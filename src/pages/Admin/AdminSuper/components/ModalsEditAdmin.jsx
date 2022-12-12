@@ -1,22 +1,21 @@
-import React, { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { MdClose } from 'react-icons/md';
+import React, { Fragment } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { MdClose } from "react-icons/md";
 
-const ModalsEditAdmin = ({ isOpen, closeModal, submitHandler, idAdmin }) => {
+const ModalsEditAdmin = ({
+  isOpen,
+  closeModal,
+  submitHandler,
+  data,
+  handleChangeEditAdmin,
+}) => {
   const isDisabled = true;
+  // console.log(data);
 
   return (
     <>
-      <Transition
-        appear
-        show={isOpen}
-        as={Fragment}
-      >
-        <Dialog
-          as="div"
-          className="relative z-10"
-          onClose={closeModal}
-        >
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -49,30 +48,28 @@ const ModalsEditAdmin = ({ isOpen, closeModal, submitHandler, idAdmin }) => {
                     as="h3"
                     className="text-2xl font-bold pt-8 mb-3"
                   >
-                    Edit Admin {idAdmin}
+                    Edit Admin
                   </Dialog.Title>
                   <hr className="mb-6 border-orange-900" />
 
-                  <form
-                    className="mb-2"
-                    onSubmit={submitHandler}
-                  >
+                  <form className="mb-2" onSubmit={submitHandler}>
                     <div className="mb-5">
                       <label
-                        htmlFor="namaAdmin"
+                        htmlFor="user_name"
                         className="block mb-2 text-sm font-medium text-gray-700"
                       >
                         Nama Admin
                       </label>
                       <input
                         type="text"
-                        name="namaAdmin"
-                        id="namaAdmin"
+                        name="user_name"
+                        id="user_name"
                         className={`input-field-xs ${
-                          isDisabled ? '!bg-secondary-600' : '!bg-white'
+                          isDisabled ? "!bg-secondary-600" : "!bg-white"
                         }`}
                         placeholder="Masukkan Nama Admin"
                         disabled={isDisabled}
+                        defaultValue={data?.user_name}
                       />
                     </div>
                     <div className="mb-5">
@@ -82,33 +79,48 @@ const ModalsEditAdmin = ({ isOpen, closeModal, submitHandler, idAdmin }) => {
                       >
                         Posisi Admin
                       </label>
-                      <input
+                      <select
+                        name="user_role_id"
+                        id="user_role_id"
+                        className="input-field-xs"
+                        // onChange={handleChangeAddAdmin}
+                      >
+                        <option
+                          value={data?.roles.role_name}
+                          key={data?.roles.role_name}
+                        >
+                          {data?.roles.role_name}
+                        </option>
+                      </select>
+                      {/* <input
                         type="text"
                         name="posisiAdmin"
                         id="posisiAdmin"
                         className={`input-field-xs ${
-                          isDisabled ? '!bg-secondary-600' : '!bg-white'
+                          isDisabled ? "!bg-secondary-600" : "!bg-white"
                         }`}
                         placeholder="Masukkan Posisi Admin"
                         disabled={isDisabled}
-                      />
+                        defaultValue={data?.roles.role_name}
+                      /> */}
                     </div>
                     <div className="mb-5">
                       <label
-                        htmlFor="emailAdmin"
+                        htmlFor="user_email"
                         className="block mb-2 text-sm font-medium text-gray-700"
                       >
                         Email
                       </label>
                       <input
                         type="email"
-                        name="emailAdmin"
-                        id="emailAdmin"
+                        name="user_email"
+                        id="user_email"
                         className={`input-field-xs ${
-                          isDisabled ? '!bg-secondary-600' : '!bg-white'
+                          isDisabled ? "!bg-secondary-600" : "!bg-white"
                         }`}
                         placeholder="Masukkan Email"
                         disabled={isDisabled}
+                        defaultValue={data?.user_email}
                       />
                     </div>
                     <div className="mb-5">
@@ -129,18 +141,19 @@ const ModalsEditAdmin = ({ isOpen, closeModal, submitHandler, idAdmin }) => {
                     </div>
                     <div className="mb-5">
                       <label
-                        htmlFor="pwdNewAdmin"
+                        htmlFor="user_password"
                         className="block mb-2 text-sm font-medium text-gray-700"
                       >
                         Password Baru
                       </label>
                       <input
                         type="password"
-                        name="pwdNewAdmin"
-                        id="pwdNewAdmin"
+                        name="user_password"
+                        id="user_password"
                         className="input-field-xs"
                         placeholder="Masukkan Password Baru"
                         required
+                        onChange={handleChangeEditAdmin}
                       />
                     </div>
                     <div className="mb-8">
@@ -160,10 +173,7 @@ const ModalsEditAdmin = ({ isOpen, closeModal, submitHandler, idAdmin }) => {
                       />
                     </div>
                     <div className="flex justify-end">
-                      <button
-                        className="button-fill"
-                        type="submit"
-                      >
+                      <button className="button-fill" type="submit">
                         Perbarui
                       </button>
                     </div>

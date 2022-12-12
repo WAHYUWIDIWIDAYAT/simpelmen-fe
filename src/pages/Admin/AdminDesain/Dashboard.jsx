@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
+import Pagination from "../../../components/Pagination";
 import { adminDesain } from "../../../services/api";
 
 const Dashboard = () => {
   const user = localStorage.getItem("admin");
   const parseUser = JSON.parse(user);
   const [data, setData] = useState();
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const postPerPage = 5;
+
+  const indexLastPost = currentPage * postPerPage;
+  const indexFirstPost = indexLastPost - postPerPage;
+  const currentData = data?.slice(indexFirstPost, indexLastPost);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   useEffect(() => {
     const getData = async () => {
@@ -50,11 +58,11 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {data?.map((item, index) => (
+                {currentData?.map((item, index) => (
                   <tr className="border-b" key={index}>
                     <td className="text-center p-3">{index + 1}</td>
                     <td className="text-center p-">{item.order_code}</td>
-                    <td className="text-left p-3">belum ada</td>
+                    <td className="text-left p-3">{item.users.user_ikm}</td>
                     <td className="text-center p-3">belum ada</td>
                     <td className="text-center p-3">{`${new Date(
                       item.createdAt
@@ -66,29 +74,16 @@ const Dashboard = () => {
               </tbody>
             </table>
           </div>
-          <nav
-            className="flex justify-end items-center gap-x-[.375rem] py-2 mt-2"
-            aria-label="pagination"
-          >
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-              <HiChevronLeft className="!text-base xs:!text-xl" />
-            </button>
-            <button className="button-gradient-sm !text-xs xs:!text-base">
-              1
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-              2
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-              3
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-              <HiChevronRight className="!text-base xs:!text-xl" />
-            </button>
-          </nav>
+          <Pagination
+            type="dashboard"
+            currentPage={currentPage}
+            postsPerPage={postPerPage}
+            totalPosts={data?.length}
+            paginate={paginate}
+          />
         </article>
 
-        <h6 className="mt-10 mb-4">Tabel Status Desain</h6>
+        {/* <h6 className="mt-10 mb-4">Tabel Status Desain</h6>
         <article id="tableStatusDesain">
           <div className="overflow-x-auto">
             <table className="table-auto mb-4 w-full">
@@ -112,19 +107,17 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {[1, 2, 3, 4, 5].map((item) => (
-                  <tr className="border-b" key={item}>
-                    <td className="text-center p-3">{item}</td>
-                    <td className="text-center p-3">001/BIKDK/O/VII/2022</td>
-                    <td className="text-center p-3">12 September 2022</td>
-                    <td className="text-left p-3">Ikha Katering</td>
-                    <td className="text-center p-3">
-                      <div className="flex justify-center">
-                        <div className="bg-[#21B630] text-white py-2 px-3 rounded-lg font-semibold">
-                          Disetujui
-                        </div>
-                      </div>
-                    </td>
+                {data?.map((item, index) => (
+                  <tr className="border-b" key={index}>
+                    <td className="text-center p-3">{index + 1}</td>
+                    <td className="text-center p-">{item.order_code}</td>
+                    <td className="text-center p-3">{`${new Date(
+                      item.createdAt
+                    ).getDate()} - ${
+                      new Date(item.createdAt).getMonth() + 1
+                    } - ${new Date(item.createdAt).getFullYear()}`}</td>
+                    <td className="text-left p-3">{item.users.user_ikm}</td>
+                    <td>belum</td>
                   </tr>
                 ))}
               </tbody>
@@ -150,7 +143,7 @@ const Dashboard = () => {
               <HiChevronRight className="!text-base xs:!text-xl" />
             </button>
           </nav>
-        </article>
+        </article> */}
       </section>
     </>
   );

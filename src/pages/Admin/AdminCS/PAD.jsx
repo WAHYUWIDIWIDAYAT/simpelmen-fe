@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { BsSearch } from "react-icons/bs";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import { IoIosArrowDown } from "react-icons/io";
 import Alerts from "../../../components/Alerts";
+import Pagination from "../../../components/Pagination";
 import { adminCS } from "../../../services/api";
 
 const PAD = () => {
@@ -12,6 +12,24 @@ const PAD = () => {
   const [alerts, setAlerts] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
   const [failMessage, setFailMessage] = useState("");
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const postPerPage = 5;
+
+  const indexLastPost = currentPage * postPerPage;
+  const indexFirstPost = indexLastPost - postPerPage;
+  const currentData = data?.slice(indexFirstPost, indexLastPost);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const getData = async (token) => {
+    await adminCS
+      .get("/pad", {
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((response) => setData(response.data));
+  };
 
   async function padStatus(status, id) {
     await adminCS
@@ -26,7 +44,10 @@ const PAD = () => {
           },
         }
       )
-      .then((response) => setAlerts(true))
+      .then((response) => {
+        setAlerts(true);
+        getData(parseUser.data.token);
+      })
       .catch((e) => {
         setFailMessage(e.message);
         setAlertFail(true);
@@ -39,16 +60,7 @@ const PAD = () => {
   }
 
   useEffect(() => {
-    const getData = async () => {
-      await adminCS
-        .get("/pad", {
-          headers: {
-            "x-access-token": `${parseUser.data.token}`,
-          },
-        })
-        .then((response) => setData(response.data));
-    };
-    getData();
+    getData(parseUser.data.token);
   }, [parseUser.data.token]);
 
   useEffect(() => {
@@ -260,7 +272,7 @@ const PAD = () => {
               </tr>
             </thead>
             <tbody>
-              {data?.map((item, index) => (
+              {currentData?.map((item, index) => (
                 <tr className="border-b" key={index}>
                   <td className="text-center p-3">{index + 1}</td>
                   <td className="text-center p-3">{item?.orders.order_code}</td>
@@ -288,9 +300,9 @@ const PAD = () => {
                             : ""
                         } input-field-select-xs !border-none !font-semibold !text-white !w-auto !pr-12`}
                       >
-                        <option value="1">Status PO</option>
-                        <option value="2">Diterima</option>
-                        <option value="3">Belum Disetujui</option>
+                        <option value="1">Status PAD</option>
+                        <option value="2">Setor</option>
+                        <option value="3">Belum Setor</option>
                       </select>
                       <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
                     </div>
@@ -300,26 +312,13 @@ const PAD = () => {
             </tbody>
           </table>
         </div>
-        <nav
-          className="flex justify-end items-center gap-x-[.375rem] py-2 mt-5"
-          aria-label="pagination"
-        >
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronLeft className="!text-base xs:!text-xl" />
-          </button>
-          <button className="button-gradient-sm !text-xs xs:!text-base">
-            1
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            2
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            3
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronRight className="!text-base xs:!text-xl" />
-          </button>
-        </nav>
+        <Pagination
+          type="dashboard"
+          currentPage={currentPage}
+          postsPerPage={postPerPage}
+          totalPosts={data?.length}
+          paginate={paginate}
+        />
       </article>
     </section>
   );

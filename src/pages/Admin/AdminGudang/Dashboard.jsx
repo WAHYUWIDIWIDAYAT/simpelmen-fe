@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { BsSearch } from "react-icons/bs";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import ModalResi from "./components/ModalResi";
 import { IoIosArrowDown } from "react-icons/io";
 import { BiPlus } from "react-icons/bi";
 import { adminGudang } from "../../../services/api";
 import Alerts from "../../../components/Alerts";
+import Pagination from "../../../components/Pagination";
 
 const Dashboard = () => {
   const user = localStorage.getItem("admin");
@@ -20,6 +20,24 @@ const Dashboard = () => {
     delivery_detail_receipt: "",
     delivery_detail_estimate: "",
   });
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const postPerPage = 5;
+
+  const indexLastPost = currentPage * postPerPage;
+  const indexFirstPost = indexLastPost - postPerPage;
+  const currentData = warehouseData?.slice(indexFirstPost, indexLastPost);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const getData = async (token) => {
+    await adminGudang
+      .get("/orders", {
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((response) => setWarehouseData(response.data));
+  };
 
   async function shipping(id, status) {
     await adminGudang
@@ -34,7 +52,32 @@ const Dashboard = () => {
           },
         }
       )
-      .then((response) => setAlerts(true))
+      .then((response) => {
+        setAlerts(true);
+        getData(parseUser.data.token);
+      })
+      .catch((e) => {
+        setFailMessage(e.message);
+        setAlertFail(true);
+      });
+  }
+  async function notAccept(id, status) {
+    await adminGudang
+      .put(
+        `/orders/belum-dikirim/${id}`,
+        {
+          order_status: parseInt(status),
+        },
+        {
+          headers: {
+            "x-access-token": `${parseUser.data.token}`,
+          },
+        }
+      )
+      .then((response) => {
+        setAlerts(true);
+        getData(parseUser.data.token);
+      })
       .catch((e) => {
         setFailMessage(e.message);
         setAlertFail(true);
@@ -43,7 +86,11 @@ const Dashboard = () => {
 
   const handleChange = (e, item) => {
     e.preventDefault();
-    shipping(item.order_id, e.target.value);
+    if (parseInt(e.target.value) === parseInt(2)) {
+      shipping(item.order_id, e.target.value);
+    } else if (parseInt(e.target.value) === 3) {
+      notAccept(item.order_id, e.target.value);
+    }
     // const filtered = data.filter((brg) => brg.id === item.id)[0];
     // filtered.status = parseInt(e.target.value);
     // setData((prevState) =>
@@ -74,20 +121,25 @@ const Dashboard = () => {
           "x-access-token": `${parseUser.data.token}`,
         },
       })
-      .then((response) => console.log(response));
+      .then((response) => {
+        setTimeout(() => {
+          setAlerts(true);
+          getData(parseUser.data.token);
+        }, 2000);
+        setIsOpenModal(false);
+      })
+      .catch((e) => {
+        setTimeout(() => {
+          setAlertFail(true);
+          setFailMessage(e.message);
+          getData(parseUser.data.token);
+        }, 2000);
+        setIsOpenModal(false);
+      });
   };
 
   useEffect(() => {
-    const getData = async () => {
-      await adminGudang
-        .get("/orders", {
-          headers: {
-            "x-access-token": `${parseUser.data.token}`,
-          },
-        })
-        .then((response) => setWarehouseData(response.data));
-    };
-    getData();
+    getData(parseUser.data.token);
   }, [parseUser.data.token]);
 
   useEffect(() => {
@@ -163,13 +215,16 @@ const Dashboard = () => {
                   <th className="text-white p-3 w-[16%] min-w-[140px] text-left">
                     Nama IKM
                   </th>
+                  <th className="text-white p-3 w-[16%] text-left">
+                    Resi Pelanggan
+                  </th>
                   <th className="text-white p-3 w-[34%] min-w-[234px] text-center">
                     Aksi
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {warehouseData?.map((item, index) => (
+                {currentData?.map((item, index) => (
                   <tr className="border-b" key={index}>
                     <td className="text-center p-3">{index + 1}</td>
                     <td className="text-center p-3">{item.order_code}</td>
@@ -179,7 +234,10 @@ const Dashboard = () => {
                       new Date(item.createdAt).getMonth() + 1
                     } - ${new Date(item.createdAt).getFullYear()}`}</td>
                     <td className="text-left p-3">
-                      {item.delivery_details[0].delivery_detail_ikm}
+                      {item.delivery_details[0]?.delivery_detail_ikm}
+                    </td>
+                    <td className="text-left p-3">
+                      {item.delivery_details[0]?.delivery_detail_receipt}
                     </td>
                     <td className="text-center p-3">
                       <div className="flex items-center gap-4 justify-center">
@@ -208,11 +266,11 @@ const Dashboard = () => {
                               {item.order_status === 4
                                 ? "Status PO"
                                 : item.order_status === 2
-                                ? "Diterima"
-                                : "Belum Disetujui"}
+                                ? "Dikirim"
+                                : "Belum Dikirim"}
                             </option>
                             <option value="4">Status PO</option>
-                            <option value="2">Dikirm</option>
+                            <option value="2">Dikirim</option>
                             <option value="3">Belum Dikirim</option>
                           </select>
                           <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
@@ -231,26 +289,13 @@ const Dashboard = () => {
               </tbody>
             </table>
           </div>
-          <nav
-            className="flex justify-end items-center gap-x-[.375rem] py-2 mt-5"
-            aria-label="pagination"
-          >
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-              <HiChevronLeft className="!text-base xs:!text-xl" />
-            </button>
-            <button className="button-gradient-sm !text-xs xs:!text-base">
-              1
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-              2
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-              3
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-              <HiChevronRight className="!text-base xs:!text-xl" />
-            </button>
-          </nav>
+          <Pagination
+            type="dashboard"
+            currentPage={currentPage}
+            postsPerPage={postPerPage}
+            totalPosts={warehouseData?.length}
+            paginate={paginate}
+          />
         </article>
       </section>
 

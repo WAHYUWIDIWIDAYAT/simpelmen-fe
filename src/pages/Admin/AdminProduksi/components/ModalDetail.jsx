@@ -4,7 +4,7 @@ import { MdClose } from "react-icons/md";
 
 const ModalDetail = ({ isOpen, closeModal, detailData }) => {
   const isDisabled = true;
-
+  console.log(detailData);
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
@@ -55,20 +55,17 @@ const ModalDetail = ({ isOpen, closeModal, detailData }) => {
                       / {detailData?.order_code}
                     </p>
                     <p className="mb-1">
-                      {
-                        detailData?.order_details[0]?.order_products.products
-                          .product_name
-                      }
+                      {detailData?.order_details[0]?.products.product_name}
                     </p>
                     <p className="mb-4">
                       {
-                        detailData?.order_details[0]?.order_products.products
-                          .jenis_products.jenis_product_name
+                        detailData?.order_details[0]?.products.jenis_products
+                          .jenis_product_name
                       }
                     </p>
                     <figure className="p-6 rounded-xl border border-orange-900/70">
                       <img
-                        src={`data:image/jpg;base64,${detailData?.order_details[0]?.order_products.products.product_image}`}
+                        src={`data:image/jpg;base64,${detailData?.order_details[0]?.products.product_image}`}
                         alt={`nama`}
                         className="w-full"
                       />
@@ -154,8 +151,8 @@ const ModalDetail = ({ isOpen, closeModal, detailData }) => {
                         placeholder="Masukkan jenis produk"
                         disabled={isDisabled}
                         value={
-                          detailData?.order_details[0]?.order_products.products
-                            .jenis_products.jenis_product_name
+                          detailData?.order_details[0]?.products.jenis_products
+                            .jenis_product_name
                         }
                       />
                     </div>
@@ -176,7 +173,7 @@ const ModalDetail = ({ isOpen, closeModal, detailData }) => {
                         placeholder="Masukkan bahan produk"
                         disabled={isDisabled}
                         value={
-                          detailData?.order_details[0]?.order_products.products
+                          detailData?.order_details[0]?.products
                             .product_materials.product_material_name
                         }
                       />
@@ -198,7 +195,7 @@ const ModalDetail = ({ isOpen, closeModal, detailData }) => {
                         placeholder="Masukkan finishing produk"
                         disabled={isDisabled}
                         value={
-                          detailData?.order_details[0]?.order_products.products
+                          detailData?.order_details[0]?.products
                             .product_finishings.product_finishing_name
                         }
                       />

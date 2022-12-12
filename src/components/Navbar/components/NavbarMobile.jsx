@@ -1,17 +1,23 @@
-import React, { Fragment } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Menu, Transition } from "@headlessui/react";
+import React, { Fragment } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Menu, Transition } from '@headlessui/react';
 
-import { FiMenu } from "react-icons/fi";
+import { FiMenu } from 'react-icons/fi';
 
 const NavbarMobile = ({ userLog, handleLogout }) => {
   const navigate = useNavigate();
   return (
     <>
       <div className="xmd:hidden">
-        <Menu as="div" className="relative flex">
+        <Menu
+          as="div"
+          className="relative flex"
+        >
           <Menu.Button>
-            <FiMenu size={25} className="cursor-pointer" />
+            <FiMenu
+              size={25}
+              className="cursor-pointer"
+            />
           </Menu.Button>
           <Transition
             as={Fragment}
@@ -26,68 +32,92 @@ const NavbarMobile = ({ userLog, handleLogout }) => {
               as="nav"
               className="absolute flex flex-col shadow-md top-14 border right-0 bg-white rounded-xl min-w-[15rem] max-w-[17rem] overflow-hidden"
             >
-              <Menu.Item as="div" className="flex w-full">
+              <Menu.Item
+                as="div"
+                className="flex w-full"
+              >
                 {userLog && (
                   <>
                     <NavLink
-                      to="/profile"
+                      to="/dashboard/profil"
                       className="nav-hidden hidden"
                     ></NavLink>
                     <button
                       className="navlink-mobile transition-200 text-left"
-                      onClick={() => navigate("/profile")}
+                      onClick={() => navigate('/dashboard/profil')}
                     >
                       👋 Hi, <span>{userLog.data.user_name}</span>!
                     </button>
                   </>
                 )}
               </Menu.Item>
-              <Menu.Item as="div" className="flex w-full">
-                <NavLink to="/" className="nav-hidden hidden"></NavLink>
+              <Menu.Item
+                as="div"
+                className="flex w-full"
+              >
+                <NavLink
+                  to="/"
+                  className="nav-hidden hidden"
+                ></NavLink>
                 <button
                   className={`navlink-mobile transition-200 text-left ${
-                    !userLog && "!pt-4"
+                    !userLog && '!pt-4'
                   }`}
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate('/')}
                 >
                   Beranda
                 </button>
               </Menu.Item>
-              <Menu.Item as="div" className="flex w-full">
+              <Menu.Item
+                as="div"
+                className="flex w-full"
+              >
                 <NavLink
                   to="/produk-kemasan"
                   className="nav-hidden hidden"
                 ></NavLink>
                 <button
                   className="navlink-mobile transition-200 text-left"
-                  onClick={() => navigate("/produk-kemasan")}
+                  onClick={() => navigate('/produk-kemasan')}
                 >
                   Produk Kemasan
                 </button>
               </Menu.Item>
-              <Menu.Item as="div" className="flex w-full">
-                <NavLink to="/laporan" className="nav-hidden hidden"></NavLink>
+              <Menu.Item
+                as="div"
+                className="flex w-full"
+              >
+                <NavLink
+                  to="/laporan"
+                  className="nav-hidden hidden"
+                ></NavLink>
                 <button
                   className="navlink-mobile transition-200 text-left"
-                  onClick={() => navigate("/laporan")}
+                  onClick={() => navigate('/laporan')}
                 >
                   Laporan PAD
                 </button>
               </Menu.Item>
-              <Menu.Item as="div" className="flex w-full">
+              <Menu.Item
+                as="div"
+                className="flex w-full"
+              >
                 <NavLink
                   to="/keranjang"
                   className="nav-hidden hidden"
                 ></NavLink>
                 <button
                   className="navlink-mobile transition-200 text-left"
-                  onClick={() => navigate("/keranjang")}
+                  onClick={() => navigate('/keranjang')}
                 >
                   Keranjang
                 </button>
               </Menu.Item>
               <hr />
-              <Menu.Item as="div" className="flex w-full">
+              <Menu.Item
+                as="div"
+                className="flex w-full"
+              >
                 {!userLog && (
                   <div className="w-full flex justify-center py-4">
                     <Link to="/login">

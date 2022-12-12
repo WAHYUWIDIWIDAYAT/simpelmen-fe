@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
+import Pagination from "../../../components/Pagination";
 import { adminKasir } from "../../../services/api";
 
 const Dashboard = () => {
@@ -7,6 +7,26 @@ const Dashboard = () => {
   const parseUser = JSON.parse(user);
   const [sellData, setSellData] = useState();
   const [pad, setPad] = useState();
+  const [currentPage, setCurrentPage] = useState({
+    pad: 1,
+    sell: 1,
+  });
+  const postPerPage = 5;
+
+  const indexLastPostSell = currentPage.sell * postPerPage;
+  const indexFirstPostSell = indexLastPostSell - postPerPage;
+  const indexLastPostPAD = currentPage.pad * postPerPage;
+  const indexFirstPostPAD = indexLastPostPAD - postPerPage;
+  const currentDataSell = sellData?.slice(
+    indexFirstPostSell,
+    indexLastPostSell
+  );
+  const currentDataPAD = pad?.slice(indexFirstPostPAD, indexLastPostPAD);
+
+  const paginateSell = (pageNumber) =>
+    setCurrentPage({ ...currentPage, sell: pageNumber });
+  const paginatePAD = (pageNumber) =>
+    setCurrentPage({ ...currentPage, pad: pageNumber });
 
   useEffect(() => {
     const getData = async () => {
@@ -52,11 +72,15 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {sellData?.map((item, index) => (
+            {currentDataSell?.map((item, index) => (
               <tr className=" border-b" key={index}>
                 <td className="text-center py-3">{index + 1}</td>
                 <td className="text-center py-3">{item.order_code}</td>
-                <td className="text-center py-3">{item.createdAt}</td>
+                <td className="text-center py-3">{`${new Date(
+                  item.createdAt
+                ).getDate()} - ${
+                  new Date(item.createdAt).getMonth() + 1
+                } - ${new Date(item.createdAt).getFullYear()}`}</td>
                 <td className="text-center py-3">{item.users.user_ikm}</td>
                 <td className="text-center py-3">
                   <div className="flex gap-2 w-full justify-center">
@@ -104,26 +128,13 @@ const Dashboard = () => {
             ))}
           </tbody>
         </table>
-        <nav
-          className="flex justify-end items-center gap-x-[.375rem] py-2 mt-5"
-          aria-label="pagination"
-        >
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronLeft className="!text-base xs:!text-xl" />
-          </button>
-          <button className="button-gradient-sm !text-xs xs:!text-base">
-            1
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            2
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            3
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronRight className="!text-base xs:!text-xl" />
-          </button>
-        </nav>
+        <Pagination
+          type="dashboard"
+          currentPage={currentPage.sell}
+          postsPerPage={postPerPage}
+          totalPosts={sellData?.length}
+          paginate={paginateSell}
+        />
         {/*  */}
         <h6 className="mt-10 mb-4">Tabel PAD </h6>
         <table className="table-auto mt-4 w-[1440px] lg:w-full">
@@ -137,7 +148,7 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {pad?.map((item, index) => (
+            {currentDataPAD?.map((item, index) => (
               <tr className=" border-b" key={index}>
                 <td className="text-center py-3">{index + 1}</td>
                 <td className="text-center py-3">{item.orders.order_code}</td>
@@ -145,7 +156,10 @@ const Dashboard = () => {
                   {item.orders.users.user_ikm}
                 </td>
                 <td className="text-center py-3">
-                  Rp. {item.retribution_jasa_total}
+                  Rp.{" "}
+                  {item.retribution_jasa_total
+                    ? item.retribution_jasa_total
+                    : "0"}
                 </td>
                 <td className="text-center py-3">
                   {item.retribution_pad_status === 2 ? (
@@ -162,26 +176,13 @@ const Dashboard = () => {
             ))}
           </tbody>
         </table>
-        <nav
-          className="flex justify-end items-center gap-x-[.375rem] py-2 mt-5"
-          aria-label="pagination"
-        >
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronLeft className="!text-base xs:!text-xl" />
-          </button>
-          <button className="button-gradient-sm !text-xs xs:!text-base">
-            1
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            2
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            3
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronRight className="!text-base xs:!text-xl" />
-          </button>
-        </nav>
+        <Pagination
+          type="dashboard"
+          currentPage={currentPage.pad}
+          postsPerPage={postPerPage}
+          totalPosts={pad?.length}
+          paginate={paginatePAD}
+        />
       </section>
     </>
   );

@@ -188,8 +188,8 @@ const DetailRetribusi = () => {
                     disabled={disable}
                     onChange={(e) => handleChange(e)}
                     defaultValue={
-                      data?.orders.order_details[0].order_products.products
-                        .product_finishings.product_finishing_name
+                      data?.orders.order_details[0]?.products
+                        ?.product_finishings?.product_finishing_name
                     }
                   />
                 </div>
@@ -259,7 +259,6 @@ const DetailRetribusi = () => {
                     id="retribution_jasa_pound"
                     name="retribution_jasa_pound"
                     className="input-field !px-5"
-                    required
                     onChange={(e) => handleChange(e)}
                   />
                 </div>
@@ -278,7 +277,6 @@ const DetailRetribusi = () => {
                     id="retribution_jasa_karton"
                     name="retribution_jasa_karton"
                     className="input-field !px-5"
-                    required
                     onChange={(e) => handleChange(e)}
                   />
                 </div>
@@ -297,7 +295,6 @@ const DetailRetribusi = () => {
                     id="retribution_jasa_sablon"
                     name="retribution_jasa_sablon"
                     className="input-field !px-5"
-                    required
                     onChange={(e) => handleChange(e)}
                   />
                 </div>
@@ -318,7 +315,6 @@ const DetailRetribusi = () => {
                     id="retribution_jasa_design"
                     name="retribution_jasa_design"
                     className="input-field !px-5"
-                    required
                     onChange={(e) => handleChange(e)}
                   />
                 </div>
@@ -337,7 +333,6 @@ const DetailRetribusi = () => {
                     id="retribution_jasa_finishing"
                     name="retribution_jasa_finishing"
                     className="input-field !px-5"
-                    required
                     onChange={(e) => handleChange(e)}
                   />
                 </div>
@@ -358,7 +353,9 @@ const DetailRetribusi = () => {
                   required
                   disabled
                   onChange={(e) => handleChange(e)}
-                  defaultValue={data?.orders.order_quantity}
+                  defaultValue={
+                    data?.orders.order_details[0]?.order_detail_quantity
+                  }
                 />
               </div>
             </div>

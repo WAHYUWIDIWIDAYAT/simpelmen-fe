@@ -1,32 +1,63 @@
-import React, { useState } from 'react';
-import { BsCartPlus } from 'react-icons/bs';
-import { postProduct } from '../../../services/api';
-import { IoIosArrowDown } from 'react-icons/io';
+import React, { useState } from "react";
+import { BsCartPlus } from "react-icons/bs";
+import { postOrder } from "../../../services/api";
+import { IoIosArrowDown } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
-const FormSticker = ({ setAlertSuccess, setAlertFail }) => {
+const FormSticker = ({
+  formType,
+  data,
+  productId,
+  setAlertSuccess,
+  setAlertFail,
+}) => {
   const [fields, setFields] = useState({});
-  const user = localStorage.getItem('user');
+  const user = localStorage.getItem("user");
+  const navigate = useNavigate();
+
+  const dummyDesign = [
+    "Lama (Diambil dari data pesanan file pesanan sebelumnya)",
+    "Baru (Dibuatkan oleh desainer BIKDK)",
+    "Swadesign (File desain dari konsumen)",
+    "Re-design (Desain ulang dari pesanan sebelumnya)",
+  ];
 
   function handleChange(e) {
     e.preventDefault();
     setFields({
       ...fields,
-      [e.target.getAttribute('name')]: e.target.value,
+      [e.target.getAttribute("name")]: e.target.value,
     });
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
+    const finalPostData = {
+      panjang_1: fields.panjang_1,
+      lebar_1: fields.lebar_1,
+      tinggi_1: fields.tinggi_1,
+      order_quantity: fields.order_quantity,
+      order_design: fields.order_design,
+      // bentuk
+    };
     if (user) {
-      await postProduct
-        .post('/Xk17j2l08BHDkmwD3lgW')
+      await postOrder
+        .post(`/cart/${productId}`, finalPostData, {
+          headers: { "x-access-token": `${JSON.parse(user).data.token}` },
+        })
         .then((response) => console.log(response));
       setAlertSuccess(true);
       console.log(fields);
     } else {
       setAlertFail(true);
-      console.log('no user');
+      console.log("no user");
     }
+  }
+  function handleGetNow(e) {
+    e.preventDefault();
+    navigate("/pesan-sekarang", {
+      state: { data: data, formType: formType, formData: fields },
+    });
   }
 
   return (
@@ -39,8 +70,8 @@ const FormSticker = ({ setAlertSuccess, setAlertFail }) => {
           Bentuk
         </label>
         <select
-          id="desain"
-          name="desain"
+          id="bentuk"
+          name="bentuk"
           onChange={(e) => handleChange(e)}
           className="input-field-select-xs"
         >
@@ -62,7 +93,7 @@ const FormSticker = ({ setAlertSuccess, setAlertFail }) => {
             <input
               type="text"
               id="ukuran"
-              name="panjang"
+              name="panjang_1"
               className="input-field-xs !pr-12"
               placeholder="Panjang"
               required
@@ -76,7 +107,7 @@ const FormSticker = ({ setAlertSuccess, setAlertFail }) => {
             <input
               type="text"
               id="ukuran"
-              name="lebar"
+              name="lebar_1"
               className="input-field-xs !pr-12"
               placeholder="Lebar"
               required
@@ -90,7 +121,7 @@ const FormSticker = ({ setAlertSuccess, setAlertFail }) => {
             <input
               type="text"
               id="ukuran"
-              name="tinggi"
+              name="tinggi_1"
               className="input-field-xs !pr-12"
               placeholder="Tinggi"
               required
@@ -111,13 +142,16 @@ const FormSticker = ({ setAlertSuccess, setAlertFail }) => {
         </label>
         <select
           id="desain"
-          name="desain"
+          name="order_design"
           onChange={(e) => handleChange(e)}
           className="input-field-select-xs"
         >
           <option>Pilih Desain</option>
-          <option value="1">Jasa Desain</option>
-          <option value="2">Tanpa Desain</option>
+          {dummyDesign.map((item, index) => (
+            <option value={item} key={index}>
+              {item}
+            </option>
+          ))}
         </select>
         <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
       </div>
@@ -132,7 +166,7 @@ const FormSticker = ({ setAlertSuccess, setAlertFail }) => {
           <input
             type="text"
             id="jumlah"
-            name="jumlah"
+            name="order_quantity"
             className="input-field-xs !pr-12"
             placeholder="Masukkan Jumlah Pesanan"
             required
@@ -142,12 +176,11 @@ const FormSticker = ({ setAlertSuccess, setAlertFail }) => {
         </div>
       </div>
       <div className="buttons flex justify-end mt-8 gap-5">
-        <button className="button-fill !py-4">Pesan Sekarang</button>
-        <button className="button-white !p-4">
-          <BsCartPlus
-            size={20}
-            className="mx-auto"
-          />
+        <button className="button-fill !py-4" onClick={(e) => handleGetNow(e)}>
+          Pesan Sekarang
+        </button>
+        <button className="button-white !p-4" type="submit">
+          <BsCartPlus size={20} className="mx-auto" />
         </button>
       </div>
     </form>

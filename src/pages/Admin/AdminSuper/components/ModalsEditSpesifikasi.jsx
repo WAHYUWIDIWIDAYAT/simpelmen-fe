@@ -1,25 +1,18 @@
-import React, { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { MdClose } from 'react-icons/md';
+import React, { Fragment } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { MdClose } from "react-icons/md";
 
 const ModalsEditSpesifikasi = ({
   isOpen,
   closeModal,
   submitHandler,
   content,
+  handleChangePutProduct,
 }) => {
   return (
     <>
-      <Transition
-        appear
-        show={isOpen}
-        as={Fragment}
-      >
-        <Dialog
-          as="div"
-          className="relative z-10"
-          onClose={closeModal}
-        >
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -55,16 +48,27 @@ const ModalsEditSpesifikasi = ({
                     Edit Spesifikasi
                   </Dialog.Title>
                   <hr className="mb-4 border-orange-900" />
-                  <p className="mb-6">
-                    Produk : {content.id} / {content.kategori}
-                  </p>
                   <form
                     className="mb-2"
-                    onSubmit={submitHandler}
+                    onSubmit={(e) => submitHandler(e, content.type)}
                   >
-                    {content.type === 'ukuran' ? (
+                    {content.type === "ukuran" ? (
                       <>
                         <div className="mb-5">
+                          <label
+                            htmlFor="shape"
+                            className="block mb-2 text-sm font-medium text-gray-700"
+                          >
+                            Bentuk Produk
+                          </label>
+                          <input
+                            type="text"
+                            className="input-field-xs !pr-12 mb-5"
+                            placeholder="Bentuk"
+                            onChange={handleChangePutProduct}
+                            name="shape"
+                            defaultValue={content.specificationName}
+                          />
                           <label
                             htmlFor="ukuranLA"
                             className="block mb-2 text-sm font-medium text-gray-700"
@@ -75,10 +79,12 @@ const ModalsEditSpesifikasi = ({
                             <div className="relative col-span-3 xs:col-span-1">
                               <input
                                 type="text"
-                                name="panjangLA"
+                                name="length"
                                 className="input-field-xs !pr-12"
                                 placeholder="Panjang"
                                 required
+                                onChange={handleChangePutProduct}
+                                defaultValue={content.p1}
                               />
                               <span className="text-gray-400 absolute right-3 top-[11px]">
                                 cm
@@ -87,10 +93,12 @@ const ModalsEditSpesifikasi = ({
                             <div className="relative col-span-3 xs:col-span-1">
                               <input
                                 type="text"
-                                name="lebarLA"
+                                name="width"
                                 className="input-field-xs !pr-12"
                                 placeholder="Lebar"
                                 required
+                                onChange={handleChangePutProduct}
+                                defaultValue={content.l1}
                               />
                               <span className="text-gray-400 absolute right-3 top-[11px]">
                                 cm
@@ -99,10 +107,12 @@ const ModalsEditSpesifikasi = ({
                             <div className="relative col-span-3 xs:col-span-1">
                               <input
                                 type="text"
-                                name="tinggiLA"
+                                name="height"
                                 className="input-field-xs !pr-12"
                                 placeholder="Tinggi"
                                 required
+                                onChange={handleChangePutProduct}
+                                defaultValue={content.t1}
                               />
                               <span className="text-gray-400 absolute right-3 top-[11px]">
                                 cm
@@ -121,10 +131,12 @@ const ModalsEditSpesifikasi = ({
                             <div className="relative col-span-3 xs:col-span-1">
                               <input
                                 type="text"
-                                name="panjangLA"
+                                name="lenght2"
                                 className="input-field-xs !pr-12"
                                 placeholder="Panjang"
                                 required
+                                onChange={handleChangePutProduct}
+                                defaultValue={content.p2}
                               />
                               <span className="text-gray-400 absolute right-3 top-[11px]">
                                 cm
@@ -133,10 +145,12 @@ const ModalsEditSpesifikasi = ({
                             <div className="relative col-span-3 xs:col-span-1">
                               <input
                                 type="text"
-                                name="lebarDB"
+                                name="width2"
                                 className="input-field-xs !pr-12"
                                 placeholder="Lebar"
                                 required
+                                onChange={handleChangePutProduct}
+                                defaultValue={content.l2}
                               />
                               <span className="text-gray-400 absolute right-3 top-[11px]">
                                 cm
@@ -145,10 +159,12 @@ const ModalsEditSpesifikasi = ({
                             <div className="relative col-span-3 xs:col-span-1">
                               <input
                                 type="text"
-                                name="tinggiDB"
+                                name="height2"
                                 className="input-field-xs !pr-12"
                                 placeholder="Tinggi"
                                 required
+                                onChange={handleChangePutProduct}
+                                defaultValue={content.t2}
                               />
                               <span className="text-gray-400 absolute right-3 top-[11px]">
                                 cm
@@ -158,41 +174,45 @@ const ModalsEditSpesifikasi = ({
                         </div>
                         <div className="mb-5">
                           <label
-                            htmlFor="deskripsiProduk"
+                            htmlFor="product_size_description"
                             className="block mb-2 text-sm font-medium text-gray-700"
                           >
                             Deskripsi Produk
                           </label>
                           <textarea
-                            name="deskripsiProduk"
-                            id="deskripsiProduk"
+                            name="product_size_description"
+                            id="product_size_description"
                             cols="30"
                             rows="4"
                             className="input-field-xs"
                             placeholder="Masukkan Deskripsi Produk"
                             required
+                            onChange={handleChangePutProduct}
+                            defaultValue={content.description}
                           ></textarea>
                         </div>
                       </>
                     ) : (
                       <div className="mb-5">
                         <label
-                          htmlFor="bentukProduk"
+                          htmlFor={content.putKey}
                           className="block mb-2 text-sm font-medium text-gray-700"
                         >
                           {content.label} Produk
                         </label>
                         <input
                           type="text"
-                          name="bentukProduk"
-                          id="bentukProduk"
+                          name={content.putKey}
+                          id={content.putKey}
                           className="input-field-xs"
                           placeholder={content.placeholder}
                           required
+                          onChange={handleChangePutProduct}
+                          defaultValue={content.specificationName}
                         />
                       </div>
                     )}
-                    {content.type === 'kategori' ? (
+                    {content.type === "kategori" ? (
                       <div className="mb-8">
                         <label
                           htmlFor="kodeProduk"
@@ -207,6 +227,8 @@ const ModalsEditSpesifikasi = ({
                           className="input-field-xs"
                           placeholder="Masukkan Kode Produk"
                           required
+                          onChange={handleChangePutProduct}
+                          // defaultValue={content.specificationName}
                         />
                       </div>
                     ) : (
@@ -215,7 +237,7 @@ const ModalsEditSpesifikasi = ({
                     <div className="flex justify-end">
                       <button
                         className={`button-fill ${
-                          content.type === 'kategori' ? null : 'mt-3'
+                          content.type === "kategori" ? null : "mt-3"
                         }`}
                         type="submit"
                       >

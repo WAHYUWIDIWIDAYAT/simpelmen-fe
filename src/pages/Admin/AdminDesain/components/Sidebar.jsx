@@ -1,20 +1,20 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { BsChatSquareDotsFill } from 'react-icons/bs';
-import { MdDashboard, MdPermMedia } from 'react-icons/md';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { BsChatSquareDotsFill } from "react-icons/bs";
+import { MdDashboard, MdPermMedia } from "react-icons/md";
 
 const Sidebar = (props) => {
   return (
     <>
       <nav
         className={`mt-8 flex flex-col gap-3 ${
-          props.toggle ? 'px-8' : 'px-18/sp'
+          props.toggle ? "px-8" : "px-18/sp"
         }`}
       >
         <NavLink
           to="/admin/desain/dashboard/"
           className={`sidebar-admin text-15/sp flex items-center gap-6 hover:!bg-orange-600/80 duration-500 transition-200 ${
-            props.toggle ? 'px-5 py-[14px]' : 'p-4 justify-center'
+            props.toggle ? "px-5 py-[14px]" : "p-4 justify-center"
           } rounded-lg`}
         >
           <MdDashboard className="fill-white text-xl" />
@@ -25,7 +25,7 @@ const Sidebar = (props) => {
             </span>
           )}
         </NavLink>
-        <NavLink
+        {/* <NavLink
           to="/admin/desain/dashboard/riwayat-chat"
           className={`sidebar-admin text-15/sp flex items-center gap-6 hover:!bg-orange-600/80 duration-500 transition-200 ${
             props.toggle ? 'px-5 py-[14px]' : 'p-4 justify-center'
@@ -38,11 +38,11 @@ const Sidebar = (props) => {
               Riwayat Chat
             </span>
           )}
-        </NavLink>
+        </NavLink> */}
         <NavLink
           to="/admin/desain/dashboard/konfirmasi-desain"
           className={`sidebar-admin text-15/sp flex items-center gap-6 hover:!bg-orange-600/80 duration-500 transition-200 ${
-            props.toggle ? 'px-5 py-[14px]' : 'p-4 justify-center'
+            props.toggle ? "px-5 py-[14px]" : "p-4 justify-center"
           } rounded-lg`}
         >
           <MdPermMedia className="fill-white text-xl" />

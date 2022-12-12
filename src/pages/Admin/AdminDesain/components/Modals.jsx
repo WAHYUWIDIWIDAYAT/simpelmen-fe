@@ -1,19 +1,10 @@
 import React, { useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { FilePond, registerPlugin } from 'react-filepond';
 import ModalChat from './ModalChat';
 import { MdClose } from 'react-icons/md';
 import { dummyImg } from '../../../../assets/image';
 import { FaTrashAlt } from 'react-icons/fa';
 import './styles.css';
-import 'filepond/dist/filepond.min.css';
-
-import FilePondPluginImageExifOrientation from 'filepond-plugin-image-exif-orientation';
-import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
-import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
-
-// Register the plugins
-registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
 
 const Modals = ({
   isOpen,
@@ -25,7 +16,6 @@ const Modals = ({
   submitChatHandler,
 }) => {
   const isDisabled = true;
-  const [fileDesain, setFileDesain] = useState([]);
 
   return (
     <>
@@ -106,46 +96,6 @@ const Modals = ({
                         </div>
                       </div>
                     </div>
-                    <form>
-                      <div className="mb-5">
-                        <label
-                          htmlFor="fileDesain"
-                          className="block mb-2 text-sm font-medium text-gray-700"
-                        >
-                          Edit desain
-                        </label>
-                        <FilePond
-                          files={fileDesain}
-                          onupdatefiles={setFileDesain}
-                          allowMultiple={false}
-                          server="/api"
-                          name="filesDesain"
-                          labelIdle="<p class='text-sm text-secondary-900'>Drag & drop desain Anda</p>"
-                          labelFileTypeNotAllowed="File tidak didukung"
-                          labelFileWaitingForSize="Menunggu ukuran"
-                          labelFileLoadError="Error"
-                          labelFileProcessing="Mengunggah"
-                          labelFileProcessingComplete="Selesai"
-                          labelFileProcessingAborted="Dibatalkan"
-                          labelFileProcessingError="Error"
-                          labelFileProcessingRevertError="Error"
-                          labelTapToCancel="Klik untuk membatalkan"
-                          labelTapToRetry="Klik untuk mengulangi"
-                          labelTapToUndo="Klik untuk mengembalikan"
-                          labelButtonRemoveItem="Hapus"
-                          labelButtonAbortItemLoad="Batalkan"
-                          labelButtonRetryItemLoad="Ulangi"
-                          labelButtonAbortItemProcessing="Batalkan"
-                          labelButtonUndoItemProcessing="Kembalikan"
-                          labelButtonRetryItemProcessing="Ulangi"
-                          labelButtonProcessItem="Unggah"
-                          labelMaxFileSizeExceeded="Ukuran file terlalu besar"
-                          labelMaxFileSize="Ukuran maksimal: {filesize}"
-                          labelMaxTotalFileSizeExceeded="Ukuran total file terlalu besar"
-                          labelMaxTotalFileSize="Ukuran total maksimal: {filesize}"
-                        />
-                      </div>
-                    </form>
 
                     <form className="mb-9">
                       <div className="mb-5">

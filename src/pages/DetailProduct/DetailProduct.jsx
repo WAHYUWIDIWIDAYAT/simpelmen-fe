@@ -1,25 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { HiOutlineArrowSmLeft } from "react-icons/hi";
 import FormKarton from "./components/FormKarton";
 import Alerts from "../../components/Alerts";
-import FormDus from "./components/FormDus";
 import FormSablon from "./components/FormSablon";
-import FormSticker from "./components/FormSticker";
-import FormStandingPouch from "./components/FormStandingPouch";
 import useProductDetail from "../../hooks/useProductDetail";
 import SkeletonImage from "../../components/Skeletons/SkeletonImage";
 import FormSkeleton from "../../components/Skeletons/FormSkeleton";
+import FormSpecial from "./components/FormSpecial";
 
 const DetailProduct = () => {
   const { productId } = useParams();
+  const navigate = useNavigate();
   const [form, setForm] = useState();
   const [alertSuccess, setAlertSuccess] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
   const { data, isLoading } = useProductDetail(
     `https://simpelmen.herokuapp.com/api/product/${productId}`
   );
-
   // Use Custom Hook
   // useEffect(()=>{
   //   const getItem = async()=>{
@@ -33,14 +31,8 @@ const DetailProduct = () => {
       case "K":
         return setForm(
           <FormKarton
-            setAlertSuccess={setAlertSuccess}
-            setAlertFail={setAlertFail}
-          />
-        );
-      case 2:
-        return setForm(
-          <FormDus
-            categoryName="Slobokan"
+            data={data}
+            productId={productId}
             setAlertSuccess={setAlertSuccess}
             setAlertFail={setAlertFail}
           />
@@ -48,20 +40,17 @@ const DetailProduct = () => {
       case "S":
         return setForm(
           <FormSablon
-            setAlertSuccess={setAlertSuccess}
-            setAlertFail={setAlertFail}
-          />
-        );
-      case 4:
-        return setForm(
-          <FormSticker
+            data={data}
+            productId={productId}
             setAlertSuccess={setAlertSuccess}
             setAlertFail={setAlertFail}
           />
         );
       case "O":
+        // standing pouch, dus offset, stiker
         return setForm(
-          <FormStandingPouch
+          <FormSpecial
+            data={data}
             productId={productId}
             setAlertSuccess={setAlertSuccess}
             setAlertFail={setAlertFail}
@@ -100,10 +89,13 @@ const DetailProduct = () => {
         )}
         <section className="containers">
           <div className="mb-5 mt-0 xs:mt-7 flex">
-            <Link to="/" className="flex items-center mb-3">
+            <div
+              className="flex items-center mb-3 cursor-pointer"
+              onClick={() => navigate(-1)}
+            >
               <HiOutlineArrowSmLeft className="text-2xl mr-3" />
               <span className="leading-10">Kembali</span>
-            </Link>
+            </div>
           </div>
           <div className="grid grid-systems gap-8 ">
             <div className="col-span-4 2xsm:col-span-8 2md:col-span-6">
@@ -153,7 +145,7 @@ const DetailProduct = () => {
                   <h2 className="text-orange-900 mb-2">
                     {data?.jenis_products.jenis_product_name}
                   </h2>
-                  {/* <p>{data?.product_materials.product_material_description}</p> */}
+                  <p>{data?.product_description}</p>
                 </>
               )}
             </div>

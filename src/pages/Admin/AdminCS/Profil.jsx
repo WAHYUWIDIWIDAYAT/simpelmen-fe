@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Alerts from "../../../components/Alerts";
 import { adminCS } from "../../../services/api";
+import { VscEye, VscEyeClosed } from "react-icons/vsc";
 
 const Profil = () => {
   const user = localStorage.getItem("admin");
@@ -12,6 +13,35 @@ const Profil = () => {
   const [alerts, setAlerts] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
   const [failMessage, setFailMessage] = useState("");
+  const [showPassword, setShowPassword] = useState({
+    confirmPassword: false,
+    oldPassword: false,
+    newPassword: false,
+    confirmNewPassword: false,
+  });
+  const handleShowPassword = (type) => {
+    if (type === "confirmPassword") {
+      setShowPassword({
+        ...showPassword,
+        confirmPassword: !showPassword.confirmPassword,
+      });
+    } else if (type === "oldPassword") {
+      setShowPassword({
+        ...showPassword,
+        oldPassword: !showPassword.oldPassword,
+      });
+    } else if (type === "newPassword") {
+      setShowPassword({
+        ...showPassword,
+        newPassword: !showPassword.newPassword,
+      });
+    } else if (type === "confirmNewPassword") {
+      setShowPassword({
+        ...showPassword,
+        confirmNewPassword: !showPassword.confirmNewPassword,
+      });
+    }
+  };
 
   const handleChangeProfile = (e) => {
     e.preventDefault();
@@ -187,7 +217,7 @@ const Profil = () => {
                   Kata Sandi
                 </label>
                 <input
-                  type="password"
+                  type={showPassword.confirmPassword ? "text" : "password"}
                   className="input-field-xs"
                   placeholder="Masukkan Kata Sandi"
                   name="password"
@@ -197,6 +227,17 @@ const Profil = () => {
                   onChange={handleChangeProfile}
                   autoComplete="on"
                 />
+                {showPassword.confirmPassword ? (
+                  <VscEyeClosed
+                    className="absolute text-xl top-10 right-4 fill-secondary-800 cursor-pointer"
+                    onClick={() => handleShowPassword("confirmPassword")}
+                  />
+                ) : (
+                  <VscEye
+                    className="absolute text-xl top-10 right-4 fill-secondary-800 cursor-pointer"
+                    onClick={() => handleShowPassword("confirmPassword")}
+                  />
+                )}
               </div>
               <div className="flex justify-end">
                 {toggleDisabledProfile ? (
@@ -230,7 +271,7 @@ const Profil = () => {
                   Kata Sandi Lama
                 </label>
                 <input
-                  type="password"
+                  type={showPassword.oldPassword ? "text" : "password"}
                   className="input-field-xs"
                   placeholder="Masukkan Kata Sandi Baru"
                   name="password"
@@ -240,6 +281,17 @@ const Profil = () => {
                   onChange={handleChangePwd}
                   autoComplete="on"
                 />
+                {showPassword.oldPassword ? (
+                  <VscEyeClosed
+                    className="absolute text-xl top-10 right-4 fill-secondary-800 cursor-pointer"
+                    onClick={() => handleShowPassword("oldPassword")}
+                  />
+                ) : (
+                  <VscEye
+                    className="absolute text-xl top-10 right-4 fill-secondary-800 cursor-pointer"
+                    onClick={() => handleShowPassword("oldPassword")}
+                  />
+                )}
               </div>
               <div className="relative w-full flex flex-col mb-8">
                 <label
@@ -249,7 +301,7 @@ const Profil = () => {
                   Kata Sandi Baru
                 </label>
                 <input
-                  type="password"
+                  type={showPassword.newPassword ? "text" : "password"}
                   className="input-field-xs"
                   placeholder="Masukkan Konfirmasi Kata Sandi Baru"
                   name="new_password"
@@ -259,9 +311,50 @@ const Profil = () => {
                   onChange={handleChangePwd}
                   autoComplete="on"
                 />
+                {showPassword.newPassword ? (
+                  <VscEyeClosed
+                    className="absolute text-xl top-10 right-4 fill-secondary-800 cursor-pointer"
+                    onClick={() => handleShowPassword("newPassword")}
+                  />
+                ) : (
+                  <VscEye
+                    className="absolute text-xl top-10 right-4 fill-secondary-800 cursor-pointer"
+                    onClick={() => handleShowPassword("newPassword")}
+                  />
+                )}
+              </div>
+              <div className="relative w-full flex flex-col mb-8">
+                <label
+                  htmlFor="confirm_password"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Konfirmasi Kata Sandi Baru
+                </label>
+                <input
+                  type={showPassword.confirmNewPassword ? "text" : "password"}
+                  className="input-field-xs"
+                  placeholder="Masukkan Konfirmasi Kata Sandi Baru"
+                  name="confirm_password"
+                  id="confirm_password"
+                  required
+                  disabled={toggleDisabledPwd}
+                  onChange={handleChangePwd}
+                  autoComplete="on"
+                />
+                {showPassword.confirmNewPassword ? (
+                  <VscEyeClosed
+                    className="absolute text-xl top-10 right-4 fill-secondary-800 cursor-pointer"
+                    onClick={() => handleShowPassword("confirmNewPassword")}
+                  />
+                ) : (
+                  <VscEye
+                    className="absolute text-xl top-10 right-4 fill-secondary-800 cursor-pointer"
+                    onClick={() => handleShowPassword("confirmNewPassword")}
+                  />
+                )}
               </div>
               <div className="flex justify-end">
-                {toggleDisabledProfile ? (
+                {toggleDisabledPwd ? (
                   <button
                     className="button-fill"
                     onClick={() => setToggleDisabledPwd(false)}

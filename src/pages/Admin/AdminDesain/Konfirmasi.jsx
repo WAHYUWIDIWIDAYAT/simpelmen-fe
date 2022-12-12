@@ -13,6 +13,16 @@ const Konfirmasi = () => {
   const [alertFail, setAlertFail] = useState(false);
   const [failMessage, setFailMessage] = useState("");
 
+  const getData = async (token) => {
+    await adminDesain
+      .get("/orders", {
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((response) => setData(response.data));
+  };
+
   async function approveDesign(id, status) {
     await adminDesain
       .put(
@@ -26,7 +36,10 @@ const Konfirmasi = () => {
           },
         }
       )
-      .then((response) => setAlerts(true))
+      .then((response) => {
+        setAlerts(true);
+        getData(parseUser.data.token);
+      })
       .catch((e) => {
         setFailMessage(e.message);
         setAlertFail(true);
@@ -45,7 +58,10 @@ const Konfirmasi = () => {
           },
         }
       )
-      .then((response) => setAlerts(true))
+      .then((response) => {
+        setAlerts(true);
+        getData(parseUser.data.token);
+      })
       .catch((e) => {
         setFailMessage(e.message);
         setAlertFail(true);
@@ -70,16 +86,7 @@ const Konfirmasi = () => {
   }
 
   useEffect(() => {
-    const getData = async () => {
-      await adminDesain
-        .get("/orders", {
-          headers: {
-            "x-access-token": `${parseUser.data.token}`,
-          },
-        })
-        .then((response) => setData(response.data));
-    };
-    getData();
+    getData(parseUser.data.token);
   }, [parseUser.data.token]);
 
   useEffect(() => {
@@ -170,7 +177,7 @@ const Konfirmasi = () => {
                     ).getDate()} - ${
                       new Date(item.createdAt).getMonth() + 1
                     } - ${new Date(item.createdAt).getFullYear()}`}</td>
-                    <td className="text-left p-3">{item.namaIKM}</td>
+                    <td className="text-left p-3">{item.users.user_ikm}</td>
                     <td className="text-center py-3 px-4 flex justify-center">
                       <div className="relative">
                         <select

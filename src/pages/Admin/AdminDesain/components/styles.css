@@ -7,17 +7,3 @@
   opacity: 1;
   visibility: visible;
 }
-
-.filepond--root * {
-  background-color: #fff !important;
-  cursor: pointer !important;
-}
-.filepond--drop-label {
-  background: white;
-  border: 1px dashed #ccc;
-  border-radius: 0.5rem;
-  -webkit-border-radius: 0.5rem;
-  -moz-border-radius: 0.5rem;
-  -ms-border-radius: 0.5rem;
-  -o-border-radius: 0.5rem;
-}

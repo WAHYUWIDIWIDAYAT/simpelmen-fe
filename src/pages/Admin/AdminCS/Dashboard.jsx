@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
+import Pagination from "../../../components/Pagination";
 import { adminCS } from "../../../services/api";
 
 const Dashboard = () => {
@@ -8,6 +8,37 @@ const Dashboard = () => {
   const [customerRetribution, setCustomerRetribution] = useState();
   const [customerStatus, setCustomerStatus] = useState();
   const [order, setOrder] = useState();
+  const [currentPage, setCurrentPage] = useState({
+    retribusi: 1,
+    status: 1,
+    rekap: 1,
+  });
+  const postPerPage = 5;
+
+  const indexLastPostRetribution = currentPage.retribusi * postPerPage;
+  const indexFirstPostRetribution = indexLastPostRetribution - postPerPage;
+  const indexLastPostStatus = currentPage.status * postPerPage;
+  const indexFirstPostStatus = indexLastPostStatus - postPerPage;
+  const indexLastPostRekap = currentPage.rekap * postPerPage;
+  const indexFirstPostRekap = indexLastPostRekap - postPerPage;
+  const currentDataRetribution = customerRetribution?.slice(
+    indexFirstPostRetribution,
+    indexLastPostRetribution
+  );
+  const currentDataStatus = customerStatus?.slice(
+    indexFirstPostStatus,
+    indexLastPostStatus
+  );
+  const currentDataRekap = order?.slice(
+    indexFirstPostRekap,
+    indexLastPostRekap
+  );
+  const paginateRetribution = (pageNumber) =>
+    setCurrentPage({ ...currentPage, retribusi: pageNumber });
+  const paginateStatus = (pageNumber) =>
+    setCurrentPage({ ...currentPage, status: pageNumber });
+  const paginateRekap = (pageNumber) =>
+    setCurrentPage({ ...currentPage, rekap: pageNumber });
 
   useEffect(() => {
     const getRetribution = async () => {
@@ -78,7 +109,7 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {customerRetribution?.map((item, index) => (
+              {currentDataRetribution?.map((item, index) => (
                 <tr className=" border-b" key={item.orders.order_id}>
                   <td className="text-center px-3 py-2">{index + 1}</td>
                   <td className="text-center px-3 py-2">
@@ -116,26 +147,13 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
-        <nav
-          className="flex justify-end items-center gap-x-[.375rem] py-2 mt-2"
-          aria-label="pagination"
-        >
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronLeft className="!text-base xs:!text-xl" />
-          </button>
-          <button className="button-gradient-sm !text-xs xs:!text-base">
-            1
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            2
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            3
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronRight className="!text-base xs:!text-xl" />
-          </button>
-        </nav>
+        <Pagination
+          type="dashboard"
+          currentPage={currentPage.retribusi}
+          postsPerPage={postPerPage}
+          totalPosts={customerRetribution?.length}
+          paginate={paginateRetribution}
+        />
       </article>
 
       <article id="statusPOPelanggan">
@@ -159,7 +177,7 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {customerStatus?.map((item, index) => (
+              {currentDataStatus?.map((item, index) => (
                 <tr className=" border-b" key={index}>
                   <td className="text-center px-3 py-2">{index + 1}</td>
                   <td className="text-center px-3 py-2">{item?.order_code}</td>
@@ -180,26 +198,13 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
-        <nav
-          className="flex justify-end items-center gap-x-[.375rem] py-2 mt-2"
-          aria-label="pagination"
-        >
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronLeft className="!text-base xs:!text-xl" />
-          </button>
-          <button className="button-gradient-sm !text-xs xs:!text-base">
-            1
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            2
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            3
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronRight className="!text-base xs:!text-xl" />
-          </button>
-        </nav>
+        <Pagination
+          type="dashboard"
+          currentPage={currentPage.status}
+          postsPerPage={postPerPage}
+          totalPosts={customerStatus?.length}
+          paginate={paginateStatus}
+        />
       </article>
 
       <article id="rekapPesanan">
@@ -226,7 +231,7 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {order?.map((item, index) => (
+              {currentDataRekap?.map((item, index) => (
                 <tr className=" border-b" key={index}>
                   <td className="text-center p-3">{index + 1}</td>
                   <td className="text-center p-3">{item.order_code}</td>
@@ -256,26 +261,13 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
-        <nav
-          className="flex justify-end items-center gap-x-[.375rem] py-2 mt-2"
-          aria-label="pagination"
-        >
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronLeft className="!text-base xs:!text-xl" />
-          </button>
-          <button className="button-gradient-sm !text-xs xs:!text-base">
-            1
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            2
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            3
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronRight className="!text-base xs:!text-xl" />
-          </button>
-        </nav>
+        <Pagination
+          type="dashboard"
+          currentPage={currentPage.rekap}
+          postsPerPage={postPerPage}
+          totalPosts={order?.length}
+          paginate={paginateRekap}
+        />
       </article>
     </section>
   );

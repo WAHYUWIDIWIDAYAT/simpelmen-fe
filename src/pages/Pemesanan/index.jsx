@@ -59,7 +59,7 @@ const Pemesanan = ({ item }) => {
       .put(
         `/checkout?order_id=${item[0].order_id}`,
         {
-          delivery_detail_order_id: item[0].order_id,
+          order_id: item.map((data) => data.order_id),
           delivery_detail_name: fields.user_name,
           delivery_detail_ikm: fields.user_ikm,
           delivery_detail_email: fields.user_email,

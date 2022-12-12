@@ -1,27 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CardProduct from "../../components/Card/CardProduct";
 import { HiOutlineArrowSmLeft } from "react-icons/hi";
-import { HiChevronRight, HiChevronLeft } from "react-icons/hi";
 import useProducts from "../../hooks/useProductDetail";
 import CardSkeleton from "../../components/Skeletons/CardSkeleton";
+import Pagination from "../../components/Pagination";
 
 const Kemasan = () => {
   const [active, setActive] = useState("Semua Kemasan");
+  const [productData, setProductData] = useState();
   const type = [
     "Semua Kemasan",
     "Karton",
     "Dus Offset",
     "Sablon Plastik, Pouch, Dus",
-    "Sticker",
+    "Stiker",
     "Standing Pouch",
   ];
   const { data, isLoading } = useProducts(
     "https://simpelmen.herokuapp.com/api/product"
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const postPerPage = 8;
+
+  const indexLastPost = currentPage * postPerPage;
+  const indexFirstPost = indexLastPost - postPerPage;
+  const currentData = productData?.slice(indexFirstPost, indexLastPost);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   function handleActive(type) {
     setActive(type);
+    if (type === "Semua Kemasan") {
+      setProductData(data);
+    } else {
+      const filteredData = data.filter(
+        (item) => item.jenis_products.jenis_product_name === type
+      );
+      setProductData(filteredData);
+    }
   }
+  useEffect(() => {
+    if (!isLoading) setProductData(data);
+  }, [data, isLoading]);
   return (
     <>
       <main className="containers">
@@ -59,7 +79,7 @@ const Kemasan = () => {
                     <CardSkeleton />
                   </div>
                 ))
-              : data?.map((item, index) => {
+              : currentData?.map((item, index) => {
                   return (
                     <div className="col-span-4 lg:col-span-3" key={index}>
                       <CardProduct {...item} />
@@ -67,26 +87,12 @@ const Kemasan = () => {
                   );
                 })}
           </div>
-          <nav
-            className="flex justify-center items-center gap-x-[.375rem] py-2"
-            aria-label="pagination"
-          >
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-              <HiChevronLeft className="!text-base xs:!text-xl" />
-            </button>
-            <button className="button-gradient-sm !text-xs xs:!text-base">
-              1
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-              2
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-              3
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-              <HiChevronRight className="!text-base xs:!text-xl" />
-            </button>
-          </nav>
+          <Pagination
+            currentPage={currentPage}
+            postsPerPage={postPerPage}
+            totalPosts={data?.length}
+            paginate={paginate}
+          />
         </section>
       </main>
     </>

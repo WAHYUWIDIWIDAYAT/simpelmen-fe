@@ -2,7 +2,7 @@ import React, { useState } from "react";
 // import { postProduct } from '../../../services/api';
 import { IoIosArrowDown } from "react-icons/io";
 
-const FormKarton = ({ setAlertSuccess, setAlertFail }) => {
+const FormKarton = ({ data }) => {
   const [fields, setFields] = useState({});
   // const user = localStorage.getItem('user');
 
@@ -47,6 +47,7 @@ const FormKarton = ({ setAlertSuccess, setAlertFail }) => {
               placeholder="Panjang"
               required
               onChange={(e) => handleChange(e)}
+              defaultValue={data.order_details[0]?.p1}
             />
             <span className="text-gray-400 absolute right-3 top-[11px]">
               cm
@@ -61,6 +62,7 @@ const FormKarton = ({ setAlertSuccess, setAlertFail }) => {
               placeholder="Lebar"
               required
               onChange={(e) => handleChange(e)}
+              defaultValue={data.order_details[0]?.l1}
             />
             <span className="text-gray-400 absolute right-3 top-[11px]">
               cm
@@ -75,6 +77,7 @@ const FormKarton = ({ setAlertSuccess, setAlertFail }) => {
               placeholder="Tinggi"
               required
               onChange={(e) => handleChange(e)}
+              defaultValue={data.order_details[0]?.t1}
             />
             <span className="text-gray-400 absolute right-3 top-[11px]">
               cm
@@ -114,9 +117,7 @@ const FormKarton = ({ setAlertSuccess, setAlertFail }) => {
           onChange={(e) => handleChange(e)}
           className="input-field-select-xs"
         >
-          <option>Pilih Desain</option>
-          <option value="1">Jasa Desain</option>
-          <option value="2">Tanpa Desain</option>
+          <option>{data.order_details[0]?.order_detail_design}</option>
         </select>
         <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
       </div>
@@ -136,6 +137,7 @@ const FormKarton = ({ setAlertSuccess, setAlertFail }) => {
             placeholder="Masukkan Jumlah Pesanan"
             required
             onChange={(e) => handleChange(e)}
+            defaultValue={data.order_details[0]?.order_detail_quantity}
           />
           <span className="text-gray-400 absolute right-3 top-[11px]">pcs</span>
         </div>

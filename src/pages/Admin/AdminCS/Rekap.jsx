@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { BsSearch } from "react-icons/bs";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
 import { IoIosArrowDown } from "react-icons/io";
+import Pagination from "../../../components/Pagination";
 import { adminCS } from "../../../services/api";
 
 const Rekap = () => {
   const user = localStorage.getItem("admin");
   const parseUser = JSON.parse(user);
   const [data, setData] = useState();
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const postPerPage = 5;
+
+  const indexLastPost = currentPage * postPerPage;
+  const indexFirstPost = indexLastPost - postPerPage;
+  const currentData = data?.slice(indexFirstPost, indexLastPost);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   // function handleChange(e, item) {
   //   e.preventDefault();
@@ -91,7 +99,7 @@ const Rekap = () => {
               </tr>
             </thead>
             <tbody>
-              {data?.map((item, index) => (
+              {currentData?.map((item, index) => (
                 <tr className="border-b" key={index}>
                   <td className="text-center p-3">{index + 1}</td>
                   <td className="text-center p-3">{item?.order_code}</td>
@@ -159,26 +167,13 @@ const Rekap = () => {
             </tbody>
           </table>
         </div>
-        <nav
-          className="flex justify-end items-center gap-x-[.375rem] py-2 mt-5"
-          aria-label="pagination"
-        >
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronLeft className="!text-base xs:!text-xl" />
-          </button>
-          <button className="button-gradient-sm !text-xs xs:!text-base">
-            1
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            2
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-            3
-          </button>
-          <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-            <HiChevronRight className="!text-base xs:!text-xl" />
-          </button>
-        </nav>
+        <Pagination
+          type="dashboard"
+          currentPage={currentPage}
+          postsPerPage={postPerPage}
+          totalPosts={data?.length}
+          paginate={paginate}
+        />
       </article>
     </section>
   );

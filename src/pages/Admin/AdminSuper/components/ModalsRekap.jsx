@@ -1,21 +1,29 @@
-import React, { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { MdClose } from 'react-icons/md';
-import { dummyImg } from '../../../../assets/image';
+import React, { Fragment, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { MdClose } from "react-icons/md";
+import { adminSuper } from "../../../../services/api";
+import { useEffect } from "react";
 
 const ModalsRekap = ({ isOpen, closeModal, idPesanan }) => {
+  const user = localStorage.getItem("admin");
+  const parseUser = JSON.parse(user);
+  const [data, setData] = useState();
+  useEffect(() => {
+    const getDetailData = async (token) => {
+      await adminSuper
+        .get(`/rekap/pesanan/${idPesanan}`, {
+          headers: {
+            "x-access-token": `${token}`,
+          },
+        })
+        .then((response) => setData(response.data));
+    };
+    getDetailData(parseUser.data.token);
+  }, [idPesanan, parseUser.data.token]);
   return (
     <>
-      <Transition
-        appear
-        show={isOpen}
-        as={Fragment}
-      >
-        <Dialog
-          as="div"
-          className="relative z-10"
-          onClose={closeModal}
-        >
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -52,35 +60,46 @@ const ModalsRekap = ({ isOpen, closeModal, idPesanan }) => {
                   </Dialog.Title>
                   <figure className="w-[80%] mx-auto mb-6">
                     <img
-                      src={dummyImg.boxTentengan}
+                      src={`data:image/jpg;base64,${data?.data?.order_details[0]?.products.product_image}`}
                       alt={`nama`}
                       className="w-full"
                     />
                   </figure>
                   <div className="text-center mb-6">
                     <p className="mb-1">
-                      Pesanan: {`1 Januari 2022`}/{idPesanan}
+                      Pesanan:{" "}
+                      {`${new Date(data?.data?.createdAt).getDate()} - ${
+                        new Date(data?.data?.createdAt).getMonth() + 1
+                      } - ${new Date(data?.data?.createdAt).getFullYear()}`}
                     </p>
                     <p className="mb-1">
-                      {`Standing Pouch`} {`(Nama Produk)`}
+                      {data?.data?.order_details[0]?.products.product_name}
                     </p>
                     <p>
-                      {`Standing Pouch Full COlor`} {`(Jenis Produk)`}
+                      {data?.data?.order_details[0]?.products.jenis_product}{" "}
+                      {`(Jenis Produk)`}
                     </p>
                   </div>
                   <div className="spesifikasi w-full bg-orange-600 rounded-lg p-4 text-center mb-6">
                     <h6 className="text-white mb-3">Spesifikasi Produk</h6>
                     <p className="text-white mb-3">
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                      Accusantium quod hic nemo rerum fugit quaerat eaque
-                      molestias laboriosam neque tempora!
+                      {
+                        data?.data?.order_details[0]?.products
+                          .product_description
+                      }
                     </p>
                     <div className="text-left">
                       <p className="text-white font-semibold">
-                        Jumlah: {`500`} pcs
+                        Jumlah:{" "}
+                        {data?.data?.order_details[0]?.order_detail_quantity}{" "}
+                        pcs
                       </p>
                       <p className="text-white font-semibold">
-                        Retribusi: Rp {`112.500`}
+                        Retribusi: Rp{" "}
+                        {data?.data?.retributions[0]?.retribution_jasa_total ===
+                        null
+                          ? "0"
+                          : data?.data?.retributions[0]?.retribution_jasa_total}
                       </p>
                     </div>
                   </div>
@@ -90,23 +109,38 @@ const ModalsRekap = ({ isOpen, closeModal, idPesanan }) => {
                       <tr>
                         <td className="w-[28%] align-baseline">Nama</td>
                         <td className="w-[4%] align-baseline">:</td>
-                        <td className="w-[68%] align-baseline">{`Ivan Nova Ardiansyah`}</td>
+                        <td className="w-[68%] align-baseline">
+                          {
+                            data?.data?.delivery_details[0]
+                              ?.delivery_detail_name
+                          }
+                        </td>
                       </tr>
                       <tr>
                         <td className="w-[28%] align-baseline">Nama IKM</td>
                         <td className="w-[4%] align-baseline">:</td>
-                        <td className="w-[68%] align-baseline">{`Vanz`}</td>
+                        <td className="w-[68%] align-baseline">
+                          {data?.data?.delivery_details[0]?.delivery_detail_ikm}
+                        </td>
                       </tr>
                       <tr>
                         <td className="w-[28%] align-baseline">Telepon</td>
                         <td className="w-[4%] align-baseline">:</td>
-                        <td className="w-[68%] align-baseline">{`6282314145656`}</td>
+                        <td className="w-[68%] align-baseline">
+                          {
+                            data?.data?.delivery_details[0]
+                              ?.delivery_detail_contact
+                          }
+                        </td>
                       </tr>
                       <tr>
                         <td className="w-[28%] align-baseline">Alamat</td>
                         <td className="w-[4%] align-baseline">:</td>
                         <td className="w-[68%] align-baseline">
-                          {`Jl. Ikigari No. 67, Kirimate, Kirigakure`}
+                          {
+                            data?.data?.delivery_details[0]
+                              ?.delivery_detail_address
+                          }
                         </td>
                       </tr>
                     </table>

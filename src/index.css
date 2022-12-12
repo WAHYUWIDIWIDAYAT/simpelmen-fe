@@ -111,6 +111,12 @@ p {
 .input-field-icon-xs {
   @apply w-full bg-white py-3 pl-10 pr-4 rounded-lg text-sm border-secondary-800 border focus:outline-none focus:border-orange-900;
 }
+.field-error {
+  @apply border-red-500 focus:border-red-500 bg-red-600/10;
+}
+.error-inputs {
+  @apply text-sm text-red-500 font-medium;
+}
 
 /* chat */
 #chatting *,
@@ -158,4 +164,12 @@ p {
 }
 .transition-all-200 {
   @apply transition-all duration-200 ease-in-out;
+}
+svg.icon-white,
+svg.icon-white path {
+  @apply text-white fill-white border-white;
+}
+svg.icon-primary,
+svg.icon-primary path {
+  @apply text-primary-900 fill-primary-900 border-primary-900;
 }

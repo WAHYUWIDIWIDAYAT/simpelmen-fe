@@ -27,7 +27,7 @@ const Navbar = () => {
     <>
       <nav className="flex justify-between items-center pb-5 sm:pb-4 border-b border-transparent sm:border-primary-600">
         <p className="text-[18px] font-semibold mr-8 hidden sm:block">
-          Dashboard asd
+          Dashboard
         </p>
         <img
           src={svg.LogoDashboardUser}

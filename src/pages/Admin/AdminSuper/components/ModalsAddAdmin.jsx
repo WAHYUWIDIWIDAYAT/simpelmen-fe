@@ -1,20 +1,18 @@
-import React, { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { MdClose } from 'react-icons/md';
+import React, { Fragment } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { MdClose } from "react-icons/md";
 
-const ModalsAddAdmin = ({ isOpen, closeModal, submitHandler }) => {
+const ModalsAddAdmin = ({
+  isOpen,
+  closeModal,
+  submitHandler,
+  handleChangeAddAdmin,
+  adminRole,
+}) => {
   return (
     <>
-      <Transition
-        appear
-        show={isOpen}
-        as={Fragment}
-      >
-        <Dialog
-          as="div"
-          className="relative z-10"
-          onClose={closeModal}
-        >
+      <Transition appear show={isOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={closeModal}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -51,72 +49,86 @@ const ModalsAddAdmin = ({ isOpen, closeModal, submitHandler }) => {
                   </Dialog.Title>
                   <hr className="mb-6 border-orange-900" />
 
-                  <form
-                    className="mb-2"
-                    onSubmit={submitHandler}
-                  >
+                  <form className="mb-2" onSubmit={submitHandler}>
                     <div className="mb-5">
                       <label
-                        htmlFor="namaAdmin"
+                        htmlFor="user_name"
                         className="block mb-2 text-sm font-medium text-gray-700"
                       >
                         Nama Admin
                       </label>
                       <input
                         type="text"
-                        name="namaAdmin"
-                        id="namaAdmin"
+                        name="user_name"
+                        id="user_name"
                         className="input-field-xs"
                         placeholder="Masukkan Nama Admin"
                         required
+                        onChange={handleChangeAddAdmin}
                       />
                     </div>
                     <div className="mb-5">
                       <label
-                        htmlFor="posisiAdmin"
+                        htmlFor="user_role_id"
                         className="block mb-2 text-sm font-medium text-gray-700"
                       >
                         Posisi Admin
                       </label>
-                      <input
+                      <select
+                        name="user_role_id"
+                        id="user_role_id"
+                        className="input-field-xs"
+                        onChange={handleChangeAddAdmin}
+                      >
+                        <option>Pilih Posisi Admin</option>
+                        {adminRole?.map((item, index) => (
+                          <option value={item.role_id} key={index}>
+                            {item.role_name}
+                          </option>
+                        ))}
+                      </select>
+                      {/* <input
                         type="text"
-                        name="posisiAdmin"
-                        id="posisiAdmin"
+                        name="user_role"
+                        id="user_role"
                         className="input-field-xs"
                         placeholder="Masukkan Posisi Admin"
                         required
-                      />
+                        onChange={handleChangeAddAdmin}
+                      /> */}
                     </div>
                     <div className="mb-5">
                       <label
-                        htmlFor="emailAdmin"
+                        htmlFor="user_email"
                         className="block mb-2 text-sm font-medium text-gray-700"
                       >
                         Email
                       </label>
                       <input
                         type="email"
-                        name="emailAdmin"
-                        id="emailAdmin"
+                        name="user_email"
+                        id="user_email"
                         className="input-field-xs"
                         placeholder="Masukkan Email"
                         required
+                        onChange={handleChangeAddAdmin}
                       />
                     </div>
                     <div className="mb-5">
                       <label
-                        htmlFor="pwdAdmin"
+                        htmlFor="user_password"
                         className="block mb-2 text-sm font-medium text-gray-700"
                       >
                         Password
                       </label>
                       <input
                         type="password"
-                        name="pwdAdmin"
-                        id="pwdAdmin"
+                        name="user_password"
+                        id="user_password"
                         className="input-field-xs"
                         placeholder="Masukkan Password"
                         required
+                        onChange={handleChangeAddAdmin}
                       />
                     </div>
                     <div className="mb-8">
@@ -136,10 +148,7 @@ const ModalsAddAdmin = ({ isOpen, closeModal, submitHandler }) => {
                       />
                     </div>
                     <div className="flex justify-end">
-                      <button
-                        className="button-fill"
-                        type="submit"
-                      >
+                      <button className="button-fill" type="submit">
                         Tambahkan
                       </button>
                     </div>

@@ -1,16 +1,105 @@
-import React, { useState } from 'react';
-import { BsSearch, BsPlus } from 'react-icons/bs';
-import { FaTrash } from 'react-icons/fa';
-import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
-import ModalsDetailProduk from './components/ModalsDetailProduk';
-import ModalsAddProduk from './components/ModalsAddProduk';
-import ModalsEditProduk from './components/ModalsEditProduk';
+import React, { useEffect, useState } from "react";
+import { BsSearch, BsPlus } from "react-icons/bs";
+import { FaTrash } from "react-icons/fa";
+import ModalsDetailProduk from "./components/ModalsDetailProduk";
+import ModalsAddProduk from "./components/ModalsAddProduk";
+import ModalsEditProduk from "./components/ModalsEditProduk";
+import { commonAPI } from "../../../services/api";
+import Alerts from "../../../components/Alerts";
+import Pagination from "../../../components/Pagination";
 
 const Produk = () => {
+  const user = localStorage.getItem("admin");
+  const parseUser = JSON.parse(user);
   const [isOpenModalAdd, setIsOpenModalAdd] = useState(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
   const [isOpenModalDetail, setIsOpenModalDetail] = useState(false);
-  const [idProduk, setIdProduk] = useState();
+  const [detailData, setDetailData] = useState();
+  const [dataProduct, setDataProduct] = useState();
+  const [postProduct, setPostProduct] = useState();
+  const [putProduct, setPutProduct] = useState();
+  const [alerts, setAlerts] = useState(false);
+  const [alertFail, setAlertFail] = useState(false);
+  const [failMessage, setFailMessage] = useState("");
+  const [categoryProduct, setCategoryProduct] = useState();
+  const [productMaterial, setProductMaterial] = useState();
+  const [productSize, setProductSize] = useState();
+  const [productFinishing, setProductFinishing] = useState();
+  const [bentukProduk, setBentukProduk] = useState();
+  // pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const postPerPage = 5;
+
+  const indexLastPost = currentPage * postPerPage;
+  const indexFirstPost = indexLastPost - postPerPage;
+  const currentData = dataProduct?.slice(indexFirstPost, indexLastPost);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const getProduct = async () => {
+    await commonAPI
+      .get("/product")
+      .then((response) => setDataProduct(response.data));
+  };
+  const getCategoryProduct = async (token) => {
+    await commonAPI
+      .get("/category", {
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((response) => setCategoryProduct(response.data.data));
+  };
+  const getMaterialProduct = async (token) => {
+    await commonAPI
+      .get("/material", {
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((response) => setProductMaterial(response.data.data));
+  };
+  const getSizeProduct = async (token) => {
+    await commonAPI
+      .get("/size", {
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((response) => setProductSize(response.data.data));
+  };
+  const getFinsihingProduct = async (token) => {
+    await commonAPI
+      .get("/finishing", {
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((response) => setProductFinishing(response.data.data));
+  };
+  const getBentukProduct = async (token) => {
+    await commonAPI
+      .get("/jenisproducts", {
+        headers: {
+          "x-access-token": `${token}`,
+        },
+      })
+      .then((response) => setBentukProduk(response.data.data));
+  };
+
+  const handleChangeProduct = (e) => {
+    e.preventDefault();
+    setPostProduct({
+      ...postProduct,
+      [e.target.getAttribute("name")]: e.target.value,
+    });
+  };
+  const handleChangePutProduct = (e) => {
+    e.preventDefault();
+    setPutProduct({
+      ...putProduct,
+      [e.target.getAttribute("name")]: e.target.value,
+    });
+  };
 
   const closeModalAdd = () => {
     setIsOpenModalAdd(false);
@@ -28,20 +117,110 @@ const Produk = () => {
     setIsOpenModalAdd(true);
   };
 
-  const modalEditHandling = (id) => {
+  const modalEditHandling = async (id) => {
     setIsOpenModalEdit(true);
-    setIdProduk(id);
+    await commonAPI
+      .get(`/product/${id}`)
+      .then((response) => setDetailData(response.data));
   };
 
-  const modalDetailHandling = (id) => {
+  const modalDetailHandling = async (id) => {
     setIsOpenModalDetail(true);
-    setIdProduk(id);
+    await commonAPI
+      .get(`/product/${id}`)
+      .then((response) => setDetailData(response.data));
   };
 
-  const submitProdukHandler = (e) => {};
-  const submitEditProdukHandler = (e) => {};
+  const submitProdukHandler = async (e) => {
+    e.preventDefault();
+    await commonAPI
+      .post("/product", postProduct, {
+        headers: {
+          "x-access-token": `${parseUser.data.token}`,
+        },
+      })
+      .then((response) => {
+        setIsOpenModalAdd(false);
+        setAlerts(true);
+        getProduct();
+      })
+      .catch((e) => {
+        setFailMessage(e.message);
+        setAlertFail(true);
+      });
+  };
+  const submitEditProdukHandler = async (e) => {
+    e.preventDefault();
+    await commonAPI
+      .put(`/product/${detailData.product_id}`, putProduct, {
+        headers: {
+          "x-access-token": `${parseUser.data.token}`,
+        },
+      })
+      .then((response) => {
+        setIsOpenModalEdit(false);
+        setAlerts(true);
+        getProduct();
+      })
+      .catch((e) => {
+        setFailMessage(e.message);
+        setAlertFail(true);
+      });
+  };
+
+  async function handleDelete(e, id) {
+    e.preventDefault();
+    await commonAPI
+      .delete(`/product/${id}`, {
+        headers: {
+          "x-access-token": `${parseUser.data.token}`,
+        },
+      })
+      .then((response) => {
+        setAlerts(true);
+        getProduct();
+      })
+      .catch((e) => {
+        setFailMessage(e.message);
+        setAlertFail(true);
+      });
+  }
+
+  // get product data
+  useEffect(() => {
+    getProduct();
+    getCategoryProduct(parseUser.data.token);
+    getMaterialProduct(parseUser.data.token);
+    getSizeProduct(parseUser.data.token);
+    getFinsihingProduct(parseUser.data.token);
+    getBentukProduct(parseUser.data.token);
+  }, [parseUser.data.token]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (alerts || alertFail === true) setAlertFail(false) || setAlerts(false);
+    }, 2000);
+  }, [alertFail, alerts]);
+
   return (
     <>
+      {alerts && (
+        <Alerts
+          state="true"
+          background="bg-green-100"
+          textColor="text-green-600"
+          textContent="Status berhasil diubah!"
+        />
+      )}
+      {alertFail && (
+        <Alerts
+          state="true"
+          background="bg-red-100"
+          textColor="text-red-600"
+          textContent={`Ups, sepertinya ada yang salah: ${failMessage}`}
+          closeButton="true"
+        />
+      )}
       <section>
         <div className="border-b border-orange-900 mb-6">
           <h3 className="font-semibold pb-3">Produk</h3>
@@ -78,7 +257,6 @@ const Produk = () => {
               className="input-field !rounded-full !py-2 !pl-14"
               placeholder="Cari"
               name="search"
-              required
               autoComplete="on"
               // onChange={handleChange}
             />
@@ -95,7 +273,7 @@ const Produk = () => {
                     No
                   </th>
                   <th className="text-white text-center p-3 min-w-[120px]">
-                    Bentuk Produk
+                    Nama Produk
                   </th>
                   <th className="text-white text-center p-3 min-w-[120px]">
                     Kategori Produk
@@ -106,29 +284,31 @@ const Produk = () => {
                 </tr>
               </thead>
               <tbody>
-                {[1, 2, 3, 4, 5].map((item, index) => (
-                  <tr
-                    className="border-b"
-                    key={index}
-                  >
+                {currentData?.map((item, index) => (
+                  <tr className="border-b" key={index}>
                     <td className="text-center p-3">{index + 1}</td>
-                    <td className="text-center p-3">A1</td>
-                    <td className="text-center p-3">Karton</td>
+                    <td className="text-center p-3">{item.product_name}</td>
+                    <td className="text-center p-3">
+                      {item?.product_categories?.product_category_name}
+                    </td>
                     <td className="text-center p-3">
                       <div className="flex items-center justify-center gap-2">
                         <button
                           className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
-                          onClick={() => modalDetailHandling(item)}
+                          onClick={() => modalDetailHandling(item.product_id)}
                         >
                           Detail
                         </button>
                         <button
                           className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
-                          onClick={() => modalEditHandling(item)}
+                          onClick={() => modalEditHandling(item.product_id)}
                         >
                           Edit
                         </button>
-                        <div className="button-fill !p-[15px]">
+                        <div
+                          className="button-fill !p-[15px]"
+                          onClick={(e) => handleDelete(e, item.product_id)}
+                        >
                           <FaTrash className="fill-white text-base" />
                         </div>
                       </div>
@@ -138,26 +318,13 @@ const Produk = () => {
               </tbody>
             </table>
           </div>
-          <nav
-            className="flex justify-end items-center gap-x-[.375rem] py-2 mt-2"
-            aria-label="pagination"
-          >
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-              <HiChevronLeft className="!text-base xs:!text-xl" />
-            </button>
-            <button className="button-gradient-sm !text-xs xs:!text-base">
-              1
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-              2
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base">
-              3
-            </button>
-            <button className="button-white-sm !shadow-none hover:!shadow-red !text-xs xs:!text-base !px-3">
-              <HiChevronRight className="!text-base xs:!text-xl" />
-            </button>
-          </nav>
+          <Pagination
+            type="dashboard"
+            currentPage={currentPage}
+            postsPerPage={postPerPage}
+            totalPosts={dataProduct?.length}
+            paginate={paginate}
+          />
         </article>
       </section>
 
@@ -166,6 +333,12 @@ const Produk = () => {
         isOpen={isOpenModalAdd}
         closeModal={closeModalAdd}
         submitHandler={submitProdukHandler}
+        handleChangeProduct={handleChangeProduct}
+        categoryProduct={categoryProduct}
+        productMaterial={productMaterial}
+        productSize={productSize}
+        productFinishing={productFinishing}
+        bentukProduk={bentukProduk}
       />
 
       {/* Modal Edit Produk */}
@@ -173,14 +346,20 @@ const Produk = () => {
         isOpen={isOpenModalEdit}
         closeModal={closeModalEdit}
         submitHandler={submitEditProdukHandler}
-        idProduk={idProduk}
+        detailData={detailData}
+        handleChangePutProduct={handleChangePutProduct}
+        categoryProduct={categoryProduct}
+        productMaterial={productMaterial}
+        productSize={productSize}
+        productFinishing={productFinishing}
+        bentukProduk={bentukProduk}
       />
 
       {/* Modal Detail Produk */}
       <ModalsDetailProduk
         isOpen={isOpenModalDetail}
         closeModal={closeModalDetail}
-        idProduk={idProduk}
+        detailData={detailData}
       />
     </>
   );

@@ -40,7 +40,6 @@ const FABWhatsApp = () => {
           </span>
         </ReactTooltip>
       )}
-      <p />
     </>
   );
 };

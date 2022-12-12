@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { HiOutlineArrowSmLeft } from "react-icons/hi";
-import { useNavigate, useParams } from "react-router-dom";
-import Modal from "../../components/Card/Modal";
-import { postOrder } from "../../services/api";
+import React, { useEffect, useState } from 'react';
+import { HiOutlineArrowSmLeft } from 'react-icons/hi';
+import { useNavigate, useParams } from 'react-router-dom';
+import Modal from '../../components/Card/Modal';
+import { postOrder } from '../../services/api';
 
 const DetailPesanan = () => {
-  const user = localStorage.getItem("user");
+  const user = localStorage.getItem('user');
   const parseUser = JSON.parse(user);
   const { pesananId } = useParams();
   const [toggleConfirm, setToggleConfirm] = useState(false);
@@ -38,7 +38,7 @@ const DetailPesanan = () => {
       await postOrder
         .get(`/list/${pesananId}`, {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
         .then((response) => setData(response.data));
@@ -49,7 +49,10 @@ const DetailPesanan = () => {
   return (
     <>
       <section className="w-full mb-6">
-        <div className="flex items-center mb-4" onClick={() => navigate(-1)}>
+        <div
+          className="flex items-center mb-4"
+          onClick={() => navigate(-1)}
+        >
           <HiOutlineArrowSmLeft className="text-2xl mr-3" />
           <span className="leading-10 cursor-pointer">Kembali</span>
         </div>
@@ -60,17 +63,17 @@ const DetailPesanan = () => {
             <h6 className="mb-5">Detail Pesanan</h6>
             <div className="mb-5 p-4 border rounded-lg border-orange-900/40">
               <img
-                src={`data:image/jpg;base64,${data?.order_products[0].products.product_image}`}
+                src={`data:image/jpg;base64,${data?.order_details[0]?.products.product_image}`}
                 alt="ini-gambar"
                 className="w-full object-cover"
               />
             </div>
             <div className="product-title mb-5">
               <p className="mb-1 text-secondary-900">
-                {data?.order_products[0].products.product_name}
+                {data?.order_details[0]?.products.product_name}
               </p>
               <p className="font-semibold">
-                {data?.order_products[0].products.product_description}
+                {data?.order_details[0]?.products.product_description}
               </p>
             </div>
             <div className="product-order-number mb-5">
@@ -82,7 +85,9 @@ const DetailPesanan = () => {
             <div className="product-order mb-5">
               <p className="mb-1 text-secondary-900">Tanggal Pesan</p>
               <p className="font-semibold pb-3 border-b border-orange-900">
-                {data?.createdAt}
+                {`${new Date(data?.createdAt).getDate()} - ${
+                  new Date(data?.createdAt).getMonth() + 1
+                } - ${new Date(data?.createdAt).getFullYear()}`}
               </p>
             </div>
             <button
@@ -106,7 +111,7 @@ const DetailPesanan = () => {
                     </td>
                     <td className="w-[3%]">:</td>
                     <td className="pl-2 w-[50%]">
-                      {data?.order_products[0].products.product_name}
+                      {data?.order_details[0]?.products.product_name}
                     </td>
                   </tr>
                   <tr>
@@ -116,8 +121,8 @@ const DetailPesanan = () => {
                     <td className="w-[3%]">:</td>
                     <td className="pl-2 w-[50%]">
                       {
-                        data?.order_products[0].products.product_materials
-                          .product_material_name
+                        data?.order_details[0]?.product_materials
+                          ?.product_material_name
                       }
                     </td>
                   </tr>
@@ -126,7 +131,9 @@ const DetailPesanan = () => {
                       Desain
                     </td>
                     <td className="w-[3%]">:</td>
-                    <td className="pl-2 w-[50%]">{data?.order_design}</td>
+                    <td className="pl-2 w-[50%]">
+                      {data?.order_details[0]?.order_detail_design}
+                    </td>
                   </tr>
                   <tr>
                     <td className="text-secondary-900 pr-3 w-[47%] py-2">
@@ -135,7 +142,7 @@ const DetailPesanan = () => {
                     <td className="w-[3%]">:</td>
                     <td className="pl-2 w-[50%]">
                       {
-                        data?.order_products[0].products.product_finishings
+                        data?.order_details[0]?.products.product_finishings
                           .product_finishing_name
                       }
                     </td>
@@ -145,7 +152,9 @@ const DetailPesanan = () => {
                       Jumlah Pesanan
                     </td>
                     <td className="w-[3%]">:</td>
-                    <td className="pl-2 w-[50%]">{data?.order_quantity} pcs</td>
+                    <td className="pl-2 w-[50%]">
+                      {data?.order_details[0]?.order_detail_quantity} pcs
+                    </td>
                   </tr>
                   <tr>
                     <td className="text-secondary-900 pr-3 w-[47%] py-2">
@@ -153,7 +162,7 @@ const DetailPesanan = () => {
                     </td>
                     <td className="w-[3%]">:</td>
                     <td className="pl-2 w-[50%]">
-                      {data?.retributions[0].retribution_jasa_total}
+                      {data?.retributions[0]?.retribution_jasa_total}
                     </td>
                   </tr>
                 </tbody>
@@ -197,7 +206,7 @@ const DetailPesanan = () => {
                     </td>
                     <td className="w-[3%]">:</td>
                     <td className="pl-2 w-[50%]">
-                      {data?.delivery_details[0].delivery_detail_courier}
+                      {data?.delivery_details[0]?.delivery_detail_courier}
                     </td>
                   </tr>
                 </tbody>

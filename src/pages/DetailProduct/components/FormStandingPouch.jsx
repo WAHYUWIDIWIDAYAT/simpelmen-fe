@@ -2,10 +2,18 @@ import React, { useState } from "react";
 import { BsCartPlus } from "react-icons/bs";
 import { postOrder } from "../../../services/api";
 import { IoIosArrowDown } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
-const FormStandingPouch = ({ productId, setAlertSuccess, setAlertFail }) => {
+const FormStandingPouch = ({
+  formType,
+  data,
+  productId,
+  setAlertSuccess,
+  setAlertFail,
+}) => {
   const [fields, setFields] = useState({});
   const user = localStorage.getItem("user");
+  const navigate = useNavigate();
 
   const dummySize = [
     {
@@ -89,8 +97,8 @@ const FormStandingPouch = ({ productId, setAlertSuccess, setAlertFail }) => {
     const finalSpesification = {
       panjang_1: parseInt(fields?.spesifikasi.split(" ")[0]),
       lebar_1: parseInt(fields?.spesifikasi.split(" ")[3]),
-      order_design: fields?.desain,
-      order_quantity: parseInt(fields?.jumlah),
+      order_design: fields?.order_design,
+      order_quantity: parseInt(fields?.order_quantity),
     };
 
     if (user) {
@@ -105,9 +113,15 @@ const FormStandingPouch = ({ productId, setAlertSuccess, setAlertFail }) => {
       setAlertFail(true);
     }
   }
+  function handleGetNow(e) {
+    e.preventDefault();
+    navigate("/pesan-sekarang", {
+      state: { data: data, formType: formType, formData: fields },
+    });
+  }
 
   return (
-    <form>
+    <form onSubmit={(e) => handleCart(e)}>
       <div className="relative">
         <label
           htmlFor="spesifikasi"
@@ -146,7 +160,7 @@ const FormStandingPouch = ({ productId, setAlertSuccess, setAlertFail }) => {
         </label>
         <select
           id="desain"
-          name="desain"
+          name="order_design"
           required
           onChange={(e) => handleChange(e)}
           className="input-field-select-xs"
@@ -191,7 +205,7 @@ const FormStandingPouch = ({ productId, setAlertSuccess, setAlertFail }) => {
           <input
             type="text"
             id="jumlah"
-            name="jumlah"
+            name="order_quantity"
             className="input-field-xs !pr-12"
             placeholder="Masukkan Jumlah Pesanan"
             required
@@ -201,10 +215,10 @@ const FormStandingPouch = ({ productId, setAlertSuccess, setAlertFail }) => {
         </div>
       </div>
       <div className="buttons flex justify-end mt-8 gap-5">
-        <button className="button-fill !py-4" onClick={(e) => handleCart(e)}>
+        <button className="button-fill !py-4" onClick={(e) => handleGetNow(e)}>
           Pesan Sekarang
         </button>
-        <button className="button-white !p-4" onClick={(e) => handleCart(e)}>
+        <button className="button-white !p-4">
           <BsCartPlus size={20} className="mx-auto" />
         </button>
       </div>

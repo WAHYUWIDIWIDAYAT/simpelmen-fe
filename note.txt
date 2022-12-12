@@ -1,0 +1,31 @@
+Aduan masyarakat v2:
+
+1. template html email (RAKA & IRUL)
+
+*landing page & user
+1. Filter, unduh PAD (NANTI)
+2. Filter kategori produk (OTW)
+3. Deskripsi produk (OTW)
+4. Swadesain (IRUL)
+6. Pesan sekarang (susah)
+7. Pilih jasa kirim masih error (IRUL)
+9. tombol pada detail pesanan (fe & be)
+10. PRODUK TOLONG FORMNYA DISESUAIKAN DENGAN EXCEL ALUR SIMPELMENOKE
+
+
+*super admin
+1. validasi konfirmasi password di tambah admin belum bisa (irul)
+2. detail rekapan pesan belum ambil data dari user (WAHYU)
+
+YANG BELUM DILAKUKAN
+1. CEK PAGE RESET PASSWORD
+2. KONDISIONAL COMPONENT SWADESIGN
+3. BUG FIX PILIH JASA KIRIM
+4. VALIDASI, LOADING STATE DI SEMUA FORM
+
+SUDAH DILAKUKAN
+1. VALIDASI, LOADING  STATE LOGIN LANDING PAGE
+2. VALIDASI, LOADING STATE REGISTER LANDING PAGE
+3. VALIDASI, LOADING STATE FORGOT PASSWORD LANDING PAGE
+4. VALIDASI, LOADING STATE EDIT PROFILE USER
+5. VALIDASI, LOADING STATE EDIT PASSWORD USER

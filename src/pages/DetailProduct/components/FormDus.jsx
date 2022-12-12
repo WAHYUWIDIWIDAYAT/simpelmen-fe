@@ -1,32 +1,69 @@
-import React, { useState } from 'react';
-import { BsCartPlus } from 'react-icons/bs';
-import { postProduct } from '../../../services/api';
-import { IoIosArrowDown } from 'react-icons/io';
+import React, { useState } from "react";
+import { BsCartPlus } from "react-icons/bs";
+import { postOrder } from "../../../services/api";
+import { IoIosArrowDown } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
-const FormDus = ({ setAlertSuccess, setAlertFail, categoryName }) => {
+const FormDus = ({
+  formType,
+  productId,
+  data,
+  setAlertSuccess,
+  setAlertFail,
+  categoryName,
+}) => {
   const [fields, setFields] = useState({});
-  const user = localStorage.getItem('user');
+  const user = localStorage.getItem("user");
+  const navigate = useNavigate();
+
+  const dummyDesign = [
+    "Lama (Diambil dari data pesanan file pesanan sebelumnya)",
+    "Baru (Dibuatkan oleh desainer BIKDK)",
+    "Swadesign (File desain dari konsumen)",
+    "Re-design (Desain ulang dari pesanan sebelumnya)",
+  ];
 
   function handleChange(e) {
     e.preventDefault();
     setFields({
       ...fields,
-      [e.target.getAttribute('name')]: e.target.value,
+      [e.target.getAttribute("name")]: e.target.value,
     });
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
+    const finalPostData = {
+      panjang_1: fields.panjang_1,
+      lebar_1: fields.lebar_1,
+      tinggi_1: fields.tinggi_1,
+      panjang_2: fields.panjang_2,
+      lebar_2: fields.lebar_2,
+      tinggi_2: fields.tinggi_2,
+      order_material_id: fields.order_material_id,
+      order_design: fields.order_design,
+      order_finishing_id: fields.order_finishing_id,
+      order_quantity: fields.order_quantity,
+    };
     if (user) {
-      await postProduct
-        .post('/Xk17j2l08BHDkmwD3lgW')
-        .then((response) => console.log(response));
+      await postOrder.post(`/cart/${productId}`, finalPostData, {
+        headers: {
+          "x-access-token": `${JSON.parse(user).data.token}`,
+        },
+      });
       setAlertSuccess(true);
       console.log(fields);
     } else {
       setAlertFail(true);
-      console.log('no user');
+      console.log("no user");
     }
+  }
+
+  function handleGetNow(e) {
+    e.preventDefault();
+    navigate("/pesan-sekarang", {
+      state: { data: data, formType: formType, formData: fields },
+    });
   }
 
   return (
@@ -36,14 +73,14 @@ const FormDus = ({ setAlertSuccess, setAlertFail, categoryName }) => {
           htmlFor="ukuran"
           className="block mb-2 text-sm font-medium text-gray-700"
         >
-          {categoryName === 'Slobokan' ? 'Ukuran Luar x Dalam' : 'Ukuran'}
+          {categoryName === "Slobokan" ? "Ukuran Luar x Dalam" : "Ukuran"}
         </label>
         <div className="grid grid-cols-3 gap-x-3 gap-y-4">
           <div className="relative col-span-3 xs:col-span-1">
             <input
               type="text"
               id="ukuran"
-              name="panjang"
+              name="panjang_1"
               className="input-field-xs !pr-12"
               placeholder="Panjang"
               required
@@ -57,7 +94,7 @@ const FormDus = ({ setAlertSuccess, setAlertFail, categoryName }) => {
             <input
               type="text"
               id="ukuran"
-              name="lebar"
+              name="lebar_1"
               className="input-field-xs !pr-12"
               placeholder="Lebar"
               required
@@ -71,9 +108,53 @@ const FormDus = ({ setAlertSuccess, setAlertFail, categoryName }) => {
             <input
               type="text"
               id="ukuran"
-              name="tinggi"
+              name="tinggi_1"
               className="input-field-xs !pr-12"
               placeholder="Tinggi"
+              required
+              onChange={(e) => handleChange(e)}
+            />
+            <span className="text-gray-400 absolute right-3 top-[11px]">
+              cm
+            </span>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-x-3 gap-y-4 my-2">
+          <div className="relative col-span-3 xs:col-span-1">
+            <input
+              type="text"
+              id="ukuran"
+              name="panjang_2"
+              className="input-field-xs !pr-12"
+              placeholder="Panjang 2"
+              required
+              onChange={(e) => handleChange(e)}
+            />
+            <span className="text-gray-400 absolute right-3 top-[11px]">
+              cm
+            </span>
+          </div>
+          <div className="relative col-span-3 xs:col-span-1">
+            <input
+              type="text"
+              id="ukuran"
+              name="lebar_2"
+              className="input-field-xs !pr-12"
+              placeholder="Lebar 2"
+              required
+              onChange={(e) => handleChange(e)}
+            />
+            <span className="text-gray-400 absolute right-3 top-[11px]">
+              cm
+            </span>
+          </div>
+          <div className="relative col-span-3 xs:col-span-1">
+            <input
+              type="text"
+              id="ukuran"
+              name="tinggi_2"
+              className="input-field-xs !pr-12"
+              placeholder="Tinggi 2"
               required
               onChange={(e) => handleChange(e)}
             />
@@ -92,7 +173,7 @@ const FormDus = ({ setAlertSuccess, setAlertFail, categoryName }) => {
         </label>
         <select
           id="bahan"
-          name="bahan"
+          name="order_material_id"
           onChange={(e) => handleChange(e)}
           className="input-field-select-xs"
         >
@@ -111,13 +192,16 @@ const FormDus = ({ setAlertSuccess, setAlertFail, categoryName }) => {
         </label>
         <select
           id="desain"
-          name="desain"
+          name="order_design"
           onChange={(e) => handleChange(e)}
           className="input-field-select-xs"
         >
           <option>Pilih Desain</option>
-          <option value="1">Jasa Desain</option>
-          <option value="2">Tanpa Desain</option>
+          {dummyDesign.map((item, index) => (
+            <option value={item} key={index}>
+              {item}
+            </option>
+          ))}
         </select>
         <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
       </div>
@@ -130,7 +214,7 @@ const FormDus = ({ setAlertSuccess, setAlertFail, categoryName }) => {
         </label>
         <select
           id="laminasi"
-          name="laminasi"
+          name="order_finishing_id"
           onChange={(e) => handleChange(e)}
           className="input-field-select-xs"
         >
@@ -151,7 +235,7 @@ const FormDus = ({ setAlertSuccess, setAlertFail, categoryName }) => {
           <input
             type="text"
             id="jumlah"
-            name="jumlah"
+            name="order_quantity"
             className="input-field-xs !pr-12"
             placeholder="Masukkan Jumlah Pesanan"
             required
@@ -161,12 +245,11 @@ const FormDus = ({ setAlertSuccess, setAlertFail, categoryName }) => {
         </div>
       </div>
       <div className="buttons flex justify-end mt-8 gap-5">
-        <button className="button-fill !py-4">Pesan Sekarang</button>
-        <button className="button-white !p-4 ">
-          <BsCartPlus
-            size={20}
-            className="mx-auto"
-          />
+        <button className="button-fill !py-4" onClick={(e) => handleGetNow(e)}>
+          Pesan Sekarang
+        </button>
+        <button className="button-white !p-4" type="submit">
+          <BsCartPlus size={20} className="mx-auto" />
         </button>
       </div>
     </form>
