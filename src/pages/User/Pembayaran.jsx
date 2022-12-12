@@ -111,12 +111,12 @@ const Pembayaran = () => {
                         </p>
                         <p className="font-semibold">
                           {
-                            item.order_products[0]?.products.jenis_products
+                            item.order_details[0]?.products.jenis_products
                               .jenis_product_name
                           }{" "}
                           -
                           {
-                            item.order_products[0]?.products.jenis_products
+                            item.order_details[0]?.products.jenis_products
                               .jenis_product_description
                           }
                         </p>

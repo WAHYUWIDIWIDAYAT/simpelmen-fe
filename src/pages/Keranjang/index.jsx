@@ -189,20 +189,20 @@ const Keranjang = () => {
                     <div className="lg:col-start-2 col-span-4 2xsm:col-span-8 2md:col-span-12 lg:col-span-4">
                       <div className="mb-3 w-11/12 xs:w-3/4 lg:w-full mx-auto">
                         <img
-                          src={`data:image/jpg;base64,${item?.order_products[0]?.products?.product_image}`}
+                          src={`data:image/jpg;base64,${item?.order_details[0]?.products?.product_image}`}
                           alt={item.altImg}
                           className="w-full object-cover object-center"
                         />
                       </div>
                       <p className="text-xs xs:text-base">
                         {
-                          item?.order_products[0]?.products?.produk_categories
+                          item?.order_details[0]?.products?.produk_categories
                             ?.product_category_description
                         }
                       </p>
                       <p className="font-bold text-base xs:text-xl md:text-2xl mb-3 line-clamp-2">
                         {
-                          item?.order_products[0]?.products?.product_finishings
+                          item?.order_details[0]?.products?.product_finishings
                             ?.product_finishing_name
                         }
                       </p>
@@ -211,7 +211,7 @@ const Keranjang = () => {
                     {/* form product */}
                     <div className="lg:col-start-7 col-span-4 2xsm:col-span-8 2md:col-span-12 lg:col-span-5">
                       {formProduct(
-                        item?.order_products[0]?.products?.product_category,
+                        item?.order_details[0]?.products?.product_category,
                         item
                       )}
                     </div>

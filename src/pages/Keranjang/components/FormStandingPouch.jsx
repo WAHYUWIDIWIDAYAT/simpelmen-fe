@@ -52,7 +52,7 @@ const FormStandingPouch = ({ data }) => {
           onChange={(e) => handleChange(e)}
           className="input-field-select-xs"
         >
-          <option>{data.order_design}</option>
+          <option>{`${data.order_details[0].order_detail_design}`}</option>
           {/* {dummyDesign.map((item, index) => (
             <option value={item}>{item}</option>
           ))} */}
@@ -95,7 +95,7 @@ const FormStandingPouch = ({ data }) => {
             required
             disabled
             onChange={(e) => handleChange(e)}
-            defaultValue={data.order_quantity}
+            defaultValue={`${data.order_details[0].order_detail_quantity}`}
           />
           <span className="text-gray-400 absolute right-3 top-[11px]">pcs</span>
         </div>
