@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 // import { postProduct } from '../../../services/api';
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown } from 'react-icons/io';
 
 const FormDus = ({ formData }) => {
   return (
@@ -102,13 +102,17 @@ const FormDus = ({ formData }) => {
         </div>
         <div className="mt-4 relative">
           <label
-            htmlFor="bahan"
+            htmlFor="order_detail_shape"
             className="block mb-2 text-sm font-medium text-gray-700"
           >
-            Bahan
+            Bentuk
           </label>
-          <select id="bahan" name="bahan" className="input-field-select-xs">
-            <option>{formData.order_material_id}</option>
+          <select
+            id="order_detail_shape"
+            name="order_detail_shape"
+            className="input-field-select-xs"
+          >
+            <option>{formData.order_detail_shape}</option>
           </select>
           <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
         </div>
@@ -119,7 +123,11 @@ const FormDus = ({ formData }) => {
           >
             Desain
           </label>
-          <select id="desain" name="desain" className="input-field-select-xs">
+          <select
+            id="desain"
+            name="desain"
+            className="input-field-select-xs"
+          >
             <option>{formData.order_design}</option>
           </select>
           <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />

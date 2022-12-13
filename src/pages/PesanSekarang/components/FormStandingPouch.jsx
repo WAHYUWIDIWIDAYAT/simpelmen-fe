@@ -1,8 +1,9 @@
-import React from "react";
+import React from 'react';
 // import { postProduct } from "../../../services/api";
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown } from 'react-icons/io';
 
 const FormStandingPouch = ({ formData }) => {
+  console.log(formData);
   return (
     <form>
       <div className="relative">
@@ -14,10 +15,13 @@ const FormStandingPouch = ({ formData }) => {
         </label>
         <select
           id="spesifikasi"
-          name="spesifikasi"
+          name="order_specification"
           className="input-field-select-xs"
         >
-          <option>{formData.spesifikasi}</option>
+          <option>
+            {formData.panjang_1} cm X {formData.lebar_1} cm{' '}
+            {formData.order_finishing_name}
+          </option>
         </select>
         <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
       </div>
@@ -28,11 +32,12 @@ const FormStandingPouch = ({ formData }) => {
         >
           Desain
         </label>
-        <select id="desain" name="desain" className="input-field-select-xs">
+        <select
+          id="desain"
+          name="desain"
+          className="input-field-select-xs"
+        >
           <option>{formData.order_design}</option>
-          {/* {dummyDesign.map((item, index) => (
-            <option value={item}>{item}</option>
-          ))} */}
         </select>
         <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
       </div>

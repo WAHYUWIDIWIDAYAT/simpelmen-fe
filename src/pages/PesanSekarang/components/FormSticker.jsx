@@ -1,5 +1,5 @@
-import React from "react";
-import { IoIosArrowDown } from "react-icons/io";
+import React from 'react';
+import { IoIosArrowDown } from 'react-icons/io';
 // import { postProduct } from '../../../services/api';
 
 const FormSticker = ({ formData }) => {
@@ -7,15 +7,17 @@ const FormSticker = ({ formData }) => {
     <form>
       <div className="relative">
         <label
-          htmlFor="bentuk"
+          htmlFor="order_detail_shape"
           className="block mb-2 text-sm font-medium text-gray-700"
         >
           Bentuk
         </label>
-        <select id="desain" name="desain" className="input-field-select-xs">
-          <option>{formData?.bentuk}</option>
-          {/* <option value="1">Jasa Bentuk</option>
-          <option value="2">Tanpa Bentuk</option> */}
+        <select
+          id="order_detail_shape"
+          name="order_detail_shape"
+          className="input-field-select-xs"
+        >
+          <option>{formData?.order_detail_shape}</option>
         </select>
         <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
       </div>

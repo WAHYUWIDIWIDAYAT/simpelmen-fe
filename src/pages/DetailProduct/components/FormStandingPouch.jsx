@@ -185,19 +185,21 @@ const FormStandingPouch = ({
         const finalSpesification =
           fields.order_design === 'swadesign'
             ? {
-                panjang_1: parseInt(fields?.order_specification.split(' ')[0]),
-                lebar_1: parseInt(fields?.order_specification.split(' ')[3]),
+                panjang_1: parseInt(fields?.order_specification.split('_')[0]),
+                lebar_1: parseInt(fields?.order_specification.split('_')[1]),
                 order_design: fields?.order_design,
                 order_quantity: parseInt(fields?.order_quantity),
                 order_design_image: fields?.order_design_image.data,
-                order_finishing_id: fields?.order_specification.split(' ')[5],
+                order_finishing_id: fields?.order_specification.split('_')[2],
+                order_finishing_name: fields?.order_specification.split('_')[3],
               }
             : {
-                panjang_1: parseInt(fields?.order_specification.split(' ')[0]),
-                lebar_1: parseInt(fields?.order_specification.split(' ')[3]),
+                panjang_1: parseInt(fields?.order_specification.split('_')[0]),
+                lebar_1: parseInt(fields?.order_specification.split('_')[1]),
                 order_design: fields?.order_design,
                 order_quantity: parseInt(fields?.order_quantity),
-                order_finishing_id: fields?.order_specification.split(' ')[5],
+                order_finishing_id: fields?.order_specification.split('_')[2],
+                order_finishing_name: fields?.order_specification.split('_')[3],
               };
 
         navigate('/pesan-sekarang', {
@@ -248,7 +250,7 @@ const FormStandingPouch = ({
           <option value="0">Pilih Spesifikasi</option>
           {specification?.map((item, index) => (
             <option
-              value={`${item.product_sizes.product_size_length} cm X ${item.product_sizes.product_size_width} cm ${item.product_finishings.product_finishing_id}`}
+              value={`${item.product_sizes.product_size_length}_${item.product_sizes.product_size_width}_${item.product_finishings.product_finishing_id}_${item.product_finishings.product_finishing_name}`}
               key={index}
             >
               {item.product_sizes.product_size_length} cm X{' '}

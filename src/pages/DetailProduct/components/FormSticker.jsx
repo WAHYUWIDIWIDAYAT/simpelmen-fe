@@ -31,7 +31,7 @@ const FormSticker = ({
     order_design: false,
     order_quantity: false,
     order_design_image: false,
-    order_material_id: false,
+    order_detail_shape: false,
   });
 
   function handleDesign(e) {
@@ -97,10 +97,10 @@ const FormSticker = ({
           order_quantity: NUMBER_REGEX.test(value),
         });
         break;
-      case 'order_material_id':
+      case 'order_detail_shape':
         setValidFields({
           ...validFields,
-          order_material_id: value !== '' && value !== '0',
+          order_detail_shape: value !== '' && value !== '0',
         });
         break;
       default:
@@ -114,14 +114,14 @@ const FormSticker = ({
         validFields.lebar_1 &&
         validFields.tinggi_1 &&
         validFields.order_quantity &&
-        validFields.order_material_id &&
+        validFields.order_detail_shape &&
         validFields.order_design &&
         validFields.order_design_image
       : validFields.panjang_1 &&
         validFields.lebar_1 &&
         validFields.tinggi_1 &&
         validFields.order_quantity &&
-        validFields.order_material_id &&
+        validFields.order_detail_shape &&
         validFields.order_design;
 
   function handleChange(e) {
@@ -143,7 +143,7 @@ const FormSticker = ({
             tinggi_1: fields?.tinggi_1,
             order_design: fields?.order_design,
             order_quantity: fields?.order_quantity,
-            order_material_id: fields?.order_material_id,
+            order_detail_shape: fields?.order_detail_shape,
             order_design_image: fields?.order_design_image.data,
           }
         : {
@@ -152,7 +152,7 @@ const FormSticker = ({
             tinggi_1: fields?.tinggi_1,
             order_design: fields?.order_design,
             order_quantity: fields?.order_quantity,
-            order_material_id: fields?.order_material_id,
+            order_detail_shape: fields?.order_detail_shape,
           };
 
     setIsLoading(true);
@@ -194,7 +194,7 @@ const FormSticker = ({
                 tinggi_1: fields?.tinggi_1,
                 order_design: fields?.order_design,
                 order_quantity: fields?.order_quantity,
-                order_material_id: fields?.order_material_id,
+                order_detail_shape: fields?.order_detail_shape,
                 order_design_image: fields?.order_design_image.data,
               }
             : {
@@ -203,7 +203,7 @@ const FormSticker = ({
                 tinggi_1: fields?.tinggi_1,
                 order_design: fields?.order_design,
                 order_quantity: fields?.order_quantity,
-                order_material_id: fields?.order_material_id,
+                order_detail_shape: fields?.order_detail_shape,
               };
 
         navigate('/pesan-sekarang', {
@@ -224,24 +224,24 @@ const FormSticker = ({
       {/* order material */}
       <div className="relative">
         <label
-          htmlFor="order_material_id"
+          htmlFor="order_detail_shape"
           className="block mb-2 text-sm font-medium text-gray-700"
         >
           Bentuk<span className="text-primary-900 font-semibold">*</span>
         </label>
         <select
-          id="order_material_id"
-          name="order_material_id"
+          id="order_detail_shape"
+          name="order_detail_shape"
           onChange={(e) => {
             handleChange(e);
             validateFieldsHandler(e);
           }}
           className={`input-field-select-xs ${
-            fields.order_material_id &&
-            !validFields.order_material_id &&
+            fields.order_detail_shape &&
+            !validFields.order_detail_shape &&
             'field-error'
           }`}
-          aria-invalid={validFields.order_material_id ? 'false' : 'true'}
+          aria-invalid={validFields.order_detail_shape ? 'false' : 'true'}
           aria-describedby="orderBentukField"
           required
         >
@@ -256,7 +256,7 @@ const FormSticker = ({
           ))}
         </select>
         <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
-        {fields.order_material_id && !validFields.order_material_id && (
+        {fields.order_detail_shape && !validFields.order_detail_shape && (
           <ErrorMessage
             referenceId="orderBentukField"
             message="Masukkan bentuk stiker dengan benar dan sesuai."

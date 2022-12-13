@@ -9,7 +9,7 @@ import FormSpecial from './components/FormSpecial';
 const PesanSekarang = () => {
   const location = useLocation();
   const productData = location.state;
-  console.log(productData.formData);
+
   const formProduct = (product) => {
     switch (product) {
       case 'K':

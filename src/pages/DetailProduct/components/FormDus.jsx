@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Buffer } from 'buffer';
 import { BsCartPlus, BsFillCloudPlusFill } from 'react-icons/bs';
-import { postOrder } from '../../../services/api';
+import { getSpecification, postOrder } from '../../../services/api';
 import { IoIosArrowDown } from 'react-icons/io';
 import regex from '../../../services/regex';
 import ErrorMessage from '../../../components/Alerts/ErrorMessage';
@@ -25,6 +25,7 @@ const FormDus = ({
   const navigate = useNavigate();
   const [isUploadDesign, setIsUploadDesign] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [specification, setSpecification] = useState(null);
   const [validFields, setValidFields] = useState({
     panjang_1: false,
     lebar_1: false,
@@ -32,7 +33,7 @@ const FormDus = ({
     panjang_2: false,
     lebar_2: false,
     tinggi_2: false,
-    order_material_id: false,
+    order_detail_shape: false,
     order_design: false,
     order_finishing_id: false,
     order_quantity: false,
@@ -128,10 +129,10 @@ const FormDus = ({
           order_quantity: NUMBER_REGEX.test(value),
         });
         break;
-      case 'order_material_id':
+      case 'order_detail_shape':
         setValidFields({
           ...validFields,
-          order_material_id: value !== '' && value !== '0',
+          order_detail_shape: value !== '' && value !== '0',
         });
         break;
       case 'order_finishing_id':
@@ -153,7 +154,7 @@ const FormDus = ({
         validFields.panjang_2 &&
         validFields.lebar_2 &&
         validFields.tinggi_2 &&
-        validFields.order_material_id &&
+        validFields.order_detail_shape &&
         validFields.order_design &&
         validFields.order_finishing_id &&
         validFields.order_quantity &&
@@ -164,7 +165,7 @@ const FormDus = ({
         validFields.panjang_2 &&
         validFields.lebar_2 &&
         validFields.tinggi_2 &&
-        validFields.order_material_id &&
+        validFields.order_detail_shape &&
         validFields.order_design &&
         validFields.order_finishing_id &&
         validFields.order_quantity;
@@ -181,7 +182,7 @@ const FormDus = ({
             panjang_2: fields.panjang_2,
             lebar_2: fields.lebar_2,
             tinggi_2: fields.tinggi_2,
-            order_material_id: fields.order_material_id,
+            order_detail_shape: fields.order_detail_shape,
             order_design: fields.order_design,
             order_finishing_id: fields.order_finishing_id,
             order_quantity: fields.order_quantity,
@@ -194,7 +195,7 @@ const FormDus = ({
             panjang_2: fields.panjang_2,
             lebar_2: fields.lebar_2,
             tinggi_2: fields.tinggi_2,
-            order_material_id: fields.order_material_id,
+            order_detail_shape: fields.order_detail_shape,
             order_design: fields.order_design,
             order_finishing_id: fields.order_finishing_id,
             order_quantity: fields.order_quantity,
@@ -242,7 +243,7 @@ const FormDus = ({
                 panjang_2: fields.panjang_2,
                 lebar_2: fields.lebar_2,
                 tinggi_2: fields.tinggi_2,
-                order_material_id: fields.order_material_id,
+                order_detail_shape: fields.order_detail_shape,
                 order_design: fields.order_design,
                 order_finishing_id: fields.order_finishing_id,
                 order_quantity: fields.order_quantity,
@@ -255,7 +256,7 @@ const FormDus = ({
                 panjang_2: fields.panjang_2,
                 lebar_2: fields.lebar_2,
                 tinggi_2: fields.tinggi_2,
-                order_material_id: fields.order_material_id,
+                order_detail_shape: fields.order_detail_shape,
                 order_design: fields.order_design,
                 order_finishing_id: fields.order_finishing_id,
                 order_quantity: fields.order_quantity,
@@ -272,6 +273,21 @@ const FormDus = ({
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    const getSpec = () => {
+      getSpecification
+        .get(`${productId}`)
+        .then((res) => {
+          setSpecification(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    getSpec();
+  }, [productId]);
 
   return (
     <form onSubmit={(e) => handleSubmit(e)}>
@@ -498,24 +514,24 @@ const FormDus = ({
       {/* order material */}
       <div className="relative mt-4">
         <label
-          htmlFor="order_material_id"
+          htmlFor="order_detail_shape"
           className="block mb-2 text-sm font-medium text-gray-700"
         >
           Bentuk<span className="text-primary-900 font-semibold">*</span>
         </label>
         <select
-          id="order_material_id"
-          name="order_material_id"
+          id="order_detail_shape"
+          name="order_detail_shape"
           onChange={(e) => {
             handleChange(e);
             validateFieldsHandler(e);
           }}
           className={`input-field-select-xs ${
-            fields.order_material_id &&
-            !validFields.order_material_id &&
+            fields.order_detail_shape &&
+            !validFields.order_detail_shape &&
             'field-error'
           }`}
-          aria-invalid={validFields.order_material_id ? 'false' : 'true'}
+          aria-invalid={validFields.order_detail_shape ? 'false' : 'true'}
           aria-describedby="orderBentukField"
           required
         >
@@ -530,7 +546,7 @@ const FormDus = ({
           ))}
         </select>
         <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
-        {fields.order_material_id && !validFields.order_material_id && (
+        {fields.order_detail_shape && !validFields.order_detail_shape && (
           <ErrorMessage
             referenceId="orderBentukField"
             message="Masukkan bentuk stiker dengan benar dan sesuai."
@@ -672,12 +688,12 @@ const FormDus = ({
           required
         >
           <option value="0">Pilih Laminasi</option>
-          {dummyData.dummyLamination.map((item, index) => (
+          {specification?.map((item, index) => (
             <option
-              value={item}
+              value={item?.product_finishings?.product_finishing_id}
               key={index}
             >
-              {item}
+              {item?.product_finishings?.product_finishing_name}
             </option>
           ))}
         </select>

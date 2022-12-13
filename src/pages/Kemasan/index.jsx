@@ -26,7 +26,9 @@ const Kemasan = () => {
   // pagination setting
   const indexLastPost = currentPage * postPerPage;
   const indexFirstPost = indexLastPost - postPerPage;
-  const currentData = productData?.slice(indexFirstPost, indexLastPost);
+  const currentData = productData
+    ? productData.slice(indexFirstPost, indexLastPost)
+    : null;
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   function handleActive(type) {

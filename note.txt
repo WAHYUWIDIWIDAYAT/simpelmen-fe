@@ -32,7 +32,7 @@ SUDAH DILAKUKAN
 
 
 =============================
-1. DATA BENTUK TU DAPET DARI MANA SIE
-2. PESAN SEKARANG BUAT STANDING POUCH, STIKER BLM ADA FORM NYA , SEK LAH YA, OTW, HUFT
-3. error form dus = Incorrect integer value: 'Laminasi Glossy' for column `magang_seal_02`.`order_details`.`order_detail_finishings_id` at row 1. id laminasi sama id material id apa aja ya, senin aja lah ya. hehe
+1. ✅DATA BENTUK TU DAPET DARI MANA SIE
+2. ✅PESAN SEKARANG BUAT STANDING POUCH, STIKER BLM ADA FORM NYA , SEK LAH YA, OTW, HUFT
+3. ✅error form dus = Incorrect integer value: 'Laminasi Glossy' for column `magang_seal_02`.`order_details`.`order_detail_finishings_id` at row 1. id laminasi sama id material id apa aja ya, senin aja lah ya. hehe
 4. Harus di cek si pesan sekarang, blm fix 
