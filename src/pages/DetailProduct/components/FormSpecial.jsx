@@ -1,9 +1,11 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
-import { IoIosArrowDown } from "react-icons/io";
-import FormDus from "./FormDus";
-import FormStandingPouch from "./FormStandingPouch";
-import FormSticker from "./FormSticker";
+import React, { useState } from 'react';
+import { useEffect } from 'react';
+import { IoIosArrowDown } from 'react-icons/io';
+import FormDus from './FormDus';
+import FormStandingPouch from './FormStandingPouch';
+import FormSticker from './FormSticker';
+
+const formOptions = ['Dus Offset', 'Standing Pouch', 'Stiker'];
 
 const FormSpecial = ({ data, productId, setAlertSuccess, setAlertFail }) => {
   const [formChoice, setFormChoice] = useState();
@@ -14,7 +16,7 @@ const FormSpecial = ({ data, productId, setAlertSuccess, setAlertFail }) => {
   const [form, setForm] = useState();
   useEffect(() => {
     switch (formChoice) {
-      case "1":
+      case 'Dus Offset':
         return setForm(
           <FormDus
             formType={formChoice}
@@ -24,7 +26,7 @@ const FormSpecial = ({ data, productId, setAlertSuccess, setAlertFail }) => {
             setAlertFail={setAlertFail}
           />
         );
-      case "2":
+      case 'Standing Pouch':
         return setForm(
           <FormStandingPouch
             formType={formChoice}
@@ -34,7 +36,7 @@ const FormSpecial = ({ data, productId, setAlertSuccess, setAlertFail }) => {
             setAlertFail={setAlertFail}
           />
         );
-      case "3":
+      case 'Stiker':
         return setForm(
           <FormSticker
             formType={formChoice}
@@ -68,9 +70,16 @@ const FormSpecial = ({ data, productId, setAlertSuccess, setAlertFail }) => {
           className="input-field-select-xs"
         >
           <option value="0">Pilih form sesuai produk keinginan anda</option>
-          <option value="1">Dus Offset</option>
-          <option value="2">Standing Pouch</option>
-          <option value="3">Stiker</option>
+          {formOptions
+            .filter((item) => item === data.jenis_products.jenis_product_name)
+            .map((item, index) => (
+              <option
+                key={index}
+                value={item}
+              >
+                {item}
+              </option>
+            ))}
         </select>
         <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
       </div>

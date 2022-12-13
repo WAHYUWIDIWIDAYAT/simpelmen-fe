@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { HiOutlineArrowSmLeft } from "react-icons/hi";
-import FormKarton from "./components/FormKarton";
-import Alerts from "../../components/Alerts";
-import FormSablon from "./components/FormSablon";
-import useProductDetail from "../../hooks/useProductDetail";
-import SkeletonImage from "../../components/Skeletons/SkeletonImage";
-import FormSkeleton from "../../components/Skeletons/FormSkeleton";
-import FormSpecial from "./components/FormSpecial";
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { HiOutlineArrowSmLeft } from 'react-icons/hi';
+import FormSkeleton from '../../components/Skeletons/FormSkeleton';
+import SkeletonImage from '../../components/Skeletons/SkeletonImage';
+import FormKarton from './components/FormKarton';
+import FormSablon from './components/FormSablon';
+import FormSpecial from './components/FormSpecial';
+import Alerts from '../../components/Alerts';
+import useProductDetail from '../../hooks/useProductDetail';
+import Zoom from 'react-img-zoom';
 
 const DetailProduct = () => {
   const { productId } = useParams();
@@ -16,19 +17,14 @@ const DetailProduct = () => {
   const [alertSuccess, setAlertSuccess] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
   const { data, isLoading } = useProductDetail(
-    `https://simpelmen.herokuapp.com/api/product/${productId}`
+    `${process.env.REACT_APP_API_URL}product/${productId}`
   );
-  // Use Custom Hook
-  // useEffect(()=>{
-  //   const getItem = async()=>{
-  //     const response = await axios.get('blablabla').then(resp => setproduct(resp))
-  //   }
-  // },[])
+  const user = localStorage.getItem('user');
 
   // Set Dynamic Form
   useEffect(() => {
     switch (data?.product_category) {
-      case "K":
+      case 'K':
         return setForm(
           <FormKarton
             data={data}
@@ -37,7 +33,7 @@ const DetailProduct = () => {
             setAlertFail={setAlertFail}
           />
         );
-      case "S":
+      case 'S':
         return setForm(
           <FormSablon
             data={data}
@@ -46,7 +42,7 @@ const DetailProduct = () => {
             setAlertFail={setAlertFail}
           />
         );
-      case "O":
+      case 'O':
         // standing pouch, dus offset, stiker
         return setForm(
           <FormSpecial
@@ -83,7 +79,11 @@ const DetailProduct = () => {
           <Alerts
             background="bg-red-100"
             textColor="text-red-600"
-            textContent="Login Terlebih Dahulu"
+            textContent={`${
+              user
+                ? 'Mohon masukkan data produk dengan benar'
+                : 'Login Terlebih Dahulu'
+            }`}
             state="true"
           />
         )}
@@ -101,30 +101,25 @@ const DetailProduct = () => {
             <div className="col-span-4 2xsm:col-span-8 2md:col-span-6">
               <div
                 className={`border rounded-xl mb-5 border-secondary-800/50 ${
-                  !isLoading ? "p-6" : ""
+                  !isLoading ? 'p-6' : ''
                 }`}
               >
                 <div
                   className={`w-full overflow-auto rounded-xl ${
-                    !isLoading ? "flex justify-center items-center" : ""
+                    !isLoading ? 'flex justify-center items-center' : ''
                   }`}
                 >
                   <div>
                     {isLoading ? (
                       <SkeletonImage />
                     ) : (
-                      <img
-                        src={`data:image/jpg;base64,${data?.product_image}`}
-                        alt="gambar-produk"
-                        className="w-full"
+                      <Zoom
+                        img={`data:image/jpg;base64,${data?.product_image}`}
+                        zoomScale={2}
+                        height={window.innerWidth < 576 ? 227 : 360}
+                        width={window.innerWidth < 576 ? 340 : 540}
                       />
                     )}
-                    {/* <Zoom
-                      img={`data:image/jpg;base64,${data?.product_image}`}
-                      zoomScale={2}
-                      height={window.innerWidth < 576 ? 227 : 360}
-                      width={window.innerWidth < 576 ? 340 : 540}
-                    /> */}
                   </div>
                 </div>
               </div>

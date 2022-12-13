@@ -116,7 +116,7 @@ const Keranjang = () => {
 
   return (
     <>
-      <main className="containers">
+      <main className="containers relative">
         <div className="mb-5 mt-0 xs:mt-7 flex">
           <Link
             to="/produk-kemasan"

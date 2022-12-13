@@ -1,14 +1,14 @@
-import React from "react";
-import CardProduct from "../../components/Card/CardProduct";
-import svg from "../../assets/svg";
-import { useNavigate } from "react-router-dom";
-import useProducts from "../../hooks/useProducts";
-import CardSkeleton from "../../components/Skeletons/CardSkeleton";
+import React from 'react';
+import CardProduct from '../../components/Card/CardProduct';
+import svg from '../../assets/svg';
+import { useNavigate } from 'react-router-dom';
+import useProducts from '../../hooks/useProducts';
+import CardSkeleton from '../../components/Skeletons/CardSkeleton';
 
 const OurProduct = () => {
   const navigate = useNavigate();
   const { data, isLoading } = useProducts(
-    "http://localhost:8000/api/product"
+    `${process.env.REACT_APP_API_URL}product`
   );
 
   return (
@@ -27,12 +27,18 @@ const OurProduct = () => {
             <div className="grid grid-systems gap-3 2xsm:gap-5 xl:gap-8">
               {isLoading
                 ? [1, 2, 3, 4, 5, 6].map((item) => (
-                    <div className="col-span-2 2xsm:col-span-4" key={item}>
+                    <div
+                      className="col-span-2 2xsm:col-span-4"
+                      key={item}
+                    >
                       <CardSkeleton />
                     </div>
                   ))
                 : data?.slice(0, 6)?.map((item, index) => (
-                    <div className="col-span-2 2xsm:col-span-4" key={index}>
+                    <div
+                      className="col-span-2 2xsm:col-span-4"
+                      key={index}
+                    >
                       <CardProduct {...item} />
                     </div>
                   ))}
@@ -40,7 +46,7 @@ const OurProduct = () => {
             <div className="mt-12 flex justify-center">
               <button
                 className="button-white"
-                onClick={() => navigate("/produk-kemasan")}
+                onClick={() => navigate('/produk-kemasan')}
                 type="button"
               >
                 Lihat Produk Lainnya

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 // import { postProduct } from '../../../services/api';
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowDown } from 'react-icons/io';
 
 const FormKarton = ({ data }) => {
   const [fields, setFields] = useState({});
@@ -10,7 +10,7 @@ const FormKarton = ({ data }) => {
     e.preventDefault();
     setFields({
       ...fields,
-      [e.target.getAttribute("name")]: e.target.value,
+      [e.target.getAttribute('name')]: e.target.value,
     });
   }
 
@@ -98,9 +98,9 @@ const FormKarton = ({ data }) => {
           onChange={(e) => handleChange(e)}
           className="input-field-select-xs"
         >
-          <option>Pilih Sablon</option>
-          <option value="1">Jasa Sablon</option>
-          <option value="2">Tanpa Sablon</option>
+          <option value={`${data.order_details[0]?.order_detail_sablon}`}>
+            {data.order_details[0]?.order_detail_sablon}
+          </option>
         </select>
         <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
       </div>

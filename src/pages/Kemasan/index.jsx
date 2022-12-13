@@ -1,28 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import CardProduct from "../../components/Card/CardProduct";
-import { HiOutlineArrowSmLeft } from "react-icons/hi";
-import useProducts from "../../hooks/useProductDetail";
-import CardSkeleton from "../../components/Skeletons/CardSkeleton";
-import Pagination from "../../components/Pagination";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import CardProduct from '../../components/Card/CardProduct';
+import { HiOutlineArrowSmLeft } from 'react-icons/hi';
+import useProducts from '../../hooks/useProductDetail';
+import CardSkeleton from '../../components/Skeletons/CardSkeleton';
+import Pagination from '../../components/Pagination';
 
 const Kemasan = () => {
-  const [active, setActive] = useState("Semua Kemasan");
+  const [active, setActive] = useState('Semua Kemasan');
   const [productData, setProductData] = useState();
   const type = [
-    "Semua Kemasan",
-    "Karton",
-    "Dus Offset",
-    "Sablon Plastik, Pouch, Dus",
-    "Stiker",
-    "Standing Pouch",
+    'Semua Kemasan',
+    'Karton',
+    'Dus Offset',
+    'Sablon Plastik, Pouch, Dus',
+    'Stiker',
+    'Standing Pouch',
   ];
   const { data, isLoading } = useProducts(
-    "https://simpelmen.herokuapp.com/api/product"
+    `${process.env.REACT_APP_API_URL}product`
   );
   const [currentPage, setCurrentPage] = useState(1);
   const postPerPage = 8;
 
+  // pagination setting
   const indexLastPost = currentPage * postPerPage;
   const indexFirstPost = indexLastPost - postPerPage;
   const currentData = productData?.slice(indexFirstPost, indexLastPost);
@@ -30,7 +31,7 @@ const Kemasan = () => {
 
   function handleActive(type) {
     setActive(type);
-    if (type === "Semua Kemasan") {
+    if (type === 'Semua Kemasan') {
       setProductData(data);
     } else {
       const filteredData = data.filter(
@@ -50,7 +51,10 @@ const Kemasan = () => {
           className="mt-0 xs:mt-7 mb-12 2xsm:mb-60/sp"
         >
           <div className="mb-5 flex">
-            <Link to="/" className="flex items-center mb-3">
+            <Link
+              to="/"
+              className="flex items-center mb-3"
+            >
               <HiOutlineArrowSmLeft className="text-2xl mr-3" />
               <span className="leading-10">Kembali</span>
             </Link>
@@ -62,8 +66,8 @@ const Kemasan = () => {
                 onClick={() => handleActive(item)}
                 className={
                   active === item
-                    ? "button-gradient-sm !text-xs xs:!text-base !rounded-full"
-                    : "button-white-sm !text-xs xs:!text-base !rounded-full"
+                    ? 'button-gradient-sm !text-xs xs:!text-base !rounded-full'
+                    : 'button-white-sm !text-xs xs:!text-base !rounded-full'
                 }
               >
                 {item}
@@ -71,17 +75,26 @@ const Kemasan = () => {
             ))}
           </div>
         </section>
-        <section id="kemasan" className="mb-9">
+        <section
+          id="kemasan"
+          className="mb-9"
+        >
           <div className="w-full grid grid-cols-8 md:grid-cols-12 gap-3 2xsm:gap-5 xl:gap-7 mb-60/sp">
             {isLoading
               ? [1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
-                  <div className="col-span-4 lg:col-span-3" key={item}>
+                  <div
+                    className="col-span-4 lg:col-span-3"
+                    key={item}
+                  >
                     <CardSkeleton />
                   </div>
                 ))
               : currentData?.map((item, index) => {
                   return (
-                    <div className="col-span-4 lg:col-span-3" key={index}>
+                    <div
+                      className="col-span-4 lg:col-span-3"
+                      key={index}
+                    >
                       <CardProduct {...item} />
                     </div>
                   );

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
-import svg from "../../assets/svg";
-import { useEffect } from "react";
-import { postOrder } from "../../services/api";
-import Alerts from "../../components/Alerts";
-import Pagination from "../../components/Pagination";
+import React, { useState, useEffect } from 'react';
+import { Player } from '@lottiefiles/react-lottie-player';
+import { postOrder } from '../../services/api';
+import Pagination from '../../components/Pagination';
+import animationData from '../../assets/lotties/plane-loading.json';
+import Alerts from '../../components/Alerts';
+import svg from '../../assets/svg';
 
 const EmptyState = () => {
   return (
@@ -28,10 +29,11 @@ const LacakPesanan = () => {
   const [data, setData] = useState();
   const [alerts, setAlerts] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
-  const [failMessage, setFailMessage] = useState("");
+  const [failMessage, setFailMessage] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const postPerPage = 10;
 
+  // pagination setting
   const indexLastPost = currentPage * postPerPage;
   const indexFirstPost = indexLastPost - postPerPage;
   const currentData = data?.slice(indexFirstPost, indexLastPost);
@@ -60,7 +62,7 @@ const LacakPesanan = () => {
     e.preventDefault();
     await postOrder
       .put(`/accept/${id}`)
-      .then((resp) => setAlerts(true))
+      .then(() => setAlerts(true))
       .catch((e) => {
         setAlertFail(true);
         setFailMessage(e.message);
@@ -104,6 +106,78 @@ const LacakPesanan = () => {
               alt="shipping-vehicle"
               className="w-full mb-8"
             />
+            <article
+              className="mb-8"
+              id="lacakPesanan"
+            >
+              <div className="w-full grid grid-cols-4 gap-y-5 gap-x-6">
+                {currentData ? (
+                  currentData?.map((item, index) => (
+                    <div
+                      className="col-span-4"
+                      key={index}
+                    >
+                      <div className="w-full shadow-gray p-4 rounded-[10px] bg-white grid grid-cols-6 gap-x-3 gap-y-2 xs:gap-y-3 xl:items-center border border-secondary-700/40">
+                        <div className="col-span-6 xl:col-span-2">
+                          <p className="text-xs xs:text-sm font-medium mb-1 xs:mb-2 text-secondary-900">
+                            No. Pesanan
+                          </p>
+                          <p className="font-semibold truncate">
+                            {item.order_code}
+                          </p>
+                        </div>
+                        <div className="col-span-6 xl:col-span-2">
+                          <p className="text-xs xs:text-sm font-medium mb-1 xs:mb-2 text-secondary-900">
+                            Jenis Produk
+                          </p>
+                          <p className="font-semibold">
+                            {
+                              item.order_details[0]?.products.jenis_products
+                                .jenis_product_name
+                            }{' '}
+                          </p>
+                        </div>
+                        <div className="xl:col-span-2 hidden xl:block">
+                          <div className="flex justify-center">
+                            <button
+                              onClick={(e) => showTracking(e, item.order_id)}
+                              className="text-sm border border-secondary-800 rounded-full px-3 py-1 hover:border-primary-900 transition-200"
+                            >
+                              Lacak Pesanan
+                            </button>
+                          </div>
+                        </div>
+                        <div className="col-span-6 xl:col-span-2 block xl:hidden">
+                          <div className="flex xl:justify-center">
+                            <button
+                              onClick={(e) => showTracking(e, item.order_id)}
+                              className="text-sm border border-secondary-800 rounded-full px-3 py-1 hover:border-primary-900 transition-200"
+                            >
+                              Lacak Pesanan
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-4">
+                    <div className="h-96 w-full flex items-center justify-center">
+                      <div>
+                        <Player
+                          src={animationData}
+                          className="player"
+                          loop
+                          autoplay
+                          speed={1}
+                          style={{ height: '300px', width: '300px' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </article>
             <Pagination
               currentPage={currentPage}
               postsPerPage={postPerPage}

@@ -1,30 +1,68 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Modal from "../../components/Card/Modal";
-import { IoIosArrowDown } from "react-icons/io";
-import svg from "../../assets/svg";
-import { getUser, postOrder } from "../../services/api";
-import useGeoLocation from "../../hooks/useGeoLocation";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Modal from '../../components/Card/Modal';
+import { IoIosArrowDown } from 'react-icons/io';
+import svg from '../../assets/svg';
+import { getUser, postOrder } from '../../services/api';
+import useGeoLocation from '../../hooks/useGeoLocation';
+import regex from '../../services/regex';
+import ErrorMessage from '../../components/Alerts/ErrorMessage';
 
-const dummy = true;
+const {
+  name: NAME_REGEX,
+  email: EMAIL_REGEX,
+  phoneNumber: PHONE_REGEX,
+  postCode: POSTCODE_REGEX,
+} = regex;
 
 const Pemesanan = ({ item }) => {
-  const currentUser = localStorage.getItem("user");
+  const currentUser = localStorage.getItem('user');
   const parseUser = JSON.parse(currentUser);
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isJasaKirim, setIsJasaKirim] = useState(false);
   const [userData, setUserData] = useState();
   const [fields, setFields] = useState({});
+  const [isCheckoutSuccess, setIsCheckoutSuccess] = useState(false);
   const { data: provinceData } = useGeoLocation(
-    `https://simpelmen.herokuapp.com/api/province`
+    `${process.env.REACT_APP_API_URL}province`
   );
   const { data: cityData } = useGeoLocation(
-    `https://simpelmen.herokuapp.com/api/city?province_id=${fields.user_province}`
+    `${process.env.REACT_APP_API_URL}city?province_id=${fields.user_province}`
   );
   const { data: districtData } = useGeoLocation(
-    `https://simpelmen.herokuapp.com/api/district?city_id=${fields.user_city}`
+    `${process.env.REACT_APP_API_URL}district?city_id=${fields.user_city}`
   );
+  const [validFields, setValidFields] = useState({
+    user_name: false,
+    user_ikm: false,
+    user_email: false,
+    user_contact: false,
+    user_postal_code: false,
+  });
+
+  useEffect(() => {
+    setValidFields({
+      user_name: NAME_REGEX.test(fields.user_name),
+      user_ikm: NAME_REGEX.test(fields.user_ikm),
+      user_email: EMAIL_REGEX.test(fields.user_email),
+      user_contact: PHONE_REGEX.test(fields.user_contact),
+      user_postal_code: POSTCODE_REGEX.test(fields.user_postal_code),
+    });
+  }, [
+    fields.user_name,
+    fields.user_ikm,
+    fields.user_email,
+    fields.user_contact,
+    fields.user_postal_code,
+  ]);
+
+  const valids =
+    validFields.user_name &&
+    validFields.user_ikm &&
+    validFields.user_email &&
+    validFields.user_contact &&
+    validFields.user_postal_code;
 
   const closeModal = () => {
     setIsOpen(false);
@@ -38,9 +76,12 @@ const Pemesanan = ({ item }) => {
     e.preventDefault();
     setFields({
       ...fields,
-      [e.target.getAttribute("name")]: e.target.value,
+      [e.target.getAttribute('name')]: e.target.value,
     });
-    if (e.target.value === "dikirim") {
+  };
+
+  const handleShipping = (e) => {
+    if (e.target.value === 'dikirim') {
       setIsJasaKirim(true);
     } else {
       setIsJasaKirim(false);
@@ -50,15 +91,43 @@ const Pemesanan = ({ item }) => {
   // toggle modal post product
   const handleSubmit = async (e) => {
     e.preventDefault();
-    openModal();
+    if (valids) {
+      openModal();
+    }
+  };
+
+  const getUserData = async (token) => {
+    await getUser
+      .get('/profile', {
+        headers: {
+          'x-access-token': `${token}`,
+        },
+      })
+      .then((response) => {
+        setUserData(response);
+        setFields({
+          user_name: response.data.data.user_name,
+          user_ikm: response.data.data.user_ikm,
+          user_email: response.data.data.user_email,
+          user_contact: response.data.data.user_contact,
+          user_address: response.data.data.user_address,
+          user_province:
+            response.data.data.subdistricts.cities.provinces.province,
+          user_city: response.data.data.subdistricts.cities.city_name,
+          user_district: response.data.data.user_district,
+          user_postal_code: response.data.data.user_postal_code,
+          user_note: '',
+          user_shipping: 'sendiri',
+          user_courier: 'jk1',
+        });
+      })
+      .catch((e) => console.log(e));
   };
 
   // post product checkout api
   const handleCheckout = async () => {
-    await postOrder
-      .put(
-        `/checkout?order_id=${item[0].order_id}`,
-        {
+    const finalData = isJasaKirim
+      ? {
           order_id: item.map((data) => data.order_id),
           delivery_detail_name: fields.user_name,
           delivery_detail_ikm: fields.user_ikm,
@@ -67,54 +136,69 @@ const Pemesanan = ({ item }) => {
           delivery_detail_method: fields.user_shipping,
           delivery_detail_address: fields.user_address,
           delivery_detail_district: fields.user_district,
-          delivery_detail_postal_code: fields.postal_code,
+          delivery_detail_postal_code: fields.user_postal_code,
           delivery_detail_courier: fields.user_courier,
           delivery_detail_note: fields.user_note,
-        },
-        {
-          headers: {
-            "x-access-token": parseUser.data.token,
-          },
         }
-      )
-      .then((response) => navigate("/"))
+      : {
+          order_id: item.map((data) => data.order_id),
+          delivery_detail_name: fields.user_name,
+          delivery_detail_ikm: fields.user_ikm,
+          delivery_detail_email: fields.user_email,
+          delivery_detail_contact: fields.user_contact,
+          delivery_detail_method: fields.user_shipping,
+          delivery_detail_address: fields.user_address,
+          delivery_detail_district: fields.user_district,
+          delivery_detail_postal_code: fields.user_postal_code,
+          delivery_detail_note: fields.user_note,
+        };
+
+    await postOrder
+      .put(`/checkout?order_id=${item[0].order_id}`, finalData, {
+        headers: {
+          'x-access-token': parseUser.data.token,
+        },
+      })
+      .then(() => {
+        setIsCheckoutSuccess(true);
+      })
       .catch((e) => console.log(e));
     setIsOpen(false);
   };
 
   useEffect(() => {
-    const getUserData = async () => {
-      await getUser
-        .get("/profile", {
-          headers: {
-            "x-access-token": `${parseUser.data.token}`,
-          },
-        })
-        .then((response) => {
-          setUserData(response);
-          setFields({
-            user_name: response.data.data.user_name,
-            user_ikm: response.data.data.user_ikm,
-            user_email: response.data.data.user_email,
-            user_contact: response.data.data.user_contact,
-            user_address: response.data.data.user_address,
-            user_province:
-              response.data.data.subdistricts.cities.provinces.province,
-            user_city: response.data.data.subdistricts.cities.city_name,
-            user_district: response.data.data.user_district,
-            user_postal_code: response.data.data.user_postal_code,
-            user_shipping: "sendiri",
-            user_courier: "jk1",
-          });
-        })
-        .catch((e) => console.log(e));
-    };
-    getUserData();
+    getUserData(parseUser.data.token);
   }, [parseUser.data.token]);
 
   return (
     <>
-      {dummy ? (
+      {isCheckoutSuccess ? (
+        <div className="fixed w-screen h-screen inset-0 bg-black/40 z-[999]">
+          <div className="w-full h-full flex items-center justify-center">
+            <section className="px-12 pb-10 pt-14 bg-white rounded-xl w-[28.125rem] flex flex-col items-center">
+              <div className="w-3/5">
+                <img
+                  src={svg.successPO}
+                  alt="empty-keranjang"
+                  className="w-full mb-10"
+                />
+              </div>
+              <h5 className="text-center mb-6">
+                Berhasil melakukan permintaan pesanan.
+              </h5>
+              <div className="flex justify-center">
+                <button
+                  className="button-fill-sm"
+                  type="button"
+                  onClick={() => navigate('/dashboard/pesanan')}
+                >
+                  Lihat Detail Pesanan
+                </button>
+              </div>
+            </section>
+          </div>
+        </div>
+      ) : (
         <>
           <hr className="my-10 border-primary-400/50" />
           <section id="alamat">
@@ -123,13 +207,14 @@ const Pemesanan = ({ item }) => {
                 Silahkan Lengkapi Data Diri Anda di Dashboard
               </h6>
             ) : (
-              ""
+              ''
             )}
             <form
               className="w-full grid grid-cols-4 2xsm:grid-cols-8 2md:grid-cols-12 gap-x-8"
               onSubmit={handleSubmit}
             >
               <div className="col-span-4 2md:col-span-6">
+                {/* username */}
                 <div className="mb-5">
                   <label
                     htmlFor="user_name"
@@ -139,15 +224,29 @@ const Pemesanan = ({ item }) => {
                   </label>
                   <input
                     type="text"
-                    className="input-field-xs"
+                    className={`input-field-xs ${
+                      fields.user_name &&
+                      !validFields.user_name &&
+                      'field-error'
+                    }`}
                     placeholder="Masukkan Nama Lengkap"
                     name="user_name"
                     id="user_name"
                     required
                     onChange={(e) => handleChange(e)}
                     defaultValue={userData?.data?.data?.user_name}
+                    aria-invalid={validFields.user_name ? 'false' : 'true'}
+                    aria-describedby="usernameField"
                   />
+                  {fields.user_name && !validFields.user_name && (
+                    <ErrorMessage
+                      referenceId="usernameField"
+                      message="Masukkan username dengan benar dan sesuai."
+                      isPasswordField={false}
+                    />
+                  )}
                 </div>
+                {/* nama ikm */}
                 <div className="mb-5">
                   <label
                     htmlFor="user_ikm"
@@ -157,15 +256,27 @@ const Pemesanan = ({ item }) => {
                   </label>
                   <input
                     type="text"
-                    className="input-field-xs"
+                    className={`input-field-xs ${
+                      fields.user_ikm && !validFields.user_ikm && 'field-error'
+                    }`}
                     placeholder="Masukkan Nama IKM"
                     name="user_ikm"
                     id="user_ikm"
                     required
                     onChange={(e) => handleChange(e)}
                     defaultValue={userData?.data?.data?.user_ikm}
+                    aria-invalid={validFields.user_ikm ? 'false' : 'true'}
+                    aria-describedby="ikmField"
                   />
+                  {fields.user_ikm && !validFields.user_ikm && (
+                    <ErrorMessage
+                      referenceId="ikmField"
+                      message="Masukkan nama IKM dengan benar dan sesuai."
+                      isPasswordField={false}
+                    />
+                  )}
                 </div>
+                {/* email */}
                 <div className="mb-5">
                   <label
                     htmlFor="user_email"
@@ -175,15 +286,29 @@ const Pemesanan = ({ item }) => {
                   </label>
                   <input
                     type="email"
-                    className="input-field-xs"
+                    className={`input-field-xs ${
+                      fields.user_email &&
+                      !validFields.user_email &&
+                      'field-error'
+                    }`}
                     placeholder="Masukkan Email"
                     name="user_email"
                     id="user_email"
                     required
                     onChange={(e) => handleChange(e)}
                     defaultValue={userData?.data?.data?.user_email}
+                    aria-invalid={validFields.user_email ? 'false' : 'true'}
+                    aria-describedby="emailField"
                   />
+                  {fields.user_email && !validFields.user_email && (
+                    <ErrorMessage
+                      referenceId="emailField"
+                      message="Masukkan email dengan benar dan sesuai."
+                      isPasswordField={false}
+                    />
+                  )}
                 </div>
+                {/* handphone */}
                 <div className="mb-5">
                   <label
                     htmlFor="user_contact"
@@ -193,15 +318,29 @@ const Pemesanan = ({ item }) => {
                   </label>
                   <input
                     type="text"
-                    className="input-field-xs"
+                    className={`input-field-xs ${
+                      fields.user_contact &&
+                      !validFields.user_contact &&
+                      'field-error'
+                    }`}
                     placeholder="Masukkan Nomor Handphone"
                     name="user_contact"
                     id="user_contact"
                     required
                     onChange={(e) => handleChange(e)}
                     defaultValue={userData?.data?.data?.user_contact}
+                    aria-invalid={validFields.user_contact ? 'false' : 'true'}
+                    aria-describedby="phoneField"
                   />
+                  {fields.user_contact && !validFields.user_contact && (
+                    <ErrorMessage
+                      referenceId="phoneField"
+                      message="Masukkan nomor handphone dengan benar dan sesuai."
+                      isPasswordField={false}
+                    />
+                  )}
                 </div>
+                {/* match profile */}
                 <div className="mb-5">
                   <input
                     type="checkbox"
@@ -216,6 +355,7 @@ const Pemesanan = ({ item }) => {
                     Sama dengan data diri pada profil saya
                   </label>
                 </div>
+                {/* catatan */}
                 <div className="mb-5">
                   <label
                     htmlFor="user_note"
@@ -236,6 +376,7 @@ const Pemesanan = ({ item }) => {
                 </div>
               </div>
               <div className="col-span-4 2md:col-span-6">
+                {/* alamat lengkap */}
                 <div className="mb-5">
                   <label
                     htmlFor="user_address"
@@ -254,6 +395,7 @@ const Pemesanan = ({ item }) => {
                     defaultValue={userData?.data?.data?.user_address}
                   />
                 </div>
+                {/* provinsi */}
                 <div className="mb-5 relative">
                   <label
                     htmlFor="user_province"
@@ -277,16 +419,20 @@ const Pemesanan = ({ item }) => {
                       {userData?.data?.data?.subdistricts
                         ? userData?.data.data.subdistricts?.cities.provinces
                             .province
-                        : "Pilih Provinsi"}
+                        : 'Pilih Provinsi'}
                     </option>
                     {provinceData?.map((item) => (
-                      <option value={item.province_id} key={item.province_id}>
+                      <option
+                        value={item.province_id}
+                        key={item.province_id}
+                      >
                         {item.province}
                       </option>
                     ))}
                   </select>
                   <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
                 </div>
+                {/* kabupaten atau kota */}
                 <div className="mb-5 relative">
                   <label
                     htmlFor="user_city"
@@ -306,16 +452,20 @@ const Pemesanan = ({ item }) => {
                     >
                       {userData?.data?.data?.subdistricts
                         ? userData?.data?.data?.subdistricts?.cities.city_name
-                        : "Pilih Kota/Kabupaten"}
+                        : 'Pilih Kota/Kabupaten'}
                     </option>
                     {cityData?.map((item) => (
-                      <option value={item.city_id} key={item.city_id}>
+                      <option
+                        value={item.city_id}
+                        key={item.city_id}
+                      >
                         {item.city_name}
                       </option>
                     ))}
                   </select>
                   <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
                 </div>
+                {/* kecamatan */}
                 <div className="mb-5 relative">
                   <label
                     htmlFor="user_district"
@@ -335,7 +485,7 @@ const Pemesanan = ({ item }) => {
                     >
                       {userData?.data?.data?.subdistricts
                         ? userData?.data?.data?.subdistricts?.subdistrict_name
-                        : "Pilih Kecamatan"}
+                        : 'Pilih Kecamatan'}
                     </option>
                     {districtData?.map((item) => (
                       <option
@@ -348,6 +498,7 @@ const Pemesanan = ({ item }) => {
                   </select>
                   <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
                 </div>
+                {/* postal code */}
                 <div className="mb-5">
                   <label
                     htmlFor="user_postal_code"
@@ -357,14 +508,29 @@ const Pemesanan = ({ item }) => {
                   </label>
                   <input
                     type="text"
-                    className="input-field-xs"
+                    className={`input-field-xs ${
+                      fields.user_postal_code &&
+                      !validFields.user_postal_code &&
+                      'field-error'
+                    }`}
                     placeholder="Masukkan Nomor Kode Pos"
                     name="user_postal_code"
                     id="user_postal_code"
                     required
                     onChange={(e) => handleChange(e)}
                     defaultValue={userData?.data?.data?.user_postal_code}
+                    aria-invalid={
+                      validFields.user_postal_code ? 'false' : 'true'
+                    }
+                    aria-describedby="postalcodeField"
                   />
+                  {fields.user_postal_code && !validFields.user_postal_code && (
+                    <ErrorMessage
+                      referenceId="postalcodeField"
+                      message="Masukkan kode pos dengan benar dan sesuai."
+                      isPasswordField={false}
+                    />
+                  )}
                 </div>
                 <div className="mb-5">
                   <input
@@ -380,6 +546,7 @@ const Pemesanan = ({ item }) => {
                     Sama dengan alamat pada profi saya
                   </label>
                 </div>
+                {/* jasa kirim */}
                 <div className="mb-5">
                   <label
                     htmlFor="pengiriman"
@@ -395,13 +562,16 @@ const Pemesanan = ({ item }) => {
                         name="user_shipping"
                         value="dikirim"
                         className="absolute opacity-0 top-0 left-0 -z-10"
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => {
+                          handleChange(e);
+                          handleShipping(e);
+                        }}
                       />
                       <div
                         className={`${
                           isJasaKirim
-                            ? "radio-button-fill"
-                            : "radio-button-white"
+                            ? 'radio-button-fill'
+                            : 'radio-button-white'
                         }`}
                       >
                         Dikirim
@@ -414,13 +584,16 @@ const Pemesanan = ({ item }) => {
                         name="user_shipping"
                         value="sendiri"
                         className="absolute opacity-0 top-0 left-0 -z-10"
-                        onChange={(e) => handleChange(e)}
+                        onChange={(e) => {
+                          handleChange(e);
+                          handleShipping(e);
+                        }}
                       />
                       <div
                         className={`${
                           isJasaKirim
-                            ? "radio-button-white"
-                            : "radio-button-fill"
+                            ? 'radio-button-white'
+                            : 'radio-button-fill'
                         }`}
                       >
                         Ambil Sendiri
@@ -445,8 +618,9 @@ const Pemesanan = ({ item }) => {
                       onChange={(e) => handleChange(e)}
                     >
                       {/* get rajaongkir api */}
-                      <option value="jk1">Jasa Kirim 1</option>
-                      <option value="jk2">Jasa Kirim 2</option>
+                      <option value="jne">JNE</option>
+                      <option value="jnt">JNT</option>
+                      <option value="anterin_aja">Anterin Aja</option>
                     </select>
                     <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />
                   </div>
@@ -456,7 +630,7 @@ const Pemesanan = ({ item }) => {
                 <div className="col-span-4 2xsm:col-span-8 2md:col-span-12 flex justify-center mt-8">
                   <button
                     className="button-fill"
-                    onClick={() => navigate("/dashboard/profil")}
+                    onClick={() => navigate('/dashboard/profil')}
                   >
                     Update Profil
                   </button>
@@ -469,30 +643,6 @@ const Pemesanan = ({ item }) => {
             </form>
           </section>
         </>
-      ) : (
-        <section className="pt-9 pb-12 2xsm:pb-28 xmd:pb-40">
-          <div className="w-4/5 md:w-[33.75rem] mx-auto">
-            <div className="w-full px-9">
-              <img
-                src={svg.successPO}
-                alt="empty-keranjang"
-                className="w-full mb-10"
-              />
-            </div>
-            <h3 className="text-center mb-10">
-              Berhasil melakukan permintaan pesanan.
-            </h3>
-            <div className="flex justify-center">
-              <button
-                className="button-fill"
-                type="button"
-                onClick={() => navigate("/dashboard/pesanan")}
-              >
-                Lihat Detail Pesanan
-              </button>
-            </div>
-          </div>
-        </section>
       )}
 
       {/* <Modal /> */}

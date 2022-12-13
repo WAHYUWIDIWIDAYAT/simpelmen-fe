@@ -72,11 +72,14 @@ for (let i = 0; i < dummySize.length; i++) {
   }
 }
 
+const dummyBentuk = ['Bulat', 'Oval', 'Kotak', 'Custom'];
+
 const dummyData = {
   dummySize,
   dummyLamination,
   dummyDesign,
   dummySpecification,
+  dummyBentuk,
 };
 
 export default dummyData;

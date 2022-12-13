@@ -69,13 +69,13 @@ const Profile = () => {
   });
   // const [showPassword, setShowPassword] = useState(true);
   const { data: provinceData } = useGeoLocation(
-    `https://simpelmen.herokuapp.com/api/province`
+    `${process.env.REACT_APP_API_URL}province`
   );
   const { data: cityData } = useGeoLocation(
-    `https://simpelmen.herokuapp.com/api/city?province_id=${fields.user_province}`
+    `${process.env.REACT_APP_API_URL}city?province_id=${fields.user_province}`
   );
   const { data: districtData } = useGeoLocation(
-    `https://simpelmen.herokuapp.com/api/district?city_id=${fields.user_city}`
+    `${process.env.REACT_APP_API_URL}district?city_id=${fields.user_city}`
   );
 
   const validateFieldsHandler = (e) => {
@@ -637,17 +637,18 @@ const Profile = () => {
                   }
                   aria-describedby="postCodeField"
                 />
-                {fields.user_postal_code && !validateFields.user_postal_code && (
-                  <p
-                    id="postCodeField"
-                    className="flex items-center ml-1 mt-1"
-                  >
-                    <BsExclamationCircleFill className="text-base mr-2 fill-red-500" />
-                    <span className="error-inputs">
-                      Masukkan kode pos harus berupa angka.
-                    </span>
-                  </p>
-                )}
+                {fields.user_postal_code &&
+                  !validateFields.user_postal_code && (
+                    <p
+                      id="postCodeField"
+                      className="flex items-center ml-1 mt-1"
+                    >
+                      <BsExclamationCircleFill className="text-base mr-2 fill-red-500" />
+                      <span className="error-inputs">
+                        Masukkan kode pos harus berupa angka.
+                      </span>
+                    </p>
+                  )}
               </div>
             </div>
             <div className="col-span-4 md:col-span-8">

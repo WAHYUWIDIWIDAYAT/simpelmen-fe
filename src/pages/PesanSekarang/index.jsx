@@ -1,10 +1,10 @@
-import React from "react";
-import { HiOutlineArrowSmLeft } from "react-icons/hi";
-import { Link, useLocation } from "react-router-dom";
-import FormKarton from "./components/FormKarton";
-import FormPesan from "./components/FormPesan";
-import FormSablon from "./components/FormSablon";
-import FormSpecial from "./components/FormSpecial";
+import React from 'react';
+import { HiOutlineArrowSmLeft } from 'react-icons/hi';
+import { Link, useLocation } from 'react-router-dom';
+import FormKarton from './components/FormKarton';
+import FormPesan from './components/FormPesan';
+import FormSablon from './components/FormSablon';
+import FormSpecial from './components/FormSpecial';
 
 const PesanSekarang = () => {
   const location = useLocation();
@@ -12,11 +12,11 @@ const PesanSekarang = () => {
   console.log(productData.formData);
   const formProduct = (product) => {
     switch (product) {
-      case "K":
+      case 'K':
         return <FormKarton data={productData.formData} />;
-      case "S":
+      case 'S':
         return <FormSablon data={productData.formData} />;
-      case "O":
+      case 'O':
         return (
           <FormSpecial
             data={productData.formData}
@@ -29,9 +29,12 @@ const PesanSekarang = () => {
   };
   return (
     <>
-      <main className="containers">
+      <main className="containers relative">
         <div className="mb-5 mt-0 xs:mt-7 flex">
-          <Link to="/produk-kemasan" className="flex items-center mb-3">
+          <Link
+            to="/produk-kemasan"
+            className="flex items-center mb-3"
+          >
             <HiOutlineArrowSmLeft className="text-2xl mr-3" />
             <span className="leading-10">Kembali</span>
           </Link>

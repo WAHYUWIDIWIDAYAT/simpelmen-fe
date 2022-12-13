@@ -1,5 +1,5 @@
-import React from "react";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
+import React from 'react';
+import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 
 const Pagination = ({
   type,
@@ -29,7 +29,7 @@ const Pagination = ({
     <>
       <nav
         className={`flex ${
-          type === "dashboard" ? "justify-end" : "justify-center"
+          type === 'dashboard' ? 'justify-end' : 'justify-center'
         } items-center gap-x-[.375rem] py-2 mt-10`}
         aria-label="pagination"
       >
@@ -43,10 +43,11 @@ const Pagination = ({
           <button
             className={`${
               currentPage === number
-                ? "button-gradient-sm"
-                : "button-white-sm !shadow-none hover:!shadow-red"
+                ? 'button-gradient-sm'
+                : 'button-white-sm !shadow-none hover:!shadow-red'
             } !text-xs xs:!text-base`}
             onClick={(e) => handlePage(e, number)}
+            key={number}
           >
             {number}
           </button>
