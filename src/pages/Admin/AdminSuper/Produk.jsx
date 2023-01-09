@@ -100,6 +100,7 @@ const Produk = () => {
     setPostProduct({
       ...postProduct,
       [e.target.getAttribute('name')]: e.target.value,
+      [e.target.getAttribute('name')]: e.target.files[0],
     });
   };
   const handleChangePutProduct = (e) => {

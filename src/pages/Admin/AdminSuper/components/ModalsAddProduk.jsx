@@ -3,6 +3,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { MdClose } from "react-icons/md";
 import { IoIosArrowDown } from "react-icons/io";
 
+
 const ModalsAddProduk = ({
   isOpen,
   closeModal,
@@ -245,6 +246,7 @@ const ModalsAddProduk = ({
                             onChange={handleChangeProduct}
                             required
                           />
+                          
                         </div>
                       </div>
                       <div className="col-span-2">

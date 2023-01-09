@@ -60,13 +60,15 @@ const FormDus = ({
     if (e.target.files[0] !== '' && e.target.files[0].size < 3000000) {
       const file = e.target.files[0];
       if (file) {
+
         const reader = new FileReader();
-        reader.onload = (e) => {
+        reader.onloadend = () => {
           setFields({
             ...fields,
             order_design_image: {
-              name: file.name,
               data: file,
+              name: file.name,
+              type: file.type,
             },
           });
         };
@@ -184,7 +186,7 @@ const FormDus = ({
             order_design: fields.order_design,
             order_finishing_id: fields.order_finishing_id,
             order_quantity: fields.order_quantity,
-            product_image: fields?.order_design_image.data,
+            product_image: fields.order_design_image.data,
           }
         : {
             panjang_1: fields.panjang_1,
@@ -205,6 +207,7 @@ const FormDus = ({
         await postOrder
           .post(`/cart/${productId}`, finalPostData, {
             headers: {
+              "Content-Type": "multipart/form-data",
               'x-access-token': `${JSON.parse(user).data.token}`,
             },
           })
@@ -245,7 +248,7 @@ const FormDus = ({
                 order_design: fields.order_design,
                 order_finishing_id: fields.order_finishing_id,
                 order_quantity: fields.order_quantity,
-                product_image: fields?.order_design_image.data,
+                product_image: fields.order_design_image.data,
               }
             : {
                 panjang_1: fields.panjang_1,
