@@ -1,0 +1,61 @@
+/* sidebar */
+.sidebar-nav:hover span {
+  color: #c9111b99;
+}
+.sidebar-nav:hover svg {
+  fill: #c9111b99;
+}
+
+.sidebar-nav.active span {
+  color: #c9111b;
+}
+.sidebar-nav.active svg {
+  fill: #c9111b;
+}
+
+/* bottom navigation */
+#bottomNav a.active {
+  background: rgb(201, 17, 27);
+  background: -moz-linear-gradient(
+    180deg,
+    rgba(201, 17, 27, 0.22) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  background: -webkit-linear-gradient(
+    180deg,
+    rgba(201, 17, 27, 0.22) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  background: linear-gradient(
+    180deg,
+    rgba(201, 17, 27, 0.22) 0%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#c9111b",endColorstr="#ffffff",GradientType=1);
+}
+#bottomNav a.active {
+  border-color: #c9111b !important;
+}
+#bottomNav a.active svg {
+  fill: #c9111b !important;
+}
+#bottomNav a.active span {
+  color: #c9111b !important;
+}
+
+/* main content */
+.maximize-main {
+  width: calc(100% - 18rem);
+}
+.minimize-main {
+  width: calc(100% - 86px);
+}
+
+@media screen and (max-width: 639px) {
+  .maximize-main {
+    width: 100%;
+  }
+  .minimize-main {
+    width: 100%;
+  }
+}

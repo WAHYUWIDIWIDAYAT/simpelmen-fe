@@ -1,0 +1,9 @@
+.image-warp-detail .absolute {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.image-warp-detail:hover .absolute {
+  opacity: 1;
+  visibility: visible;
+}

@@ -1,0 +1,16 @@
+/* Language: css */
+/* using: tailwindcss */
+/* Path: src\components\Navbar\styles.css */
+
+.navlinks {
+  @apply text-15/sp font-semibold text-secondary-800 hover:text-primary-900 cursor-pointer;
+}
+.navlinks.active {
+  @apply text-primary-900;
+}
+.navlink-mobile {
+  @apply text-15/sp font-semibold px-30/sp py-3 cursor-pointer bg-white hover:bg-orange-400/60 block w-full;
+}
+.nav-hidden.active ~ .navlink-mobile {
+  @apply text-primary-900 hover:text-dark;
+}

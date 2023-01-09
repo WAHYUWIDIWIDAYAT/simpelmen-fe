@@ -1,0 +1,18 @@
+a.sidebar-admin.active {
+  background-color: #f19a40;
+}
+
+/* main content */
+.maximize-admin-main {
+  width: calc(100% - 18rem);
+}
+.minimize-admin-main {
+  width: calc(100% - 88px);
+}
+
+@media screen and (max-width: 767px) {
+  .maximize-admin-main {
+    width: 100%;
+    transform: translateX(15rem);
+  }
+}
