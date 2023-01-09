@@ -145,6 +145,7 @@ const Produk = () => {
     await commonAPI
       .post('/product', postProduct, {
         headers: {
+          "Content-Type": "multipart/form-data",
           'x-access-token': `${parseUser.data.token}`,
         },
       })
@@ -163,6 +164,7 @@ const Produk = () => {
     await commonAPI
       .put(`/product/${detailData.product_id}`, putProduct, {
         headers: {
+          "Content-Type": "multipart/form-data",
           'x-access-token': `${parseUser.data.token}`,
         },
       })

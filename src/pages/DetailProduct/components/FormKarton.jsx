@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Buffer } from 'buffer';
 import { BsCartPlus, BsFillCloudPlusFill } from 'react-icons/bs';
 import { CgSpinner } from 'react-icons/cg';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -50,14 +49,15 @@ const FormKarton = ({ data, productId, setAlertSuccess, setAlertFail }) => {
     if (e.target.files[0] !== '' && e.target.files[0].size < 3000000) {
       const file = e.target.files[0];
       if (file) {
+
         const reader = new FileReader();
-        reader.onload = (e) => {
-          const encode = Buffer.from(e.target.result).toString('base64');
+        reader.onloadend = () => {
           setFields({
             ...fields,
             order_design_image: {
+              data: file,
               name: file.name,
-              data: encode,
+              type: file.type,
             },
           });
         };
@@ -133,7 +133,7 @@ const FormKarton = ({ data, productId, setAlertSuccess, setAlertFail }) => {
             order_detail_sablon: fields?.order_detail_sablon,
             order_design: fields?.order_design,
             order_quantity: fields?.order_quantity,
-            order_design_image: fields?.order_design_image.data,
+            product_image: fields?.order_design_image.data,
           }
         : {
             panjang_1: fields?.panjang_1,
@@ -142,6 +142,7 @@ const FormKarton = ({ data, productId, setAlertSuccess, setAlertFail }) => {
             order_detail_sablon: fields?.order_detail_sablon,
             order_design: fields?.order_design,
             order_quantity: fields?.order_quantity,
+            product_image: null,
           };
     setIsLoading(true);
 
@@ -150,6 +151,7 @@ const FormKarton = ({ data, productId, setAlertSuccess, setAlertFail }) => {
         await postOrder
           .post(`/cart/${productId}`, finalPostProduct, {
             headers: {
+              "Content-Type": "multipart/form-data",
               'x-access-token': `${JSON.parse(user).data.token}`,
             },
           })
@@ -186,7 +188,7 @@ const FormKarton = ({ data, productId, setAlertSuccess, setAlertFail }) => {
                 order_detail_sablon: fields?.order_detail_sablon,
                 order_design: fields?.order_design,
                 order_quantity: fields?.order_quantity,
-                order_design_image: fields?.order_design_image.data,
+                product_image: fields?.order_design_image.data,
               }
             : {
                 panjang_1: fields?.panjang_1,
@@ -195,6 +197,7 @@ const FormKarton = ({ data, productId, setAlertSuccess, setAlertFail }) => {
                 order_detail_sablon: fields?.order_detail_sablon,
                 order_design: fields?.order_design,
                 order_quantity: fields?.order_quantity,
+                product_image: null,
               };
         navigate('/pesan-sekarang', {
           state: { data: data, formData: finalPostProduct },

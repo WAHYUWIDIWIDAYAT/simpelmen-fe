@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Buffer } from 'buffer';
 import { BsCartPlus, BsFillCloudPlusFill } from 'react-icons/bs';
 import { getSpecification, postOrder } from '../../../services/api';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -63,12 +62,11 @@ const FormDus = ({
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          const encode = Buffer.from(e.target.result).toString('base64');
           setFields({
             ...fields,
             order_design_image: {
               name: file.name,
-              data: encode,
+              data: file,
             },
           });
         };
@@ -186,7 +184,7 @@ const FormDus = ({
             order_design: fields.order_design,
             order_finishing_id: fields.order_finishing_id,
             order_quantity: fields.order_quantity,
-            order_design_image: fields?.order_design_image.data,
+            product_image: fields?.order_design_image.data,
           }
         : {
             panjang_1: fields.panjang_1,
@@ -247,7 +245,7 @@ const FormDus = ({
                 order_design: fields.order_design,
                 order_finishing_id: fields.order_finishing_id,
                 order_quantity: fields.order_quantity,
-                order_design_image: fields?.order_design_image.data,
+                product_image: fields?.order_design_image.data,
               }
             : {
                 panjang_1: fields.panjang_1,

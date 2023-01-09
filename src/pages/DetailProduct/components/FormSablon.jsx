@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Buffer } from 'buffer';
 import { BsCartPlus, BsFillCloudPlusFill } from 'react-icons/bs';
 import { postOrder } from '../../../services/api';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -50,12 +49,11 @@ const FormSablon = ({ data, productId, setAlertSuccess, setAlertFail }) => {
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          const encode = Buffer.from(e.target.result).toString('base64');
           setFields({
             ...fields,
             order_design_image: {
               name: file.name,
-              data: encode,
+              data: file,
             },
           });
         };
@@ -128,7 +126,7 @@ const FormSablon = ({ data, productId, setAlertSuccess, setAlertFail }) => {
             tinggi_1: fields?.tinggi_1,
             order_design: fields?.order_design,
             order_quantity: fields?.order_quantity,
-            order_design_image: fields?.order_design_image.data,
+            product_image: fields?.order_design_image.data,
           }
         : {
             panjang_1: fields?.panjang_1,
@@ -144,6 +142,7 @@ const FormSablon = ({ data, productId, setAlertSuccess, setAlertFail }) => {
         await postOrder
           .post(`/cart/${productId}`, finalPostProduct, {
             headers: {
+              "Content-Type": "multipart/form-data",
               'x-access-token': `${JSON.parse(user).data.token}`,
             },
           })
@@ -180,7 +179,7 @@ const FormSablon = ({ data, productId, setAlertSuccess, setAlertFail }) => {
                 tinggi_1: fields?.tinggi_1,
                 order_design: fields?.order_design,
                 order_quantity: fields?.order_quantity,
-                order_design_image: fields?.order_design_image.data,
+                product_image: fields?.order_design_image.data,
               }
             : {
                 panjang_1: fields?.panjang_1,

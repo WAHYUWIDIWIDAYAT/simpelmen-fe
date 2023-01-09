@@ -175,7 +175,7 @@ const ModalsAddProduk = ({
                           >
                             <option>Pilih Ukuran Produk</option>
                             {productSize?.map((item) => (
-                              <option value="1">Ukuran Produk 1</option>
+                              <option value={item.product_size_id}>{item.product_size_description}</option>
                             ))}
                           </select>
                           <IoIosArrowDown className="absolute right-4 top-[43px] text-lg fill-gray-400" />

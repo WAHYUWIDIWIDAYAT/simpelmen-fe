@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Buffer } from 'buffer';
 import { BsCartPlus, BsFillCloudPlusFill } from 'react-icons/bs';
 import { postOrder } from '../../../services/api';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -49,12 +48,11 @@ const FormSticker = ({
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          const encode = Buffer.from(e.target.result).toString('base64');
           setFields({
             ...fields,
             order_design_image: {
               name: file.name,
-              data: encode,
+              data: file,
             },
           });
         };
@@ -144,7 +142,7 @@ const FormSticker = ({
             order_design: fields?.order_design,
             order_quantity: fields?.order_quantity,
             order_detail_shape: fields?.order_detail_shape,
-            order_design_image: fields?.order_design_image.data,
+            product_image: fields?.order_design_image.data,
           }
         : {
             panjang_1: fields?.panjang_1,
@@ -160,6 +158,7 @@ const FormSticker = ({
       if (valids) {
         await postOrder
           .post(`/cart/${productId}`, finalPostProduct, {
+            "Content-Type": "multipart/form-data",
             headers: { 'x-access-token': `${JSON.parse(user).data.token}` },
           })
           .then(() => {
@@ -195,7 +194,7 @@ const FormSticker = ({
                 order_design: fields?.order_design,
                 order_quantity: fields?.order_quantity,
                 order_detail_shape: fields?.order_detail_shape,
-                order_design_image: fields?.order_design_image.data,
+                product_image: fields?.order_design_image.data,
               }
             : {
                 panjang_1: fields?.panjang_1,

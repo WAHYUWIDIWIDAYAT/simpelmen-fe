@@ -72,14 +72,7 @@ const Pembayaran = () => {
                         new Date(item.createdAt).getMonth() + 1
                       } - ${new Date(item.createdAt).getFullYear()}`}</p>
                     </div>
-                    <div className="col-span-5 xl:col-span-2 block xl:hidden">
-                      <div className="flex xl:justify-center">
-                        {badge(
-                          item.order_statuses[0]?.order_status_description,
-                          item.order_statuses[0]?.order_status_admin_code
-                        )}
-                      </div>
-                    </div>
+         
                     <div className="col-span-3 xl:col-span-2">
                       <p className="text-xs xs:text-sm font-medium mb-1 xs:mb-2 text-secondary-900">
                         No. Pesanan
@@ -102,7 +95,16 @@ const Pembayaran = () => {
                           item.order_details[0]?.products.jenis_products
                             .jenis_product_description
                         }
+                        
                       </p>
+                    </div>
+                    <div className="col-span-5 xl:col-span-2">
+                      <div className="flex xl:justify-center">
+                        {badge(
+                          item.order_statuses[0]?.order_status_description,
+                          item.order_statuses[0]?.order_status_admin_code
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

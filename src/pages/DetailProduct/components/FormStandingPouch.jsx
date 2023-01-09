@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Buffer } from 'buffer';
 import { BsCartPlus, BsFillCloudPlusFill } from 'react-icons/bs';
 import { IoIosArrowDown } from 'react-icons/io';
 import { CgSpinner } from 'react-icons/cg';
@@ -55,12 +54,11 @@ const FormStandingPouch = ({
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          const encode = Buffer.from(e.target.result).toString('base64');
           setFields({
             ...fields,
             order_design_image: {
               name: file.name,
-              data: encode,
+              data: file,
             },
           });
         };
@@ -137,7 +135,7 @@ const FormStandingPouch = ({
             lebar_1: parseInt(fields?.order_specification.split(' ')[3]),
             order_design: fields?.order_design,
             order_quantity: parseInt(fields?.order_quantity),
-            order_design_image: fields?.order_design_image.data,
+            product_image: fields?.order_design_image.data,
             order_finishing_id: fields?.order_specification.split(' ')[5],
           }
         : {
@@ -154,6 +152,7 @@ const FormStandingPouch = ({
         await postOrder
           .post(`/cart/${productId}`, finalSpesification, {
             headers: {
+              "Content-Type": "multipart/form-data",
               'x-access-token': `${JSON.parse(user).data.token}`,
             },
           })
@@ -189,7 +188,7 @@ const FormStandingPouch = ({
                 lebar_1: parseInt(fields?.order_specification.split('_')[1]),
                 order_design: fields?.order_design,
                 order_quantity: parseInt(fields?.order_quantity),
-                order_design_image: fields?.order_design_image.data,
+                product_image: fields?.order_design_image.data,
                 order_finishing_id: fields?.order_specification.split('_')[2],
                 order_finishing_name: fields?.order_specification.split('_')[3],
               }
