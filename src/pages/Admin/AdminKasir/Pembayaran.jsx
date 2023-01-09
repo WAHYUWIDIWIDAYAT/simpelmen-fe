@@ -193,9 +193,9 @@ const Pembayaran = () => {
         </div>
         <h6 className="mt-10 mb-4">
           Tabel Pembayaran{" "}
-          <span className="text-primary-900 font-semibold">
+          {/* <span className="text-primary-900 font-semibold">
             Work tapi error 500 'cant update tapi data keupdate wkwk'
-          </span>
+          </span> */}
         </h6>
         <div className="flex items-center justify-between mb-4">
           <div className="flex gap-2 items-center mr-4">
@@ -248,7 +248,7 @@ const Pembayaran = () => {
                 <td className="text-center py-3">{item.users.user_ikm}</td>
                 <td className="text-center py-3 text-primary-900 font-semibold">
                   {" "}
-                  GAADA RESPONSE
+                  {/* GAADA RESPONSE */}
                 </td>
                 <td className="text-center py-3">
                   <div className="flex items-center gap-4 justify-center">

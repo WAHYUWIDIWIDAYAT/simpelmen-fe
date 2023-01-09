@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { BsSearch } from "react-icons/bs";
-import { IoIosArrowDown } from "react-icons/io";
-import Pagination from "../../../components/Pagination";
-import { adminCS } from "../../../services/api";
+import React, { useEffect, useState } from 'react';
+import { BsSearch } from 'react-icons/bs';
+import { IoIosArrowDown } from 'react-icons/io';
+import Pagination from '../../../components/Pagination';
+import { adminCS } from '../../../services/api';
 
 const Rekap = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [data, setData] = useState();
   // pagination
@@ -16,6 +16,7 @@ const Rekap = () => {
   const indexFirstPost = indexLastPost - postPerPage;
   const currentData = data?.slice(indexFirstPost, indexLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const [isLoading, setIsLoading] = useState(true);
 
   // function handleChange(e, item) {
   //   e.preventDefault();
@@ -33,12 +34,16 @@ const Rekap = () => {
   useEffect(() => {
     const getData = async () => {
       await adminCS
-        .get("/rekap/order", {
+        .get('/rekap/order', {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
-        .then((response) => setData(response.data));
+        .then((response) => {
+          setData(response.data);
+          setIsLoading(false);
+        })
+        .catch(() => setIsLoading(false));
     };
     getData();
   }, [parseUser.data.token]);
@@ -99,71 +104,95 @@ const Rekap = () => {
               </tr>
             </thead>
             <tbody>
-              {currentData?.map((item, index) => (
-                <tr className="border-b" key={index}>
-                  <td className="text-center p-3">{index + 1}</td>
-                  <td className="text-center p-3">{item?.order_code}</td>
-                  <td className="text-left p-3">{item?.users.user_ikm}</td>
-                  <td className="text-center py-3 px-4 flex justify-center">
-                    <div className="relative">
-                      <select
-                        id="status"
-                        name="status"
-                        defaultValue={
-                          item?.order_statuses[0].order_status_admin_code
-                        }
-                        // value={item.status}
-                        // onChange={(e) => handleChange(e, item)}
-                        className={`${
-                          item.order_statuses[0].order_status_admin_code === "8"
-                            ? "!bg-gradient-to-bl !from-orange-900 !to-primary-900 hover:!from-primary-900 hover:!to-orange-900 !shadow-red"
-                            : "!bg-orange-600"
-                        } input-field-select-xs !border-none !font-semibold !w-auto !pr-12 !text-white`}
-                      >
-                        <option
-                          value={
-                            item?.order_statuses[0].order_status_admin_code
-                          }
-                        >
-                          {item?.order_statuses[0].order_status_admin_code ===
-                          "8"
-                            ? "Status Pesanan"
-                            : item?.order_statuses[0]
-                                .order_status_admin_code === 2
-                            ? "Admin CS"
-                            : item?.order_statuses[0]
-                                .order_status_admin_code === 3
-                            ? "Admin Kasir"
-                            : item?.order_statuses[0]
-                                .order_status_admin_code === 4
-                            ? "Admin Desain"
-                            : item?.order_statuses[0]
-                                .order_status_admin_code === 5
-                            ? "Admin Gudang"
-                            : item?.order_statuses[0]
-                                .order_status_admin_code === 6
-                            ? "Admin Produksi"
-                            : item?.order_statuses[0]
-                                .order_status_admin_code === 7
-                            ? "Admin TU"
-                            : ""}
-                        </option>
-                        {/* <option value="1">Status Pesanan</option>
-                        <option value="2">Admin CS</option>
-                        <option value="3">Admin Kasir</option>
-                        <option value="4">Admin TU</option>
-                        <option value="5">Admin Produksi</option>
-                        <option value="6">Admin Desain</option>
-                        <option value="7">Admin Gudang</option> */}
-                      </select>
-                      <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
-                    </div>
-                  </td>
-                  <td className="text-center py-3">
-                    Rp. {item.retributions[0]?.retribution_jasa_total}
-                  </td>
-                </tr>
-              ))}
+              {isLoading
+                ? [1, 2, 3].map((item) => (
+                    <tr
+                      className="border-b animate-pulse"
+                      key={item}
+                    >
+                      <td className="text-center py-3 px-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center py-3 px-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-left py-3 px-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center py-3 px-4">
+                        <div className="py-2">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </div>
+                      </td>
+                      <td className="text-center py-3 px-4">
+                        <div className="py-2">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                : currentData?.map((item, index) => (
+                    <tr
+                      className="border-b"
+                      key={index}
+                    >
+                      <td className="text-center p-3">{index + 1}</td>
+                      <td className="text-center p-3">{item?.order_code}</td>
+                      <td className="text-left p-3">{item?.users.user_ikm}</td>
+                      <td className="text-center py-3 px-4 flex justify-center">
+                        <div className="relative">
+                          <select
+                            id="status"
+                            name="status"
+                            defaultValue={
+                              item?.order_statuses[0].order_status_admin_code
+                            }
+                            // value={item.status}
+                            // onChange={(e) => handleChange(e, item)}
+                            className={`${
+                              item.order_statuses[0].order_status_admin_code ===
+                              '8'
+                                ? '!bg-gradient-to-bl !from-orange-900 !to-primary-900 hover:!from-primary-900 hover:!to-orange-900 !shadow-red'
+                                : '!bg-orange-600'
+                            } input-field-select-xs !border-none !font-semibold !w-auto !pr-12 !text-white`}
+                          >
+                            <option
+                              value={
+                                item?.order_statuses[0].order_status_admin_code
+                              }
+                            >
+                              {item?.order_statuses[0]
+                                .order_status_admin_code === '8'
+                                ? 'Status Pesanan'
+                                : item?.order_statuses[0]
+                                    .order_status_admin_code === 2
+                                ? 'Admin CS'
+                                : item?.order_statuses[0]
+                                    .order_status_admin_code === 3
+                                ? 'Admin Kasir'
+                                : item?.order_statuses[0]
+                                    .order_status_admin_code === 4
+                                ? 'Admin Desain'
+                                : item?.order_statuses[0]
+                                    .order_status_admin_code === 5
+                                ? 'Admin Gudang'
+                                : item?.order_statuses[0]
+                                    .order_status_admin_code === 6
+                                ? 'Admin Produksi'
+                                : item?.order_statuses[0]
+                                    .order_status_admin_code === 7
+                                ? 'Admin TU'
+                                : ''}
+                            </option>
+                          </select>
+                          <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
+                        </div>
+                      </td>
+                      <td className="text-center py-3">
+                        Rp. {item.retributions[0]?.retribution_jasa_total}
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>

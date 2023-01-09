@@ -71,6 +71,9 @@ p {
 .button-fill-sm {
   @apply text-base text-white font-semibold px-5 py-2 rounded-lg bg-primary-900 hover:bg-primary-600 shadow-red outline-hidden;
 }
+.button-orange-sm {
+  @apply text-base text-white font-semibold px-5 py-2 rounded-lg bg-orange-900 hover:bg-orange-600 shadow-red outline-hidden;
+}
 .button-success-sm {
   @apply text-base text-white font-semibold px-5 py-2 rounded-lg bg-green-500 hover:bg-green-400 shadow-gray outline-hidden;
 }

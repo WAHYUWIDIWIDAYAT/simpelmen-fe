@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { BsSearch, BsPlus } from "react-icons/bs";
-import { FaTrash } from "react-icons/fa";
-import Alerts from "../../../components/Alerts";
-import Pagination from "../../../components/Pagination";
-import { commonAPI } from "../../../services/api";
-import ModalsEditSpesifikasi from "./components/ModalsEditSpesifikasi";
-import ModalsSpesifikasi from "./components/ModalsSpesifikasi";
+import React, { useEffect, useState } from 'react';
+import { BsSearch, BsPlus } from 'react-icons/bs';
+import { FaTrash } from 'react-icons/fa';
+import Alerts from '../../../components/Alerts';
+import Pagination from '../../../components/Pagination';
+import { commonAPI } from '../../../services/api';
+import ModalsEditSpesifikasi from './components/ModalsEditSpesifikasi';
+import ModalsSpesifikasi from './components/ModalsSpesifikasi';
 
 const Spesifikasi = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
@@ -23,8 +23,13 @@ const Spesifikasi = () => {
   const [putProduct, setPutProduct] = useState();
   const [alerts, setAlerts] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [failMessage, setFailMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState('');
+  const [failMessage, setFailMessage] = useState('');
+  const [isLoadingCategory, setIsLoadingCategory] = useState(true);
+  const [isLoadingMaterial, setIsLoadingMaterial] = useState(true);
+  const [isLoadingBentuk, setIsLoadingBentuk] = useState(true);
+  const [isLoadingSize, setIsLoadingSize] = useState(true);
+  const [isLoadingFinishing, setIsLoadingFinishing] = useState(true);
   // pagination
   const [currentPage, setCurrentPage] = useState({
     kategori: 1,
@@ -79,55 +84,85 @@ const Spesifikasi = () => {
 
   const getCategoryProduct = async (token) => {
     await commonAPI
-      .get("/category", {
+      .get('/category', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
-      .then((response) => setCategoryProduct(response.data.data));
+      .then((response) => {
+        setCategoryProduct(response.data.data);
+        setIsLoadingCategory(false);
+      })
+      .catch(() => {
+        setIsLoadingCategory(false);
+      });
   };
   const getMaterialProduct = async (token) => {
     await commonAPI
-      .get("/material", {
+      .get('/material', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
-      .then((response) => setProductMaterial(response.data.data));
+      .then((response) => {
+        setProductMaterial(response.data.data);
+        setIsLoadingMaterial(false);
+      })
+      .catch(() => {
+        setIsLoadingMaterial(false);
+      });
   };
   const getSizeProduct = async (token) => {
     await commonAPI
-      .get("/size", {
+      .get('/size', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
-      .then((response) => setProductSize(response.data.data));
+      .then((response) => {
+        setProductSize(response.data.data);
+        setIsLoadingSize(false);
+      })
+      .catch(() => {
+        setIsLoadingSize(false);
+      });
   };
   const getFinsihingProduct = async (token) => {
     await commonAPI
-      .get("/finishing", {
+      .get('/finishing', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
-      .then((response) => setProductFinishing(response.data.data));
+      .then((response) => {
+        setProductFinishing(response.data.data);
+        setIsLoadingFinishing(false);
+      })
+      .catch(() => {
+        setIsLoadingFinishing(false);
+      });
   };
   const getBentukProduct = async (token) => {
     await commonAPI
-      .get("/jenisproducts", {
+      .get('/jenisproducts', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
-      .then((response) => setBentukProduk(response.data.data));
+      .then((response) => {
+        setBentukProduk(response.data.data);
+        setIsLoadingBentuk(false);
+      })
+      .catch(() => {
+        setIsLoadingBentuk(false);
+      });
   };
 
   const handleChangeProduct = (e) => {
     e.preventDefault();
     setPostProduct({
       ...postProduct,
-      [e.target.getAttribute("name")]: e.target.value,
+      [e.target.getAttribute('name')]: e.target.value,
     });
   };
 
@@ -135,7 +170,7 @@ const Spesifikasi = () => {
     e.preventDefault();
     setPutProduct({
       ...putProduct,
-      [e.target.getAttribute("name")]: e.target.value,
+      [e.target.getAttribute('name')]: e.target.value,
     });
   };
 
@@ -152,22 +187,22 @@ const Spesifikasi = () => {
     await commonAPI
       .delete(`/${type}/${id}`, {
         headers: {
-          "x-access-token": `${parseUser.data.token}`,
+          'x-access-token': `${parseUser.data.token}`,
         },
       })
       .then((response) => {
-        setSuccessMessage("Spesifikasi berhasil dihapus!");
+        setSuccessMessage('Spesifikasi berhasil dihapus!');
         setAlerts(true);
         switch (type) {
-          case "category":
+          case 'category':
             return getCategoryProduct(parseUser.data.token);
-          case "material":
+          case 'material':
             return getMaterialProduct(parseUser.data.token);
-          case "jenisproducts":
+          case 'jenisproducts':
             return getBentukProduct(parseUser.data.token);
-          case "size":
+          case 'size':
             return getSizeProduct(parseUser.data.token);
-          case "finishing":
+          case 'finishing':
             return getFinsihingProduct(parseUser.data.token);
           default:
             break;
@@ -181,68 +216,68 @@ const Spesifikasi = () => {
 
   const handleModal = (type) => {
     switch (type) {
-      case "kategori":
+      case 'kategori':
         setModalContent({
-          type: "kategori",
-          label: "Kategori",
-          placeholder: "Masukkan Kategori Produk",
-          path: "/category",
-          html: "name",
-          name: "name",
-          id: "name",
-          kode: "id",
+          type: 'kategori',
+          label: 'Kategori',
+          placeholder: 'Masukkan Kategori Produk',
+          path: '/category',
+          html: 'name',
+          name: 'name',
+          id: 'name',
+          kode: 'id',
         });
         break;
-      case "bahan":
+      case 'bahan':
         setModalContent({
-          type: "bahan",
-          label: "Bahan",
-          placeholder: "Masukkan Bahan Produk",
-          path: "/material",
-          html: "name",
-          name: "name",
-          id: "name",
+          type: 'bahan',
+          label: 'Bahan',
+          placeholder: 'Masukkan Bahan Produk',
+          path: '/material',
+          html: 'name',
+          name: 'name',
+          id: 'name',
         });
         break;
-      case "bentuk":
+      case 'bentuk':
         setModalContent({
-          type: "bentuk",
-          label: "Bentuk",
-          placeholder: "Masukkan Bentuk Produk",
-          path: "/jenisproducts",
-          html: "name",
-          name: "name",
-          id: "name",
+          type: 'bentuk',
+          label: 'Bentuk',
+          placeholder: 'Masukkan Bentuk Produk',
+          path: '/jenisproducts',
+          html: 'name',
+          name: 'name',
+          id: 'name',
         });
         break;
-      case "ukuran":
+      case 'ukuran':
         setModalContent({
-          type: "ukuran",
-          label: "Deskripsi",
-          placeholder: "Masukkan Deskripsi Produk",
-          path: "/size",
-          html: "name",
-          name: "name",
-          id: "name",
-          length1: "length",
-          width1: "width",
-          height1: "height",
-          length2: "length2",
-          width2: "width2",
-          height2: "height2",
-          shape: "shape",
-          description: "product_size_description",
+          type: 'ukuran',
+          label: 'Deskripsi',
+          placeholder: 'Masukkan Deskripsi Produk',
+          path: '/size',
+          html: 'name',
+          name: 'name',
+          id: 'name',
+          length1: 'length',
+          width1: 'width',
+          height1: 'height',
+          length2: 'length2',
+          width2: 'width2',
+          height2: 'height2',
+          shape: 'shape',
+          description: 'product_size_description',
         });
         break;
-      case "finishing":
+      case 'finishing':
         setModalContent({
-          type: "finishing",
-          label: "Finishing",
-          placeholder: "Masukkan Finishing Produk",
-          path: "/finishing",
-          html: "name",
-          name: "name",
-          id: "name",
+          type: 'finishing',
+          label: 'Finishing',
+          placeholder: 'Masukkan Finishing Produk',
+          path: '/finishing',
+          html: 'name',
+          name: 'name',
+          id: 'name',
         });
         break;
       default:
@@ -264,46 +299,46 @@ const Spesifikasi = () => {
     description
   ) => {
     switch (type) {
-      case "category":
+      case 'category':
         setModalEditContent({
           id: id,
-          type: "kategori",
-          label: "Kategori",
-          placeholder: "Masukkan Kategori Produk",
-          path: "/category",
+          type: 'kategori',
+          label: 'Kategori',
+          placeholder: 'Masukkan Kategori Produk',
+          path: '/category',
           specificationName: productName,
-          putKey: "product_category_name",
+          putKey: 'product_category_name',
         });
         break;
-      case "material":
+      case 'material':
         setModalEditContent({
           id: id,
-          type: "bahan",
-          label: "Bahan",
-          placeholder: "Masukkan Bahan Produk",
-          path: "/material",
+          type: 'bahan',
+          label: 'Bahan',
+          placeholder: 'Masukkan Bahan Produk',
+          path: '/material',
           specificationName: productName,
-          putKey: "product_material_name",
+          putKey: 'product_material_name',
         });
         break;
-      case "jenisproducts":
+      case 'jenisproducts':
         setModalEditContent({
           id: id,
-          type: "bentuk",
-          label: "Bentuk",
-          placeholder: "Masukkan Bentuk Produk",
-          path: "/jenisproducts",
+          type: 'bentuk',
+          label: 'Bentuk',
+          placeholder: 'Masukkan Bentuk Produk',
+          path: '/jenisproducts',
           specificationName: productName,
-          putKey: "name",
+          putKey: 'name',
         });
         break;
-      case "size":
+      case 'size':
         setModalEditContent({
           id: id,
-          type: "ukuran",
-          label: "Deskripsi",
-          placeholder: "Masukkan Deskripsi Produk",
-          path: "/size",
+          type: 'ukuran',
+          label: 'Deskripsi',
+          placeholder: 'Masukkan Deskripsi Produk',
+          path: '/size',
           specificationName: productName,
           p1: p1,
           l1: l1,
@@ -314,15 +349,15 @@ const Spesifikasi = () => {
           description: description,
         });
         break;
-      case "finishing":
+      case 'finishing':
         setModalEditContent({
           id: id,
-          type: "finishing",
-          label: "Finishing",
-          placeholder: "Masukkan Finishing Produk",
-          path: "/finishing",
+          type: 'finishing',
+          label: 'Finishing',
+          placeholder: 'Masukkan Finishing Produk',
+          path: '/finishing',
           specificationName: productName,
-          putKey: "product_finishing_name",
+          putKey: 'product_finishing_name',
         });
         break;
       default:
@@ -336,24 +371,24 @@ const Spesifikasi = () => {
     await commonAPI
       .post(modalContent.path, postProduct, {
         headers: {
-          "x-access-token": `${parseUser.data.token}`,
+          'x-access-token': `${parseUser.data.token}`,
         },
       })
       .then((response) => {
         setTimeout(() => {
           setModalContent({});
-          setSuccessMessage("Spesifikasi berhasil ditambahkan!");
+          setSuccessMessage('Spesifikasi berhasil ditambahkan!');
           setAlerts(true);
           switch (type) {
-            case "kategori":
+            case 'kategori':
               return getCategoryProduct(parseUser.data.token);
-            case "bahan":
+            case 'bahan':
               return getMaterialProduct(parseUser.data.token);
-            case "bentuk":
+            case 'bentuk':
               return getBentukProduct(parseUser.data.token);
-            case "ukuran":
+            case 'ukuran':
               return getSizeProduct(parseUser.data.token);
-            case "finishing":
+            case 'finishing':
               return getFinsihingProduct(parseUser.data.token);
             default:
               break;
@@ -373,24 +408,24 @@ const Spesifikasi = () => {
     await commonAPI
       .put(`${modalEditContent.path}/${modalEditContent.id}`, putProduct, {
         headers: {
-          "x-access-token": `${parseUser.data.token}`,
+          'x-access-token': `${parseUser.data.token}`,
         },
       })
       .then((response) => {
         setTimeout(() => {
           setModalEditContent({});
-          setSuccessMessage("Spesifikasi berhasil diubah!");
+          setSuccessMessage('Spesifikasi berhasil diubah!');
           setAlerts(true);
           switch (type) {
-            case "kategori":
+            case 'kategori':
               return getCategoryProduct(parseUser.data.token);
-            case "bahan":
+            case 'bahan':
               return getMaterialProduct(parseUser.data.token);
-            case "bentuk":
+            case 'bentuk':
               return getBentukProduct(parseUser.data.token);
-            case "ukuran":
+            case 'ukuran':
               return getSizeProduct(parseUser.data.token);
-            case "finishing":
+            case 'finishing':
               return getFinsihingProduct(parseUser.data.token);
             default:
               break;
@@ -451,7 +486,7 @@ const Spesifikasi = () => {
             <h6>Kategori Produk</h6>
             <div>
               <button
-                onClick={() => handleModal("kategori")}
+                onClick={() => handleModal('kategori')}
                 className="button-fill !pl-4 flex items-center"
               >
                 <BsPlus className="text-2xl mr-2 fill-white" />
@@ -503,42 +538,65 @@ const Spesifikasi = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentDataKategori?.map((item, index) => (
-                    <tr className="border-b" key={index}>
-                      <td className="text-center p-3">{index + 1}</td>
-                      <td className="text-center p-3">
-                        {item.product_category_name}
-                      </td>
-                      <td className="text-center p-3">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
-                            onClick={() =>
-                              handleModalEdit(
-                                "category",
-                                item.product_category_id,
-                                item.product_category_name
-                              )
-                            }
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="button-fill !p-[15px]"
-                            onClick={(e) =>
-                              handleDelete(
-                                e,
-                                "category",
-                                item.product_category_id
-                              )
-                            }
-                          >
-                            <FaTrash className="fill-white text-base" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {isLoadingCategory
+                    ? [1, 2, 3].map((item) => (
+                        <tr
+                          className="animate-pulse border-b"
+                          key={item}
+                        >
+                          <td className="text-center px-4 py-3">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <div className="flex items-center justify-center gap-3 py-2">
+                              <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                              <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    : currentDataKategori?.map((item, index) => (
+                        <tr
+                          className="border-b"
+                          key={index}
+                        >
+                          <td className="text-center p-3">{index + 1}</td>
+                          <td className="text-center p-3">
+                            {item.product_category_name}
+                          </td>
+                          <td className="text-center p-3">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
+                                onClick={() =>
+                                  handleModalEdit(
+                                    'category',
+                                    item.product_category_id,
+                                    item.product_category_name
+                                  )
+                                }
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="button-fill !p-[15px]"
+                                onClick={(e) =>
+                                  handleDelete(
+                                    e,
+                                    'category',
+                                    item.product_category_id
+                                  )
+                                }
+                              >
+                                <FaTrash className="fill-white text-base" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                 </tbody>
               </table>
             </div>
@@ -559,7 +617,7 @@ const Spesifikasi = () => {
             <h6>Bahan Produk</h6>
             <div>
               <button
-                onClick={() => handleModal("bahan")}
+                onClick={() => handleModal('bahan')}
                 className="button-fill !pl-4 flex items-center"
               >
                 <BsPlus className="text-2xl mr-2 fill-white" />
@@ -599,54 +657,77 @@ const Spesifikasi = () => {
               <table className="table-auto mb-4 w-full">
                 <thead>
                   <tr className="bg-orange-900">
-                    <td className="text-white text-center p-3 min-w-[54px]">
+                    <th className="text-white text-center p-3 min-w-[54px]">
                       No
-                    </td>
-                    <td className="text-white text-center p-3 min-w-[160px]">
+                    </th>
+                    <th className="text-white text-center p-3 min-w-[160px]">
                       Bahan Produk
-                    </td>
-                    <td className="text-white text-center p-3 min-w-[180px]">
+                    </th>
+                    <th className="text-white text-center p-3 min-w-[180px]">
                       Aksi
-                    </td>
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {currentDataBahan?.map((item, index) => (
-                    <tr className="border-b" key={index}>
-                      <td className="text-center p-3">{index + 1}</td>
-                      <td className="text-center p-3">
-                        {item.product_material_name}
-                      </td>
-                      <td className="text-center p-3">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
-                            onClick={() =>
-                              handleModalEdit(
-                                "material",
-                                item.product_material_id,
-                                item.product_material_name
-                              )
-                            }
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="button-fill !p-[15px]"
-                            onClick={(e) =>
-                              handleDelete(
-                                e,
-                                "material",
-                                item.product_material_id
-                              )
-                            }
-                          >
-                            <FaTrash className="fill-white text-base" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {isLoadingMaterial
+                    ? [1, 2, 3].map((item) => (
+                        <tr
+                          className="animate-pulse border-b"
+                          key={item}
+                        >
+                          <td className="text-center px-4 py-3">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <div className="flex items-center justify-center gap-3 py-2">
+                              <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                              <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    : currentDataBahan?.map((item, index) => (
+                        <tr
+                          className="border-b"
+                          key={index}
+                        >
+                          <td className="text-center p-3">{index + 1}</td>
+                          <td className="text-center p-3">
+                            {item.product_material_name}
+                          </td>
+                          <td className="text-center p-3">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
+                                onClick={() =>
+                                  handleModalEdit(
+                                    'material',
+                                    item.product_material_id,
+                                    item.product_material_name
+                                  )
+                                }
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="button-fill !p-[15px]"
+                                onClick={(e) =>
+                                  handleDelete(
+                                    e,
+                                    'material',
+                                    item.product_material_id
+                                  )
+                                }
+                              >
+                                <FaTrash className="fill-white text-base" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                 </tbody>
               </table>
             </div>
@@ -667,7 +748,7 @@ const Spesifikasi = () => {
             <h6>Bentuk Produk</h6>
             <div>
               <button
-                onClick={() => handleModal("bentuk")}
+                onClick={() => handleModal('bentuk')}
                 className="button-fill !pl-4 flex items-center"
               >
                 <BsPlus className="text-2xl mr-2 fill-white" />
@@ -719,42 +800,65 @@ const Spesifikasi = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentDataBentuk?.map((item, index) => (
-                    <tr className="border-b" key={index}>
-                      <td className="text-center p-3">{index + 1}</td>
-                      <td className="text-center p-3">
-                        {item.jenis_product_name}
-                      </td>
-                      <td className="text-center p-3">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
-                            onClick={() =>
-                              handleModalEdit(
-                                "jenisproducts",
-                                item.jenis_product_id,
-                                item.jenis_product_name
-                              )
-                            }
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="button-fill !p-[15px]"
-                            onClick={(e) =>
-                              handleDelete(
-                                e,
-                                "jenisproducts",
-                                item.jenis_product_id
-                              )
-                            }
-                          >
-                            <FaTrash className="fill-white text-base" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {isLoadingBentuk
+                    ? [1, 2, 3].map((item) => (
+                        <tr
+                          className="animate-pulse border-b"
+                          key={item}
+                        >
+                          <td className="text-center px-4 py-3">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <div className="flex items-center justify-center gap-3 py-2">
+                              <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                              <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    : currentDataBentuk?.map((item, index) => (
+                        <tr
+                          className="border-b"
+                          key={index}
+                        >
+                          <td className="text-center p-3">{index + 1}</td>
+                          <td className="text-center p-3">
+                            {item.jenis_product_name}
+                          </td>
+                          <td className="text-center p-3">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
+                                onClick={() =>
+                                  handleModalEdit(
+                                    'jenisproducts',
+                                    item.jenis_product_id,
+                                    item.jenis_product_name
+                                  )
+                                }
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="button-fill !p-[15px]"
+                                onClick={(e) =>
+                                  handleDelete(
+                                    e,
+                                    'jenisproducts',
+                                    item.jenis_product_id
+                                  )
+                                }
+                              >
+                                <FaTrash className="fill-white text-base" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                 </tbody>
               </table>
             </div>
@@ -775,7 +879,7 @@ const Spesifikasi = () => {
             <h6>Ukuran Produk</h6>
             <div>
               <button
-                onClick={() => handleModal("ukuran")}
+                onClick={() => handleModal('ukuran')}
                 className="button-fill !pl-4 flex items-center"
               >
                 <BsPlus className="text-2xl mr-2 fill-white" />
@@ -830,48 +934,74 @@ const Spesifikasi = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentDataUkuran?.map((item, index) => (
-                    <tr className="border-b align-baseline" key={index}>
-                      <td className="text-center p-3">{index + 1}</td>
-                      <td className="text-center p-3">
-                        {item.product_size_shape}
-                      </td>
-                      <td className="p-3 text-center">
-                        {item.product_size_description}
-                      </td>
-                      <td className="text-center p-3">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
-                            onClick={() =>
-                              handleModalEdit(
-                                "size",
-                                item.product_size_id,
-                                item.product_size_shape,
-                                item.product_size_length,
-                                item.product_size_width,
-                                item.product_size_height,
-                                item.product_size_length2,
-                                item.product_size_width2,
-                                item.product_size_height2,
-                                item.product_size_description
-                              )
-                            }
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="button-fill !p-[15px]"
-                            onClick={(e) =>
-                              handleDelete(e, "size", item.product_size_id)
-                            }
-                          >
-                            <FaTrash className="fill-white text-base" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {isLoadingSize
+                    ? [1, 2, 3].map((item) => (
+                        <tr
+                          className="border-b align-baseline animate-pulse"
+                          key={item}
+                        >
+                          <td className="text-center px-4 py-3">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </td>
+                          <td className="px-4 py-3 text-center">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <div className="flex items-center justify-center gap-3 py-3">
+                              <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                              <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    : currentDataUkuran?.map((item, index) => (
+                        <tr
+                          className="border-b align-baseline"
+                          key={index}
+                        >
+                          <td className="text-center p-3">{index + 1}</td>
+                          <td className="text-center p-3">
+                            {item.product_size_shape}
+                          </td>
+                          <td className="p-3 text-center">
+                            {item.product_size_description}
+                          </td>
+                          <td className="text-center p-3">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
+                                onClick={() =>
+                                  handleModalEdit(
+                                    'size',
+                                    item.product_size_id,
+                                    item.product_size_shape,
+                                    item.product_size_length,
+                                    item.product_size_width,
+                                    item.product_size_height,
+                                    item.product_size_length2,
+                                    item.product_size_width2,
+                                    item.product_size_height2,
+                                    item.product_size_description
+                                  )
+                                }
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="button-fill !p-[15px]"
+                                onClick={(e) =>
+                                  handleDelete(e, 'size', item.product_size_id)
+                                }
+                              >
+                                <FaTrash className="fill-white text-base" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                 </tbody>
               </table>
             </div>
@@ -892,7 +1022,7 @@ const Spesifikasi = () => {
             <h6>Finishing Kemasan</h6>
             <div>
               <button
-                onClick={() => handleModal("finishing")}
+                onClick={() => handleModal('finishing')}
                 className="button-fill !pl-4 flex items-center"
               >
                 <BsPlus className="text-2xl mr-2 fill-white" />
@@ -944,42 +1074,65 @@ const Spesifikasi = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentDataFinishing?.map((item, index) => (
-                    <tr className="border-b" key={index}>
-                      <td className="text-center p-3">{index + 1}</td>
-                      <td className="text-center p-3">
-                        {item.product_finishing_name}
-                      </td>
-                      <td className="text-center p-3">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
-                            onClick={() =>
-                              handleModalEdit(
-                                "finishing",
-                                item.product_finishing_id,
-                                item.product_finishing_name
-                              )
-                            }
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="button-fill !p-[15px]"
-                            onClick={(e) =>
-                              handleDelete(
-                                e,
-                                "finishing",
-                                item.product_finishing_id
-                              )
-                            }
-                          >
-                            <FaTrash className="fill-white text-base" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {isLoadingFinishing
+                    ? [1, 2, 3].map((item) => (
+                        <tr
+                          className="animate-pulse border-b"
+                          key={item}
+                        >
+                          <td className="text-center px-4 py-3">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </td>
+                          <td className="text-center px-4 py-3">
+                            <div className="flex items-center justify-center gap-3 py-2">
+                              <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                              <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    : currentDataFinishing?.map((item, index) => (
+                        <tr
+                          className="border-b"
+                          key={index}
+                        >
+                          <td className="text-center p-3">{index + 1}</td>
+                          <td className="text-center p-3">
+                            {item.product_finishing_name}
+                          </td>
+                          <td className="text-center p-3">
+                            <div className="flex items-center justify-center gap-2">
+                              <button
+                                className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
+                                onClick={() =>
+                                  handleModalEdit(
+                                    'finishing',
+                                    item.product_finishing_id,
+                                    item.product_finishing_name
+                                  )
+                                }
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="button-fill !p-[15px]"
+                                onClick={(e) =>
+                                  handleDelete(
+                                    e,
+                                    'finishing',
+                                    item.product_finishing_id
+                                  )
+                                }
+                              >
+                                <FaTrash className="fill-white text-base" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
                 </tbody>
               </table>
             </div>

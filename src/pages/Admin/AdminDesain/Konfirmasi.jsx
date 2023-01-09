@@ -1,26 +1,31 @@
-import React, { useEffect, useState } from "react";
-import { BsSearch } from "react-icons/bs";
-import { HiChevronLeft, HiChevronRight } from "react-icons/hi";
-import { IoIosArrowDown } from "react-icons/io";
-import Alerts from "../../../components/Alerts";
-import { adminDesain } from "../../../services/api";
+import React, { useEffect, useState } from 'react';
+import { BsSearch } from 'react-icons/bs';
+import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
+import { IoIosArrowDown } from 'react-icons/io';
+import Alerts from '../../../components/Alerts';
+import { adminDesain } from '../../../services/api';
 
 const Konfirmasi = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [data, setData] = useState();
   const [alerts, setAlerts] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
-  const [failMessage, setFailMessage] = useState("");
+  const [failMessage, setFailMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const getData = async (token) => {
     await adminDesain
-      .get("/orders", {
+      .get('/orders', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
-      .then((response) => setData(response.data));
+      .then((response) => {
+        setData(response.data);
+        setIsLoading(false);
+      })
+      .catch(() => setIsLoading(false));
   };
 
   async function approveDesign(id, status) {
@@ -32,7 +37,7 @@ const Konfirmasi = () => {
         },
         {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         }
       )
@@ -54,7 +59,7 @@ const Konfirmasi = () => {
         },
         {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         }
       )
@@ -70,9 +75,9 @@ const Konfirmasi = () => {
 
   function handleChangeStatus(e, item) {
     e.preventDefault();
-    if (e.target.value === "2") {
+    if (e.target.value === '2') {
       approveDesign(item.order_id, parseInt(e.target.value));
-    } else if (e.target.value === "3") {
+    } else if (e.target.value === '3') {
       declineDesign(item.order_id, parseInt(e.target.value));
     }
     // const filtered = data.filter((brg) => brg.id === item.id)[0];
@@ -168,50 +173,78 @@ const Konfirmasi = () => {
                 </tr>
               </thead>
               <tbody>
-                {data?.map((item, index) => (
-                  <tr className="border-b">
-                    <td className="text-center p-3">{index + 1}</td>
-                    <td className="text-center p-3">{item.order_code}</td>
-                    <td className="text-center p-3">{`${new Date(
-                      item.createdAt
-                    ).getDate()} - ${
-                      new Date(item.createdAt).getMonth() + 1
-                    } - ${new Date(item.createdAt).getFullYear()}`}</td>
-                    <td className="text-left p-3">{item.users.user_ikm}</td>
-                    <td className="text-center py-3 px-4 flex justify-center">
-                      <div className="relative">
-                        <select
-                          id="status"
-                          name="status"
-                          defaultValue={item.order_status}
-                          // value={item.order_status}
-                          onChange={(e) => handleChangeStatus(e, item)}
-                          className={`${
-                            parseInt(item.order_status) === 1
-                              ? "!bg-gradient-to-bl !from-orange-900 !to-primary-900 hover:!from-primary-900 hover:!to-orange-900 !shadow-red"
-                              : parseInt(item.order_status) === 3
-                              ? "!bg-green-500 hover:!bg-green-500/80"
-                              : parseInt(item.order_status) === 2
-                              ? "!bg-secondary-800 hover:!bg-secondary-800/80"
-                              : ""
-                          } input-field-select-xs !border-none !font-semibold !text-white !w-auto !pr-12`}
-                        >
-                          <option value={item.order_status}>
-                            {item.order_status === 2
-                              ? "Belum Disetujui"
-                              : item.order_status === 3
-                              ? "Disetujui"
-                              : "Status Pesanan"}
-                          </option>
-                          <option value="1">Status Desain</option>
-                          <option value="2">Disetujui</option>
-                          <option value="3">Belum Disetujui</option>
-                        </select>
-                        <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {isLoading
+                  ? [1, 2, 3].map((item) => (
+                      <tr
+                        className="animate-pulse border-b"
+                        key={item}
+                      >
+                        <td className="text-center py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-left py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <div className="flex justify-center py-2">
+                            <div className="h-3 bg-slate-200 w-20 rounded-md"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : data?.map((item, index) => (
+                      <tr
+                        className="border-b"
+                        key={index}
+                      >
+                        <td className="text-center p-3">{index + 1}</td>
+                        <td className="text-center p-3">{item.order_code}</td>
+                        <td className="text-center p-3">{`${new Date(
+                          item.createdAt
+                        ).getDate()} - ${
+                          new Date(item.createdAt).getMonth() + 1
+                        } - ${new Date(item.createdAt).getFullYear()}`}</td>
+                        <td className="text-left p-3">{item.users.user_ikm}</td>
+                        <td className="text-center py-3 px-4 flex justify-center">
+                          <div className="relative">
+                            <select
+                              id="status"
+                              name="status"
+                              defaultValue={item.order_status}
+                              // value={item.order_status}
+                              onChange={(e) => handleChangeStatus(e, item)}
+                              className={`${
+                                parseInt(item.order_status) === 1
+                                  ? '!bg-gradient-to-bl !from-orange-900 !to-primary-900 hover:!from-primary-900 hover:!to-orange-900 !shadow-red'
+                                  : parseInt(item.order_status) === 3
+                                  ? '!bg-green-500 hover:!bg-green-500/80'
+                                  : parseInt(item.order_status) === 2
+                                  ? '!bg-secondary-800 hover:!bg-secondary-800/80'
+                                  : ''
+                              } input-field-select-xs !border-none !font-semibold !text-white !w-auto !pr-12`}
+                            >
+                              <option value={item.order_status}>
+                                {item.order_status === 2
+                                  ? 'Belum Disetujui'
+                                  : item.order_status === 3
+                                  ? 'Disetujui'
+                                  : 'Status Pesanan'}
+                              </option>
+                              <option value="1">Status Desain</option>
+                              <option value="2">Disetujui</option>
+                              <option value="3">Belum Disetujui</option>
+                            </select>
+                            <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>

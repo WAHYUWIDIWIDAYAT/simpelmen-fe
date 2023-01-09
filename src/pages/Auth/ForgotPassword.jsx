@@ -39,7 +39,7 @@ const ForgotPassword = () => {
           'Content-Type': 'application/json',
         },
       })
-      .then((response) => {
+      .then(() => {
         setAlerts(true);
         setIsLoading(false);
       })

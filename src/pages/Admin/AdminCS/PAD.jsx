@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { BsSearch } from "react-icons/bs";
-import { IoIosArrowDown } from "react-icons/io";
-import Alerts from "../../../components/Alerts";
-import Pagination from "../../../components/Pagination";
-import { adminCS } from "../../../services/api";
+import React, { useEffect, useState } from 'react';
+import { BsSearch } from 'react-icons/bs';
+import { IoIosArrowDown } from 'react-icons/io';
+import Alerts from '../../../components/Alerts';
+import Pagination from '../../../components/Pagination';
+import { adminCS } from '../../../services/api';
 
 const PAD = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [data, setData] = useState();
   const [alerts, setAlerts] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
-  const [failMessage, setFailMessage] = useState("");
+  const [failMessage, setFailMessage] = useState('');
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const postPerPage = 5;
@@ -20,15 +20,20 @@ const PAD = () => {
   const indexFirstPost = indexLastPost - postPerPage;
   const currentData = data?.slice(indexFirstPost, indexLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getData = async (token) => {
     await adminCS
-      .get("/pad", {
+      .get('/pad', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
-      .then((response) => setData(response.data));
+      .then((response) => {
+        setData(response.data);
+        setIsLoading(false);
+      })
+      .catch(() => setIsLoading(false));
   };
 
   async function padStatus(status, id) {
@@ -40,7 +45,7 @@ const PAD = () => {
         },
         {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         }
       )
@@ -272,43 +277,73 @@ const PAD = () => {
               </tr>
             </thead>
             <tbody>
-              {currentData?.map((item, index) => (
-                <tr className="border-b" key={index}>
-                  <td className="text-center p-3">{index + 1}</td>
-                  <td className="text-center p-3">{item?.orders.order_code}</td>
-                  <td className="text-left p-3">
-                    {item?.orders.users.user_ikm}
-                  </td>
-                  <td className="text-center p-3">
-                    {item?.retribution_jasa_total}
-                  </td>
-                  <td className="text-center py-3 px-4 flex justify-center">
-                    <div className="relative">
-                      <select
-                        id="status"
-                        name="status"
-                        defaultValue={item?.retribution_pad_status}
-                        // value={item?.status}
-                        onChange={(e) => handleChange(e, item)}
-                        className={`${
-                          item?.retribution_pad_status === null
-                            ? "!bg-gradient-to-bl !from-orange-900 !to-primary-900 hover:!from-primary-900 hover:!to-orange-900 !shadow-red"
-                            : parseInt(item?.retribution_pad_status) === 2
-                            ? "!bg-green-500"
-                            : parseInt(item?.retribution_pad_status) === 3
-                            ? "!bg-secondary-800"
-                            : ""
-                        } input-field-select-xs !border-none !font-semibold !text-white !w-auto !pr-12`}
-                      >
-                        <option value="1">Status PAD</option>
-                        <option value="2">Setor</option>
-                        <option value="3">Belum Setor</option>
-                      </select>
-                      <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {isLoading
+                ? [1, 2, 3].map((item) => (
+                    <tr
+                      className="border-b animate-pulse"
+                      key={item}
+                    >
+                      <td className="text-center py-3 px-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center py-3 px-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-left py-3 px-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center py-3 px-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center py-3 px-4">
+                        <div className="py-2">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                : currentData?.map((item, index) => (
+                    <tr
+                      className="border-b"
+                      key={index}
+                    >
+                      <td className="text-center p-3">{index + 1}</td>
+                      <td className="text-center p-3">
+                        {item?.orders.order_code}
+                      </td>
+                      <td className="text-left p-3">
+                        {item?.orders.users.user_ikm}
+                      </td>
+                      <td className="text-center p-3">
+                        {item?.retribution_jasa_total}
+                      </td>
+                      <td className="text-center py-3 px-4 flex justify-center">
+                        <div className="relative">
+                          <select
+                            id="status"
+                            name="status"
+                            defaultValue={item?.retribution_pad_status}
+                            // value={item?.status}
+                            onChange={(e) => handleChange(e, item)}
+                            className={`${
+                              item?.retribution_pad_status === null
+                                ? '!bg-gradient-to-bl !from-orange-900 !to-primary-900 hover:!from-primary-900 hover:!to-orange-900 !shadow-red'
+                                : parseInt(item?.retribution_pad_status) === 2
+                                ? '!bg-green-500'
+                                : parseInt(item?.retribution_pad_status) === 3
+                                ? '!bg-secondary-800'
+                                : ''
+                            } input-field-select-xs !border-none !font-semibold !text-white !w-auto !pr-12`}
+                          >
+                            <option value="1">Status PAD</option>
+                            <option value="2">Setor</option>
+                            <option value="3">Belum Setor</option>
+                          </select>
+                          <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>

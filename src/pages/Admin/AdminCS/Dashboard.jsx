@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import Pagination from "../../../components/Pagination";
-import { adminCS } from "../../../services/api";
+import React, { useEffect, useState } from 'react';
+import Pagination from '../../../components/Pagination';
+import { adminCS } from '../../../services/api';
 
 const Dashboard = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [customerRetribution, setCustomerRetribution] = useState();
   const [customerStatus, setCustomerStatus] = useState();
@@ -33,6 +33,9 @@ const Dashboard = () => {
     indexFirstPostRekap,
     indexLastPostRekap
   );
+  const [isLoadingRetribusi, setIsLoadingRetribusi] = useState(true);
+  const [isLoadingStatus, setIsLoadingStatus] = useState(true);
+  const [isLoadingRekap, setIsLoadingRekap] = useState(true);
   const paginateRetribution = (pageNumber) =>
     setCurrentPage({ ...currentPage, retribusi: pageNumber });
   const paginateStatus = (pageNumber) =>
@@ -40,28 +43,38 @@ const Dashboard = () => {
   const paginateRekap = (pageNumber) =>
     setCurrentPage({ ...currentPage, rekap: pageNumber });
 
+  // get retribusi
   useEffect(() => {
     const getRetribution = async () => {
       await adminCS
-        .get("/retributions", {
+        .get('/retributions', {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
-        .then((response) => setCustomerRetribution(response.data));
+        .then((response) => {
+          setCustomerRetribution(response.data);
+          setIsLoadingRetribusi(false);
+        })
+        .catch(() => setIsLoadingRetribusi(false));
     };
     getRetribution();
   }, [parseUser.data.token]);
 
+  // get orders
   useEffect(() => {
     const getOrders = async () => {
       await adminCS
-        .get("/orders", {
+        .get('/orders', {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
-        .then((response) => setCustomerStatus(response.data));
+        .then((response) => {
+          setCustomerStatus(response.data);
+          setIsLoadingStatus(false);
+        })
+        .catch(() => setIsLoadingStatus(false));
     };
     getOrders();
   }, [parseUser.data.token]);
@@ -70,12 +83,16 @@ const Dashboard = () => {
   useEffect(() => {
     const getData = async () => {
       await adminCS
-        .get("/rekap/order", {
+        .get('/rekap/order', {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
-        .then((response) => setOrder(response.data));
+        .then((response) => {
+          setOrder(response.data);
+          setIsLoadingRekap(false);
+        })
+        .catch(() => setIsLoadingRekap(false));
     };
     getData();
   }, [parseUser.data.token]);
@@ -109,41 +126,69 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {currentDataRetribution?.map((item, index) => (
-                <tr className=" border-b" key={item.orders.order_id}>
-                  <td className="text-center px-3 py-2">{index + 1}</td>
-                  <td className="text-center px-3 py-2">
-                    {item.orders.order_code}
-                  </td>
-                  <td className="text-left px-3 py-2">
-                    {item.orders.users.user_ikm}
-                  </td>
-                  <td className="text-center px-3 py-2">
-                    Rp. {item.retribution_jasa_total || 0}
-                  </td>
-                  <td className="text-center py-2 px-4">
-                    <div
-                      className={`${
-                        item.retribution_status === "0"
-                          ? "bg-[#6D6061]"
-                          : item.retribution_status === "1"
-                          ? "bg-[#21B630]"
-                          : item.retribution_status === "2"
-                          ? "bg-primary-900"
-                          : ""
-                      } text-white py-2 rounded-lg font-semibold text-sm`}
+              {isLoadingRetribusi
+                ? [1, 2, 3].map((item) => (
+                    <tr
+                      className="animate-pulse border-b"
+                      key={item}
                     >
-                      {item.retribution_status === "0"
-                        ? "Belum Diproses"
-                        : item.retribution_status === "1"
-                        ? "Disetujui"
-                        : item.retribution_status === "2"
-                        ? "Belum Disetujui"
-                        : ""}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      <td className="text-center px-4 py-2">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center px-4 py-2">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-left px-4 py-2">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center px-4 py-2">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center py-2 px-4">
+                        <div className="py-2">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                : currentDataRetribution?.map((item, index) => (
+                    <tr
+                      className=" border-b"
+                      key={item.orders.order_id}
+                    >
+                      <td className="text-center px-3 py-2">{index + 1}</td>
+                      <td className="text-center px-3 py-2">
+                        {item.orders.order_code}
+                      </td>
+                      <td className="text-left px-3 py-2">
+                        {item.orders.users.user_ikm}
+                      </td>
+                      <td className="text-center px-3 py-2">
+                        Rp. {item.retribution_jasa_total || 0}
+                      </td>
+                      <td className="text-center py-2 px-4">
+                        <div
+                          className={`${
+                            item.retribution_status === '0'
+                              ? 'bg-[#6D6061]'
+                              : item.retribution_status === '1'
+                              ? 'bg-[#21B630]'
+                              : item.retribution_status === '2'
+                              ? 'bg-primary-900'
+                              : ''
+                          } text-white py-2 rounded-lg font-semibold text-sm`}
+                        >
+                          {item.retribution_status === '0'
+                            ? 'Belum Diproses'
+                            : item.retribution_status === '1'
+                            ? 'Disetujui'
+                            : item.retribution_status === '2'
+                            ? 'Belum Disetujui'
+                            : ''}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>
@@ -177,24 +222,51 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {currentDataStatus?.map((item, index) => (
-                <tr className=" border-b" key={index}>
-                  <td className="text-center px-3 py-2">{index + 1}</td>
-                  <td className="text-center px-3 py-2">{item?.order_code}</td>
-                  <td className="text-left px-3 py-2">
-                    {item?.delivery_details[0]?.delivery_detail_ikm}
-                  </td>
-                  <td className="text-center px-4 py-2">
-                    {item?.order_status === null ? (
-                      <div className="bg-[#6D6061] text-white py-2 rounded-lg font-semibold text-sm truncate px-2">
-                        Belum Diproses
-                      </div>
-                    ) : (
-                      ""
-                    )}
-                  </td>
-                </tr>
-              ))}
+              {isLoadingStatus
+                ? [1, 2, 3].map((item) => (
+                    <tr
+                      className="animate-pulse border-b"
+                      key={item}
+                    >
+                      <td className="text-center px-4 py-2">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center px-4 py-2">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-left px-4 py-2">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center px-4 py-2">
+                        <div className="py-2 rounded-lg px-2">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                : currentDataStatus?.map((item, index) => (
+                    <tr
+                      className="border-b"
+                      key={index}
+                    >
+                      <td className="text-center px-3 py-2">{index + 1}</td>
+                      <td className="text-center px-3 py-2">
+                        {item?.order_code}
+                      </td>
+                      <td className="text-left px-3 py-2">
+                        {item?.delivery_details[0]?.delivery_detail_ikm}
+                      </td>
+                      <td className="text-center px-4 py-2">
+                        {item?.order_status === null ? (
+                          <div className="bg-[#6D6061] text-white py-2 rounded-lg font-semibold text-sm truncate px-2">
+                            Belum Diproses
+                          </div>
+                        ) : (
+                          ''
+                        )}
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>
@@ -231,33 +303,65 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {currentDataRekap?.map((item, index) => (
-                <tr className=" border-b" key={index}>
-                  <td className="text-center p-3">{index + 1}</td>
-                  <td className="text-center p-3">{item.order_code}</td>
-                  <td className="text-left p-3">{item.users.user_ikm}</td>
-                  <td className="text-center p-3">
-                    {item.order_statuses[0]?.order_status_admin_code === 1
-                      ? "Super Admin"
-                      : item.order_statuses[0]?.order_status_admin_code === 2
-                      ? "Admin CS"
-                      : item.order_statuses[0]?.order_status_admin_code === 3
-                      ? "Admin Kasir"
-                      : item.order_statuses[0]?.order_status_admin_code === 4
-                      ? "Admin Desain"
-                      : item.order_statuses[0]?.order_status_admin_code === 5
-                      ? "Admin Gudang"
-                      : item.order_statuses[0]?.order_status_admin_code === 6
-                      ? "Admin Produksi"
-                      : item.order_statuses[0]?.order_status_admin_code === 7
-                      ? "Admin TU"
-                      : ""}
-                  </td>
-                  <td className="text-center p-3">
-                    Rp. {item.retributions[0]?.retribution_jasa_total || 0}
-                  </td>
-                </tr>
-              ))}
+              {isLoadingRekap
+                ? [1, 2, 3].map((item) => (
+                    <tr
+                      className="animate-pulse border-b"
+                      key={item}
+                    >
+                      <td className="text-center p-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center p-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-left p-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center p-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center p-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                    </tr>
+                  ))
+                : currentDataRekap?.map((item, index) => (
+                    <tr
+                      className="border-b"
+                      key={index}
+                    >
+                      <td className="text-center p-3">{index + 1}</td>
+                      <td className="text-center p-3">{item.order_code}</td>
+                      <td className="text-left p-3">{item.users.user_ikm}</td>
+                      <td className="text-center p-3">
+                        {item.order_statuses[0]?.order_status_admin_code === 1
+                          ? 'Super Admin'
+                          : item.order_statuses[0]?.order_status_admin_code ===
+                            2
+                          ? 'Admin CS'
+                          : item.order_statuses[0]?.order_status_admin_code ===
+                            3
+                          ? 'Admin Kasir'
+                          : item.order_statuses[0]?.order_status_admin_code ===
+                            4
+                          ? 'Admin Desain'
+                          : item.order_statuses[0]?.order_status_admin_code ===
+                            5
+                          ? 'Admin Gudang'
+                          : item.order_statuses[0]?.order_status_admin_code ===
+                            6
+                          ? 'Admin Produksi'
+                          : item.order_statuses[0]?.order_status_admin_code ===
+                            7
+                          ? 'Admin TU'
+                          : ''}
+                      </td>
+                      <td className="text-center p-3">
+                        Rp. {item.retributions[0]?.retribution_jasa_total || 0}
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>

@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { BsSearch, BsPlus } from "react-icons/bs";
-import { FaTrash } from "react-icons/fa";
-import ModalsDetailProduk from "./components/ModalsDetailProduk";
-import ModalsAddProduk from "./components/ModalsAddProduk";
-import ModalsEditProduk from "./components/ModalsEditProduk";
-import { commonAPI } from "../../../services/api";
-import Alerts from "../../../components/Alerts";
-import Pagination from "../../../components/Pagination";
+import React, { useEffect, useState } from 'react';
+import { BsSearch, BsPlus } from 'react-icons/bs';
+import { FaTrash } from 'react-icons/fa';
+import ModalsDetailProduk from './components/ModalsDetailProduk';
+import ModalsAddProduk from './components/ModalsAddProduk';
+import ModalsEditProduk from './components/ModalsEditProduk';
+import { commonAPI } from '../../../services/api';
+import Alerts from '../../../components/Alerts';
+import Pagination from '../../../components/Pagination';
 
 const Produk = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [isOpenModalAdd, setIsOpenModalAdd] = useState(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
@@ -20,12 +20,13 @@ const Produk = () => {
   const [putProduct, setPutProduct] = useState();
   const [alerts, setAlerts] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
-  const [failMessage, setFailMessage] = useState("");
+  const [failMessage, setFailMessage] = useState('');
   const [categoryProduct, setCategoryProduct] = useState();
   const [productMaterial, setProductMaterial] = useState();
   const [productSize, setProductSize] = useState();
   const [productFinishing, setProductFinishing] = useState();
   const [bentukProduk, setBentukProduk] = useState();
+  const [isLoading, setIsLoading] = useState(true);
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const postPerPage = 5;
@@ -37,50 +38,58 @@ const Produk = () => {
 
   const getProduct = async () => {
     await commonAPI
-      .get("/product")
-      .then((response) => setDataProduct(response.data));
+      .get('/product')
+      .then((response) => {
+        setDataProduct(response.data);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setAlertFail(true);
+        setFailMessage('Gagal mengambil data produk');
+        setIsLoading(false);
+      });
   };
   const getCategoryProduct = async (token) => {
     await commonAPI
-      .get("/category", {
+      .get('/category', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
       .then((response) => setCategoryProduct(response.data.data));
   };
   const getMaterialProduct = async (token) => {
     await commonAPI
-      .get("/material", {
+      .get('/material', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
       .then((response) => setProductMaterial(response.data.data));
   };
   const getSizeProduct = async (token) => {
     await commonAPI
-      .get("/size", {
+      .get('/size', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
       .then((response) => setProductSize(response.data.data));
   };
   const getFinsihingProduct = async (token) => {
     await commonAPI
-      .get("/finishing", {
+      .get('/finishing', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
       .then((response) => setProductFinishing(response.data.data));
   };
   const getBentukProduct = async (token) => {
     await commonAPI
-      .get("/jenisproducts", {
+      .get('/jenisproducts', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
       .then((response) => setBentukProduk(response.data.data));
@@ -90,14 +99,14 @@ const Produk = () => {
     e.preventDefault();
     setPostProduct({
       ...postProduct,
-      [e.target.getAttribute("name")]: e.target.value,
+      [e.target.getAttribute('name')]: e.target.value,
     });
   };
   const handleChangePutProduct = (e) => {
     e.preventDefault();
     setPutProduct({
       ...putProduct,
-      [e.target.getAttribute("name")]: e.target.value,
+      [e.target.getAttribute('name')]: e.target.value,
     });
   };
 
@@ -134,9 +143,9 @@ const Produk = () => {
   const submitProdukHandler = async (e) => {
     e.preventDefault();
     await commonAPI
-      .post("/product", postProduct, {
+      .post('/product', postProduct, {
         headers: {
-          "x-access-token": `${parseUser.data.token}`,
+          'x-access-token': `${parseUser.data.token}`,
         },
       })
       .then((response) => {
@@ -154,7 +163,7 @@ const Produk = () => {
     await commonAPI
       .put(`/product/${detailData.product_id}`, putProduct, {
         headers: {
-          "x-access-token": `${parseUser.data.token}`,
+          'x-access-token': `${parseUser.data.token}`,
         },
       })
       .then((response) => {
@@ -173,7 +182,7 @@ const Produk = () => {
     await commonAPI
       .delete(`/product/${id}`, {
         headers: {
-          "x-access-token": `${parseUser.data.token}`,
+          'x-access-token': `${parseUser.data.token}`,
         },
       })
       .then((response) => {
@@ -284,37 +293,66 @@ const Produk = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentData?.map((item, index) => (
-                  <tr className="border-b" key={index}>
-                    <td className="text-center p-3">{index + 1}</td>
-                    <td className="text-center p-3">{item.product_name}</td>
-                    <td className="text-center p-3">
-                      {item?.product_categories?.product_category_name}
-                    </td>
-                    <td className="text-center p-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
-                          onClick={() => modalDetailHandling(item.product_id)}
-                        >
-                          Detail
-                        </button>
-                        <button
-                          className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
-                          onClick={() => modalEditHandling(item.product_id)}
-                        >
-                          Edit
-                        </button>
-                        <div
-                          className="button-fill !p-[15px]"
-                          onClick={(e) => handleDelete(e, item.product_id)}
-                        >
-                          <FaTrash className="fill-white text-base" />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {isLoading
+                  ? [1, 2, 3].map((item) => (
+                      <tr
+                        className="animate-pulse border-b"
+                        key={item}
+                      >
+                        <td className="text-center px-4 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          <div className="flex items-center justify-center gap-3 py-2">
+                            <div className="h-3 bg-slate-200 rounded-md w-20"></div>
+                            <div className="h-3 bg-slate-200 rounded-md w-20"></div>
+                            <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : currentData?.map((item, index) => (
+                      <tr
+                        className="border-b"
+                        key={index}
+                      >
+                        <td className="text-center p-3">{index + 1}</td>
+                        <td className="text-center p-3">{item.product_name}</td>
+                        <td className="text-center p-3">
+                          {item?.product_categories?.product_category_name}
+                        </td>
+                        <td className="text-center p-3">
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
+                              onClick={() =>
+                                modalDetailHandling(item.product_id)
+                              }
+                            >
+                              Detail
+                            </button>
+                            <button
+                              className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
+                              onClick={() => modalEditHandling(item.product_id)}
+                            >
+                              Edit
+                            </button>
+                            <div
+                              className="button-fill !p-[15px]"
+                              onClick={(e) => handleDelete(e, item.product_id)}
+                            >
+                              <FaTrash className="fill-white text-base" />
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>

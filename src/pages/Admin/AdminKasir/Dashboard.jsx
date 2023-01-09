@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import Pagination from "../../../components/Pagination";
-import { adminKasir } from "../../../services/api";
+import React, { useEffect, useState } from 'react';
+import Pagination from '../../../components/Pagination';
+import { adminKasir } from '../../../services/api';
 
 const Dashboard = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [sellData, setSellData] = useState();
   const [pad, setPad] = useState();
@@ -27,30 +27,42 @@ const Dashboard = () => {
     setCurrentPage({ ...currentPage, sell: pageNumber });
   const paginatePAD = (pageNumber) =>
     setCurrentPage({ ...currentPage, pad: pageNumber });
+  const [isLoadingSell, setIsLoadingSell] = useState(true);
+  const [isLoadingPAD, setIsLoadingPAD] = useState(true);
 
   useEffect(() => {
     const getData = async () => {
       await adminKasir
-        .get("/orders", {
+        .get('/orders', {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
-        .then((response) => setSellData(response.data));
+        .then((response) => {
+          setSellData(response.data);
+          setIsLoadingSell(false);
+        })
+        .catch(() => setIsLoadingSell(false));
     };
+
     getData();
   }, [parseUser.data.token]);
 
   useEffect(() => {
     const getData = async () => {
       await adminKasir
-        .get("/pad", {
+        .get('/pad', {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
-        .then((response) => setPad(response.data));
+        .then((response) => {
+          setPad(response.data);
+          setIsLoadingPAD(false);
+        })
+        .catch(() => setIsLoadingPAD(false));
     };
+
     getData();
   }, [parseUser.data.token]);
 
@@ -72,60 +84,89 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {currentDataSell?.map((item, index) => (
-              <tr className=" border-b" key={index}>
-                <td className="text-center py-3">{index + 1}</td>
-                <td className="text-center py-3">{item.order_code}</td>
-                <td className="text-center py-3">{`${new Date(
-                  item.createdAt
-                ).getDate()} - ${
-                  new Date(item.createdAt).getMonth() + 1
-                } - ${new Date(item.createdAt).getFullYear()}`}</td>
-                <td className="text-center py-3">{item.users.user_ikm}</td>
-                <td className="text-center py-3">
-                  <div className="flex gap-2 w-full justify-center">
-                    <div
-                      className={`bg-${
-                        item.order_payment_method === null
-                          ? "[#6D6061]"
-                          : item.order_payment_method === "DP"
-                          ? "[#21B630]"
-                          : item.order_payment_method === "Langsung"
-                          ? "[#21B630]"
-                          : ""
-                      } text-white py-2 px-3 rounded-lg font-semibold`}
-                    >
-                      {item.order_payment_method === null
-                        ? "Belum Diproses"
-                        : item.order_payment_method === "DP"
-                        ? "DP"
-                        : item.order_payment_method === "Langsung"
-                        ? "Langsung"
-                        : ""}
-                    </div>
-                    <div
-                      className={`bg-${
-                        item.order_payment_status === null
-                          ? "[#6D6061]"
-                          : item.order_payment_status === "Lunas"
-                          ? "[#21B630]"
-                          : item.order_payment_status === "Belum Lunas"
-                          ? "[#21B630]"
-                          : ""
-                      } text-white py-2 px-3 rounded-lg font-semibold`}
-                    >
-                      {item.order_payment_status === null
-                        ? "Belum Diproses"
-                        : item.order_payment_status === "Lunas"
-                        ? "Lunas"
-                        : item.order_payment_status === "Belum Lunas"
-                        ? "Belum Lunas"
-                        : ""}
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            ))}
+            {isLoadingSell
+              ? [1, 2, 3].map((item) => (
+                  <tr
+                    className="animate-pulse border-b"
+                    key={item}
+                  >
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="flex py-2 gap-2 w-full justify-center">
+                        <div className="h-3 w-20 bg-slate-200 rounded-md"></div>
+                        <div className="h-3 w-20 bg-slate-200 rounded-md"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              : currentDataSell?.map((item, index) => (
+                  <tr
+                    className=" border-b"
+                    key={index}
+                  >
+                    <td className="text-center py-3">{index + 1}</td>
+                    <td className="text-center py-3">{item.order_code}</td>
+                    <td className="text-center py-3">{`${new Date(
+                      item.createdAt
+                    ).getDate()} - ${
+                      new Date(item.createdAt).getMonth() + 1
+                    } - ${new Date(item.createdAt).getFullYear()}`}</td>
+                    <td className="text-center py-3">{item.users.user_ikm}</td>
+                    <td className="text-center py-3">
+                      <div className="flex gap-2 w-full justify-center">
+                        <div
+                          className={`bg-${
+                            item.order_payment_method === null
+                              ? '[#6D6061]'
+                              : item.order_payment_method === 'DP'
+                              ? '[#21B630]'
+                              : item.order_payment_method === 'Langsung'
+                              ? '[#21B630]'
+                              : ''
+                          } text-white py-2 px-3 rounded-lg font-semibold`}
+                        >
+                          {item.order_payment_method === null
+                            ? 'Belum Diproses'
+                            : item.order_payment_method === 'DP'
+                            ? 'DP'
+                            : item.order_payment_method === 'Langsung'
+                            ? 'Langsung'
+                            : ''}
+                        </div>
+                        <div
+                          className={`bg-${
+                            item.order_payment_status === null
+                              ? '[#6D6061]'
+                              : item.order_payment_status === 'Lunas'
+                              ? '[#21B630]'
+                              : item.order_payment_status === 'Belum Lunas'
+                              ? '[#21B630]'
+                              : ''
+                          } text-white py-2 px-3 rounded-lg font-semibold`}
+                        >
+                          {item.order_payment_status === null
+                            ? 'Belum Diproses'
+                            : item.order_payment_status === 'Lunas'
+                            ? 'Lunas'
+                            : item.order_payment_status === 'Belum Lunas'
+                            ? 'Belum Lunas'
+                            : ''}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
           </tbody>
         </table>
         <Pagination
@@ -148,32 +189,62 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {currentDataPAD?.map((item, index) => (
-              <tr className=" border-b" key={index}>
-                <td className="text-center py-3">{index + 1}</td>
-                <td className="text-center py-3">{item.orders.order_code}</td>
-                <td className="text-center py-3">
-                  {item.orders.users.user_ikm}
-                </td>
-                <td className="text-center py-3">
-                  Rp.{" "}
-                  {item.retribution_jasa_total
-                    ? item.retribution_jasa_total
-                    : "0"}
-                </td>
-                <td className="text-center py-3">
-                  {item.retribution_pad_status === 2 ? (
-                    <div className="bg-[#21B630] text-white py-2 px-3 rounded-lg font-semibold">
-                      Disetujui
-                    </div>
-                  ) : (
-                    <div className="bg-primary-900 text-white py-2 px-3 rounded-lg font-semibold">
-                      Belum Disetujui
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {isLoadingPAD
+              ? [1, 2, 3].map((item) => (
+                  <tr
+                    className="animate-pulse border-b"
+                    key={item}
+                  >
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="py-2">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              : currentDataPAD?.map((item, index) => (
+                  <tr
+                    className=" border-b"
+                    key={index}
+                  >
+                    <td className="text-center py-3">{index + 1}</td>
+                    <td className="text-center py-3">
+                      {item.orders.order_code}
+                    </td>
+                    <td className="text-center py-3">
+                      {item.orders.users.user_ikm}
+                    </td>
+                    <td className="text-center py-3">
+                      Rp.{' '}
+                      {item.retribution_jasa_total
+                        ? item.retribution_jasa_total
+                        : '0'}
+                    </td>
+                    <td className="text-center py-3">
+                      {item.retribution_pad_status === 2 ? (
+                        <div className="bg-[#21B630] text-white py-2 px-3 rounded-lg font-semibold">
+                          Disetujui
+                        </div>
+                      ) : (
+                        <div className="bg-primary-900 text-white py-2 px-3 rounded-lg font-semibold">
+                          Belum Disetujui
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
           </tbody>
         </table>
         <Pagination

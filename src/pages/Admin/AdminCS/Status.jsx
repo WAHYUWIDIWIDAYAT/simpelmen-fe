@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { BsSearch } from "react-icons/bs";
-import { IoIosArrowDown } from "react-icons/io";
-import Alerts from "../../../components/Alerts";
-import Pagination from "../../../components/Pagination";
-import { adminCS } from "../../../services/api";
+import React, { useEffect, useState } from 'react';
+import { BsSearch } from 'react-icons/bs';
+import { IoIosArrowDown } from 'react-icons/io';
+import Alerts from '../../../components/Alerts';
+import Pagination from '../../../components/Pagination';
+import { adminCS } from '../../../services/api';
 
 const Status = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [data, setData] = useState();
   const [alerts, setAlerts] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
-  const [failMessage, setFailMessage] = useState("");
+  const [failMessage, setFailMessage] = useState('');
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const postPerPage = 5;
@@ -20,15 +20,22 @@ const Status = () => {
   const indexFirstPost = indexLastPost - postPerPage;
   const currentData = data?.slice(indexFirstPost, indexLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const [isLoading, setIsLoading] = useState(true);
 
   const getData = async (token) => {
     await adminCS
-      .get("/orders", {
+      .get('/orders', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
-      .then((response) => setData(response.data));
+      .then((response) => {
+        setData(response.data);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   const declineStatus = async (id, status) => {
@@ -38,7 +45,7 @@ const Status = () => {
         { order_status: status },
         {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         }
       )
@@ -58,7 +65,7 @@ const Status = () => {
         { order_status: status },
         {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         }
       )
@@ -77,9 +84,9 @@ const Status = () => {
     // const filtered = data.filter((brg) => brg.order_id === item.order_id)[0];
     // filtered.order_status = parseInt(e.target.value);
 
-    if (e.target.value === "2") {
+    if (e.target.value === '2') {
       declineStatus(item.order_id, parseInt(e.target.value));
-    } else if (e.target.value === "3") {
+    } else if (e.target.value === '3') {
       acceptStatus(item.order_id, parseInt(e.target.value));
     }
     // console.log(data);
@@ -174,53 +181,81 @@ const Status = () => {
               </tr>
             </thead>
             <tbody>
-              {currentData?.map((item, index) => (
-                <tr className="border-b" key={index}>
-                  <td className="text-center p-3">{index + 1}</td>
-                  <td className="text-center p-3">{item.order_code}</td>
-                  <td className="text-center p-3">{`${new Date(
-                    item.createdAt
-                  ).getDate()} - ${
-                    new Date(item.createdAt).getMonth() + 1
-                  } - ${new Date(item.createdAt).getFullYear()}`}</td>
-                  <td className="text-left p-3">
-                    {item.delivery_details[0]?.delivery_detail_ikm}
-                  </td>
-                  <td className="text-center py-3 px-4 flex justify-center">
-                    <div className="relative">
-                      <select
-                        id="status"
-                        name="status"
-                        defaultValue={item.order_status}
-                        // value={item.status}
-                        onChange={(e) => handleChange(e, item)}
-                        className={`${
-                          item.order_status === null
-                            ? "!bg-gradient-to-bl !from-orange-900 !to-primary-900 hover:!from-primary-900 hover:!to-orange-900 !shadow-red"
-                            : item.order_status === 3
-                            ? "!bg-green-500 hover:!bg-green-500/80"
-                            : item.order_status === 2
-                            ? "!bg-secondary-800 hover:!bg-secondary-800/80"
-                            : ""
-                        } input-field-select-xs !border-none !font-semibold !text-white !w-auto !pr-12`}
-                      >
-                        <option value={item.order_status}>
-                          {item.order_status === null
-                            ? "Status PO"
-                            : item.order_status === 2
-                            ? "Belum Disetujui"
-                            : item.order_status === 3
-                            ? "Diterima"
-                            : ""}
-                        </option>
-                        <option value="2">Belum Disetujui</option>
-                        <option value="3">Diterima</option>
-                      </select>
-                      <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {isLoading
+                ? [1, 2, 3].map((item) => (
+                    <tr
+                      className="animate-pulse border-b"
+                      key={item}
+                    >
+                      <td className="text-center py-3 px-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center py-3 px-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center py-3 px-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-left py-3 px-4">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </td>
+                      <td className="text-center py-3 px-4">
+                        <div className="py-2">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                : currentData?.map((item, index) => (
+                    <tr
+                      className="border-b"
+                      key={index}
+                    >
+                      <td className="text-center p-3">{index + 1}</td>
+                      <td className="text-center p-3">{item.order_code}</td>
+                      <td className="text-center p-3">{`${new Date(
+                        item.createdAt
+                      ).getDate()} - ${
+                        new Date(item.createdAt).getMonth() + 1
+                      } - ${new Date(item.createdAt).getFullYear()}`}</td>
+                      <td className="text-left p-3">
+                        {item.delivery_details[0]?.delivery_detail_ikm}
+                      </td>
+                      <td className="text-center py-3 px-4 flex justify-center">
+                        <div className="relative">
+                          <select
+                            id="status"
+                            name="status"
+                            defaultValue={item.order_status}
+                            // value={item.status}
+                            onChange={(e) => handleChange(e, item)}
+                            className={`${
+                              item.order_status === null
+                                ? '!bg-gradient-to-bl !from-orange-900 !to-primary-900 hover:!from-primary-900 hover:!to-orange-900 !shadow-red'
+                                : item.order_status === 3
+                                ? '!bg-green-500 hover:!bg-green-500/80'
+                                : item.order_status === 2
+                                ? '!bg-secondary-800 hover:!bg-secondary-800/80'
+                                : ''
+                            } input-field-select-xs !border-none !font-semibold !text-white !w-auto !pr-12`}
+                          >
+                            <option value={item.order_status}>
+                              {item.order_status === null
+                                ? 'Status PO'
+                                : item.order_status === 2
+                                ? 'Belum Disetujui'
+                                : item.order_status === 3
+                                ? 'Diterima'
+                                : ''}
+                            </option>
+                            <option value="2">Belum Disetujui</option>
+                            <option value="3">Diterima</option>
+                          </select>
+                          <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>

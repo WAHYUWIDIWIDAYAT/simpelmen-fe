@@ -1,29 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { BsSearch, BsPlus } from "react-icons/bs";
-import { FaTrash } from "react-icons/fa";
-import Alerts from "../../../components/Alerts";
-import Pagination from "../../../components/Pagination";
-import { adminSuper } from "../../../services/api";
-import ModalsAddAdmin from "./components/ModalsAddAdmin";
-import ModalsEditAdmin from "./components/ModalsEditAdmin";
+import React, { useEffect, useState } from 'react';
+import { BsSearch, BsPlus } from 'react-icons/bs';
+import { FaTrash } from 'react-icons/fa';
+import Alerts from '../../../components/Alerts';
+import Pagination from '../../../components/Pagination';
+import { adminSuper } from '../../../services/api';
+import ModalsAddAdmin from './components/ModalsAddAdmin';
+import ModalsEditAdmin from './components/ModalsEditAdmin';
 
 const Anggota = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isOpenModalEdit, setIsOpenModalEdit] = useState(false);
   const [alertAdd, setAlertAdd] = useState(false);
   // const [alertEdit, setAlertEdit] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
-  const [alertAddMessage, setAlertAddMessage] = useState("");
+  const [alertAddMessage, setAlertAddMessage] = useState('');
   // const [alertEditMessage, setAlertEditMessage] = useState("");
-  const [failMessage, setFailMessage] = useState("");
+  const [failMessage, setFailMessage] = useState('');
   const [detailAdmin, setDetailAdmin] = useState();
   const [dataAdmin, setDataAdmin] = useState();
   const [addAdmin, setAddAdmin] = useState();
   const [editAdmin, setEditAdmin] = useState();
   const [adminRole, setAdminRole] = useState();
   const [updateId, setUpdateId] = useState();
+  const [isLoading, setIsLoading] = useState(true);
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const postPerPage = 5;
@@ -37,10 +38,17 @@ const Anggota = () => {
     await adminSuper
       .get(`/data/admin`, {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
-      .then((response) => setDataAdmin(response.data.data));
+      .then((response) => {
+        setDataAdmin(response.data.data);
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setDataAdmin(null);
+        setIsLoading(false);
+      });
   };
 
   const closeModal = () => {
@@ -62,7 +70,7 @@ const Anggota = () => {
     await adminSuper
       .get(`/data/admin/${id}?id=${id}`, {
         headers: {
-          "x-access-token": `${parseUser.data.token}`,
+          'x-access-token': `${parseUser.data.token}`,
         },
       })
       .then((response) => setDetailAdmin(response.data.data));
@@ -72,9 +80,9 @@ const Anggota = () => {
   useEffect(() => {
     const getRole = async () => {
       await adminSuper
-        .get("/role", {
+        .get('/role', {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
         .then((response) => setAdminRole(response.data.data));
@@ -87,7 +95,7 @@ const Anggota = () => {
     e.preventDefault();
     setAddAdmin({
       ...addAdmin,
-      [e.target.getAttribute("name")]: e.target.value,
+      [e.target.getAttribute('name')]: e.target.value,
     });
   };
 
@@ -95,7 +103,7 @@ const Anggota = () => {
     e.preventDefault();
     setEditAdmin({
       ...editAdmin,
-      [e.target.getAttribute("name")]: e.target.value,
+      [e.target.getAttribute('name')]: e.target.value,
     });
   };
 
@@ -105,7 +113,7 @@ const Anggota = () => {
     console.log(addAdmin);
     await adminSuper
       .post(
-        "/create/admin",
+        '/create/admin',
         {
           user_name: addAdmin.user_name,
           user_email: addAdmin.user_email,
@@ -114,14 +122,14 @@ const Anggota = () => {
         },
         {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         }
       )
       .then((response) => {
         setTimeout(() => {
           setAlertAdd(true);
-          setAlertAddMessage("Admin Berhasil Ditambahkan!");
+          setAlertAddMessage('Admin Berhasil Ditambahkan!');
           getDataAdmin(parseUser.data.token);
         }, 2000);
         setIsOpenModal(false);
@@ -149,14 +157,14 @@ const Anggota = () => {
         },
         {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         }
       )
       .then((response) => {
         setTimeout(() => {
           setAlertAdd(true);
-          setAlertAddMessage("Admin Berhasil Diupdate!");
+          setAlertAddMessage('Admin Berhasil Diupdate!');
           getDataAdmin(parseUser.data.token);
         }, 2000);
         setIsOpenModalEdit(false);
@@ -208,10 +216,10 @@ const Anggota = () => {
         </div>
         <div className="flex flex-col gap-y-4 xs:gap-y-0 xs:flex-row xs:items-center justify-between mb-4">
           <h6 className="">
-            Tabel Admin{" "}
-            <span className="text-primary-900 font-semibold">
+            Tabel Admin{' '}
+            {/* <span className="text-primary-900 font-semibold">
               NO ENDPOINT DELETE
-            </span>
+            </span> */}
           </h6>
           <div>
             <button
@@ -274,27 +282,60 @@ const Anggota = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentData?.map((item, index) => (
-                  <tr className="border-b" key={index}>
-                    <td className="text-center p-3">{index + 1}</td>
-                    <td className="text-center p-3">{item.user_name}</td>
-                    <td className="text-center p-3">{item.user_email}</td>
-                    <td className="text-center p-3">{item.roles?.role_name}</td>
-                    <td className="text-center p-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
-                          onClick={() => detailModalHandlingEdit(item.user_id)}
-                        >
-                          Edit
-                        </button>
-                        <div className="button-fill !p-[15px]">
-                          <FaTrash className="fill-white text-base" />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {isLoading
+                  ? [1, 2, 3].map((item) => (
+                      <tr
+                        className="border-b"
+                        key={item}
+                      >
+                        <td className="text-center px-4 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          <div className="flex items-center justify-center gap-2 py-2">
+                            <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                            <div className="h-3 bg-slate-200 rounded-md w-16"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : currentData?.map((item, index) => (
+                      <tr
+                        className="border-b"
+                        key={index}
+                      >
+                        <td className="text-center p-3">{index + 1}</td>
+                        <td className="text-center p-3">{item.user_name}</td>
+                        <td className="text-center p-3">{item.user_email}</td>
+                        <td className="text-center p-3">
+                          {item.roles?.role_name}
+                        </td>
+                        <td className="text-center p-3">
+                          <div className="flex items-center justify-center gap-2">
+                            <button
+                              className="bg-white border py-3 px-4 rounded-lg text-sm transition-200 hover:border-orange-900"
+                              onClick={() =>
+                                detailModalHandlingEdit(item.user_id)
+                              }
+                            >
+                              Edit
+                            </button>
+                            <div className="button-fill !p-[15px]">
+                              <FaTrash className="fill-white text-base" />
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>

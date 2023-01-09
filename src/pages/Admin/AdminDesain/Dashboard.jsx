@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import Pagination from "../../../components/Pagination";
-import { adminDesain } from "../../../services/api";
+import React, { useEffect, useState } from 'react';
+import Pagination from '../../../components/Pagination';
+import { adminDesain } from '../../../services/api';
 
 const Dashboard = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [data, setData] = useState();
   // pagination
@@ -14,16 +14,21 @@ const Dashboard = () => {
   const indexFirstPost = indexLastPost - postPerPage;
   const currentData = data?.slice(indexFirstPost, indexLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getData = async () => {
       await adminDesain
-        .get("/orders", {
+        .get('/orders', {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
-        .then((response) => setData(response.data));
+        .then((response) => {
+          setData(response.data);
+          setIsLoading(false);
+        })
+        .catch(() => setIsLoading(false));
     };
     getData();
   }, [parseUser.data.token]);
@@ -58,19 +63,47 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentData?.map((item, index) => (
-                  <tr className="border-b" key={index}>
-                    <td className="text-center p-3">{index + 1}</td>
-                    <td className="text-center p-">{item.order_code}</td>
-                    <td className="text-left p-3">{item.users.user_ikm}</td>
-                    <td className="text-center p-3">belum ada</td>
-                    <td className="text-center p-3">{`${new Date(
-                      item.createdAt
-                    ).getDate()} - ${
-                      new Date(item.createdAt).getMonth() + 1
-                    } - ${new Date(item.createdAt).getFullYear()}`}</td>
-                  </tr>
-                ))}
+                {isLoading
+                  ? [1, 2, 3].map((item) => (
+                      <tr
+                        className="animate-pulse border-b"
+                        key={item}
+                      >
+                        <td className="text-center py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-left py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <div className="py-2">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : currentData?.map((item, index) => (
+                      <tr
+                        className="border-b"
+                        key={index}
+                      >
+                        <td className="text-center p-3">{index + 1}</td>
+                        <td className="text-center p-">{item.order_code}</td>
+                        <td className="text-left p-3">{item.users.user_ikm}</td>
+                        <td className="text-center p-3">belum ada</td>
+                        <td className="text-center p-3">{`${new Date(
+                          item.createdAt
+                        ).getDate()} - ${
+                          new Date(item.createdAt).getMonth() + 1
+                        } - ${new Date(item.createdAt).getFullYear()}`}</td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>

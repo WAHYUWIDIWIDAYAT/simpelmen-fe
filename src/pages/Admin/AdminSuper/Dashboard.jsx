@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { BsFillCartFill, BsFillPersonFill } from "react-icons/bs";
-import { FaBox } from "react-icons/fa";
-import Pagination from "../../../components/Pagination";
-import { adminSuper, commonAPI } from "../../../services/api";
+import React, { useEffect, useState } from 'react';
+import { BsFillCartFill, BsFillPersonFill } from 'react-icons/bs';
+import { FaBox } from 'react-icons/fa';
+import Pagination from '../../../components/Pagination';
+import { adminSuper, commonAPI } from '../../../services/api';
 
 const Dashboard = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [dataAdmin, setDataAdmin] = useState();
   const [dataProduct, setDataProduct] = useState();
   const [data, setData] = useState(); //rekap pesanan
+  const [isLoadingAdmin, setIsLoadingAdmin] = useState(true);
+  const [isLoadingProduct, setIsLoadingProduct] = useState(true);
+  const [isLoadingPesanan, setIsLoadingPesanan] = useState(true);
   const [currentPage, setCurrentPage] = useState({
     admin: 1,
     produk: 1,
@@ -44,10 +47,16 @@ const Dashboard = () => {
       await adminSuper
         .get(`/data/admin`, {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
-        .then((response) => setDataAdmin(response.data.data));
+        .then((response) => {
+          setDataAdmin(response.data.data);
+          setIsLoadingAdmin(false);
+        })
+        .catch(() => {
+          setIsLoadingAdmin(false);
+        });
     };
     getDataAdmin();
   }, [parseUser.data.token, parseUser.data.user_status]);
@@ -57,10 +66,16 @@ const Dashboard = () => {
       await commonAPI
         .get(`/product`, {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
-        .then((response) => setDataProduct(response.data));
+        .then((response) => {
+          setDataProduct(response.data);
+          setIsLoadingProduct(false);
+        })
+        .catch(() => {
+          setIsLoadingProduct(false);
+        });
     };
     getDataProduct();
   }, [parseUser.data.token, parseUser.data.user_status]);
@@ -68,12 +83,18 @@ const Dashboard = () => {
   useEffect(() => {
     const getData = async () => {
       await adminSuper
-        .get("/rekap/pesanan", {
+        .get('/rekap/pesanan', {
           headers: {
-            "x-access-token": `${JSON.parse(user).data.token}`,
+            'x-access-token': `${JSON.parse(user).data.token}`,
           },
         })
-        .then((response) => setData(response.data));
+        .then((response) => {
+          setData(response.data);
+          setIsLoadingPesanan(false);
+        })
+        .catch(() => {
+          setIsLoadingPesanan(false);
+        });
     };
     getData();
   }, [user]);
@@ -87,7 +108,10 @@ const Dashboard = () => {
         <div className="grid grid-cols-4 xmd:grid-cols-8 gap-4">
           <div className="col-span-4 xl:col-span-2">
             <div className="card rounded-xl p-6 flex items-center gap-5 bg-gradient-to-r from-primary-900 to-orange-900">
-              <BsFillPersonFill fill="#FFFFFF" size={40} />
+              <BsFillPersonFill
+                fill="#FFFFFF"
+                size={40}
+              />
               <div className="content">
                 <h4 className="!text-white">{dataAdmin?.length}</h4>
                 <p className="!text-white">Total Admin</p>
@@ -96,7 +120,10 @@ const Dashboard = () => {
           </div>
           <div className="col-span-4 xl:col-span-2">
             <div className="card rounded-xl p-6 flex items-center gap-5 bg-gradient-to-r from-primary-900 to-orange-900">
-              <FaBox fill="#FFFFFF" size={40} />
+              <FaBox
+                fill="#FFFFFF"
+                size={40}
+              />
               <div className="content">
                 <h4 className="!text-white">14</h4>
                 <p className="!text-white">Total Produksi</p>
@@ -105,7 +132,10 @@ const Dashboard = () => {
           </div>
           <div className="col-span-4 xl:col-span-2">
             <div className="card rounded-xl p-6 flex items-center gap-5 bg-gradient-to-r from-primary-900 to-orange-900">
-              <BsFillCartFill fill="#FFFFFF" size={40} />
+              <BsFillCartFill
+                fill="#FFFFFF"
+                size={40}
+              />
               <div className="content">
                 <h4 className="!text-white">14</h4>
                 <p className="!text-white">Total Pesanan</p>
@@ -115,7 +145,10 @@ const Dashboard = () => {
         </div>
 
         <h6 className="mt-10 mb-4">Tabel Admin</h6>
-        <article id="tableAdmin" className="mb-6">
+        <article
+          id="tableAdmin"
+          className="mb-6"
+        >
           <div className="overflow-x-auto">
             <table className="table-auto mb-4 w-full">
               <thead>
@@ -135,14 +168,41 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentDataAdmin?.map((item, index) => (
-                  <tr className="border-b" key={index}>
-                    <td className="text-center p-3">{index + 1}</td>
-                    <td className="text-center p-3">{item.user_name}</td>
-                    <td className="text-center p-3">{item.roles?.role_name}</td>
-                    <td className="text-center p-3">{item.user_email}</td>
-                  </tr>
-                ))}
+                {isLoadingAdmin
+                  ? [1, 2, 3].map((item) => (
+                      <tr
+                        className="animate-pulse border-b"
+                        key={item}
+                      >
+                        <td className="text-center px-4 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-4 py-3">
+                          <div className="py-2">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : currentDataAdmin?.map((item, index) => (
+                      <tr
+                        className="border-b"
+                        key={index}
+                      >
+                        <td className="text-center p-3">{index + 1}</td>
+                        <td className="text-center p-3">{item.user_name}</td>
+                        <td className="text-center p-3">
+                          {item.roles?.role_name}
+                        </td>
+                        <td className="text-center p-3">{item.user_email}</td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
@@ -156,7 +216,10 @@ const Dashboard = () => {
         </article>
 
         <h6 className="mb-4">Tabel Produk</h6>
-        <article id="tableProduk" className="mb-6">
+        <article
+          id="tableProduk"
+          className="mb-6"
+        >
           <div className="overflow-x-auto">
             <table className="table-auto mb-4 w-full">
               <thead>
@@ -173,15 +236,39 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentDataProduk?.map((item, index) => (
-                  <tr className="border-b" key={index}>
-                    <td className="text-center py-3">{index + 1}</td>
-                    <td className="text-center py-3">{item.product_name}</td>
-                    <td className="text-center py-3">
-                      {item?.product_categories?.product_category_name}
-                    </td>
-                  </tr>
-                ))}
+                {isLoadingProduct
+                  ? [1, 2, 3].map((item) => (
+                      <tr
+                        className="animate-pulse border-b"
+                        key={item}
+                      >
+                        <td className="text-center py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <div className="py-2">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : currentDataProduk?.map((item, index) => (
+                      <tr
+                        className="border-b"
+                        key={index}
+                      >
+                        <td className="text-center py-3">{index + 1}</td>
+                        <td className="text-center py-3">
+                          {item.product_name}
+                        </td>
+                        <td className="text-center py-3">
+                          {item?.product_categories?.product_category_name}
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
@@ -217,44 +304,73 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentDataRekap?.map((item, index) => (
-                  <tr className="border-b" key={index}>
-                    <td className="text-center p-3">{index + 1}</td>
-                    <td className="text-center p-3">{item.order_code}</td>
-                    <td className="text-left p-3">{item.users.user_ikm}</td>
-                    <td className="text-center p-3">
-                      <div className="text-white bg-orange-600 rounded-md py-2 px-7">
-                        {item?.order_statuses[0].order_status_admin_code === "8"
-                          ? "Status Pesanan"
-                          : item?.order_statuses[0].order_status_admin_code ===
-                            2
-                          ? "Admin CS"
-                          : item?.order_statuses[0].order_status_admin_code ===
-                            3
-                          ? "Admin Kasir"
-                          : item?.order_statuses[0].order_status_admin_code ===
-                            4
-                          ? "Admin Desain"
-                          : item?.order_statuses[0].order_status_admin_code ===
-                            5
-                          ? "Admin Gudang"
-                          : item?.order_statuses[0].order_status_admin_code ===
-                            6
-                          ? "Admin Produksi"
-                          : item?.order_statuses[0].order_status_admin_code ===
-                            7
-                          ? "Admin TU"
-                          : ""}
-                      </div>
-                    </td>
-                    <td className="text-center p-3">
-                      Rp.{" "}
-                      {item.retributions[0]?.retribution_jasa_total !== null
-                        ? item.retributions[0]?.retribution_jasa_total
-                        : "0"}
-                    </td>
-                  </tr>
-                ))}
+                {isLoadingPesanan
+                  ? [1, 2, 3].map((item) => (
+                      <tr
+                        className="border-b"
+                        key={item}
+                      >
+                        <td className="text-center px-3 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-3 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-left px-3 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-3 py-3">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center px-3 py-3">
+                          <div className="py-2">
+                            <div className="h-3 bg-slate-200 rounded-md"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : currentDataRekap?.map((item, index) => (
+                      <tr
+                        className="border-b"
+                        key={index}
+                      >
+                        <td className="text-center p-3">{index + 1}</td>
+                        <td className="text-center p-3">{item.order_code}</td>
+                        <td className="text-left p-3">{item.users.user_ikm}</td>
+                        <td className="text-center p-3">
+                          <div className="text-white bg-orange-600 rounded-md py-2 px-7">
+                            {item?.order_statuses[0].order_status_admin_code ===
+                            '8'
+                              ? 'Status Pesanan'
+                              : item?.order_statuses[0]
+                                  .order_status_admin_code === 2
+                              ? 'Admin CS'
+                              : item?.order_statuses[0]
+                                  .order_status_admin_code === 3
+                              ? 'Admin Kasir'
+                              : item?.order_statuses[0]
+                                  .order_status_admin_code === 4
+                              ? 'Admin Desain'
+                              : item?.order_statuses[0]
+                                  .order_status_admin_code === 5
+                              ? 'Admin Gudang'
+                              : item?.order_statuses[0]
+                                  .order_status_admin_code === 6
+                              ? 'Admin Produksi'
+                              : item?.order_statuses[0]
+                                  .order_status_admin_code === 7
+                              ? 'Admin TU'
+                              : ''}
+                          </div>
+                        </td>
+                        <td className="text-center p-3">
+                          Rp.{' '}
+                          {item.retributions[0]?.retribution_jasa_total !== null
+                            ? item.retributions[0]?.retribution_jasa_total
+                            : '0'}
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { BsSearch } from "react-icons/bs";
-import Pagination from "../../../components/Pagination";
-import { adminKasir } from "../../../services/api";
+import React, { useEffect, useState } from 'react';
+import { BsSearch } from 'react-icons/bs';
+import Pagination from '../../../components/Pagination';
+import { adminKasir } from '../../../services/api';
 
 const PAD = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [pad, setPad] = useState();
   // pagination
@@ -15,15 +15,21 @@ const PAD = () => {
   const indexFirstPost = indexLastPost - postPerPage;
   const currentData = pad?.slice(indexFirstPost, indexLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     const getData = async () => {
       await adminKasir
-        .get("/pad", {
+        .get('/pad', {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         })
-        .then((response) => setPad(response.data));
+        .then((response) => {
+          setPad(response.data);
+          setIsLoading(false);
+        })
+        .catch(() => setIsLoading(false));
     };
     getData();
   }, [parseUser.data.token]);
@@ -72,29 +78,59 @@ const PAD = () => {
             </tr>
           </thead>
           <tbody>
-            {currentData?.map((item, index) => (
-              <tr className="border-b" key={index}>
-                <td className="text-center py-3">{index + 1}</td>
-                <td className="text-center py-3">{item.orders.order_code}</td>
-                <td className="text-center py-3">
-                  {item.orders.users.user_ikm}
-                </td>
-                <td className="text-center py-3">
-                  Rp. {item.retribution_jasa_total}
-                </td>
-                <td className="text-center py-3">
-                  {item.retribution_pad_status === 2 ? (
-                    <div className="bg-[#21B630] text-white py-2 px-3 rounded-lg font-semibold">
-                      Disetujui
-                    </div>
-                  ) : (
-                    <div className="bg-primary-900 text-white py-2 px-3 rounded-lg font-semibold">
-                      Belum Disetujui
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
+            {isLoading
+              ? [1, 2, 3].map((item) => (
+                  <tr
+                    className="animate-pulse border-b"
+                    key={item}
+                  >
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="h-3 bg-slate-200 rounded-md"></div>
+                    </td>
+                    <td className="text-center py-3 px-4">
+                      <div className="py-2">
+                        <div className="h-3 bg-slate-200 rounded-md"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              : currentData?.map((item, index) => (
+                  <tr
+                    className="border-b"
+                    key={index}
+                  >
+                    <td className="text-center py-3">{index + 1}</td>
+                    <td className="text-center py-3">
+                      {item.orders.order_code}
+                    </td>
+                    <td className="text-center py-3">
+                      {item.orders.users.user_ikm}
+                    </td>
+                    <td className="text-center py-3">
+                      Rp. {item.retribution_jasa_total}
+                    </td>
+                    <td className="text-center py-3">
+                      {item.retribution_pad_status === 2 ? (
+                        <div className="bg-[#21B630] text-white py-2 px-3 rounded-lg font-semibold">
+                          Disetujui
+                        </div>
+                      ) : (
+                        <div className="bg-primary-900 text-white py-2 px-3 rounded-lg font-semibold">
+                          Belum Disetujui
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
           </tbody>
         </table>
         <Pagination

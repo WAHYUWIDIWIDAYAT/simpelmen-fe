@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { BsSearch } from "react-icons/bs";
-import { IoIosArrowDown } from "react-icons/io";
-import Alerts from "../../../components/Alerts";
-import Pagination from "../../../components/Pagination";
-import { adminTU } from "../../../services/api";
+import React, { useEffect, useState } from 'react';
+import { BsSearch } from 'react-icons/bs';
+import { IoIosArrowDown } from 'react-icons/io';
+import Alerts from '../../../components/Alerts';
+import Pagination from '../../../components/Pagination';
+import { adminTU } from '../../../services/api';
 
 const Dashboard = () => {
-  const user = localStorage.getItem("admin");
+  const user = localStorage.getItem('admin');
   const parseUser = JSON.parse(user);
   const [orderData, setOrderData] = useState();
   const [alerts, setAlerts] = useState(false);
   const [alertFail, setAlertFail] = useState(false);
-  const [failMessage, setFailMessage] = useState("");
+  const [failMessage, setFailMessage] = useState('');
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const postPerPage = 5;
@@ -20,14 +20,20 @@ const Dashboard = () => {
   const indexFirstPost = indexLastPost - postPerPage;
   const currentData = orderData?.slice(indexFirstPost, indexLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const [isLoading, setIsLoading] = useState(true);
+
   const getData = async (token) => {
     await adminTU
-      .get("/orders", {
+      .get('/orders', {
         headers: {
-          "x-access-token": `${token}`,
+          'x-access-token': `${token}`,
         },
       })
-      .then((response) => setOrderData(response.data));
+      .then((response) => {
+        setOrderData(response.data);
+        setIsLoading(false);
+      })
+      .catch(() => setIsLoading(false));
   };
 
   async function accept(id) {
@@ -35,11 +41,11 @@ const Dashboard = () => {
       .put(
         `/orders/approve/${id}`,
         {
-          order_status: "2",
+          order_status: '2',
         },
         {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         }
       )
@@ -58,11 +64,11 @@ const Dashboard = () => {
       .put(
         `/orders/decline/${id}`,
         {
-          order_status: "3",
+          order_status: '3',
         },
         {
           headers: {
-            "x-access-token": `${parseUser.data.token}`,
+            'x-access-token': `${parseUser.data.token}`,
           },
         }
       )
@@ -78,9 +84,9 @@ const Dashboard = () => {
 
   function handleChange(e, item) {
     e.preventDefault();
-    if (e.target.value === "2") {
+    if (e.target.value === '2') {
       accept(item.order_id);
-    } else if (e.target.value === "3") {
+    } else if (e.target.value === '3') {
       decline(item.order_id);
     }
     // const filtered = data.filter((brg) => brg.id === item.id)[0];
@@ -175,58 +181,86 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentData?.map((item, index) => (
-                  <tr className="border-b" key={item.id}>
-                    <td className="text-center p-3">{index + 1}</td>
-                    <td className="text-center p-3">{item.order_code}</td>
-                    <td className="text-left p-3">{item.users.user_ikm}</td>
-                    <td className="text-center p-3">{`${new Date(
-                      item.createdAt
-                    ).getDate()} - ${
-                      new Date(item.createdAt).getMonth() + 1
-                    } - ${new Date(item.createdAt).getFullYear()}`}</td>
-                    <td className="text-center p-3">
-                      <div className="flex items-center gap-4 justify-center text-primary-900 font-semibold">
-                        <div className="relative">
-                          <select
-                            id="status"
-                            name="status"
-                            defaultValue={item.order_status}
-                            // value={item.order_status}
-                            onChange={(e) => handleChange(e, item)}
-                            className={`${
-                              item.order_status === null
-                                ? "!bg-gradient-to-bl !from-orange-900 !to-primary-900 hover:!from-primary-900 hover:!to-orange-900 !shadow-red"
-                                : item.order_status === 2
-                                ? "!bg-green-500 hover:!bg-green-500/80"
-                                : item.order_status === 3
-                                ? "!bg-secondary-800 hover:!bg-secondary-800/80"
-                                : ""
-                            } input-field-select-xs !border-none !font-semibold !text-white !w-auto !pr-12`}
-                          >
-                            <option
-                              value={
-                                item.order_status === null
-                                  ? "null"
-                                  : item.order_status
-                              }
-                            >
-                              {item.order_status === null
-                                ? "Status PO"
-                                : item.order_status === 2
-                                ? "Diterima"
-                                : "Belum Disetujui"}
-                            </option>
-                            <option value="1">Status PO</option>
-                            <option value="2">Diterima</option>
-                            <option value="3">Belum Disetujui</option>
-                          </select>
-                          <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {isLoading
+                  ? [1, 2, 3].map((item) => (
+                      <tr
+                        className="border-b"
+                        key={item}
+                      >
+                        <td className="text-center py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-left py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <div className="h-3 bg-slate-200 rounded-md"></div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <div className="flex py-2 items-center gap-4 justify-center">
+                            <div className="h-3 w-24 bg-slate-200 rounded-md"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : currentData?.map((item, index) => (
+                      <tr
+                        className="border-b"
+                        key={item.id}
+                      >
+                        <td className="text-center p-3">{index + 1}</td>
+                        <td className="text-center p-3">{item.order_code}</td>
+                        <td className="text-left p-3">{item.users.user_ikm}</td>
+                        <td className="text-center p-3">{`${new Date(
+                          item.createdAt
+                        ).getDate()} - ${
+                          new Date(item.createdAt).getMonth() + 1
+                        } - ${new Date(item.createdAt).getFullYear()}`}</td>
+                        <td className="text-center p-3">
+                          <div className="flex items-center gap-4 justify-center text-primary-900 font-semibold">
+                            <div className="relative">
+                              <select
+                                id="status"
+                                name="status"
+                                defaultValue={item.order_status}
+                                // value={item.order_status}
+                                onChange={(e) => handleChange(e, item)}
+                                className={`${
+                                  item.order_status === null
+                                    ? '!bg-gradient-to-bl !from-orange-900 !to-primary-900 hover:!from-primary-900 hover:!to-orange-900 !shadow-red'
+                                    : item.order_status === 2
+                                    ? '!bg-green-500 hover:!bg-green-500/80'
+                                    : item.order_status === 3
+                                    ? '!bg-secondary-800 hover:!bg-secondary-800/80'
+                                    : ''
+                                } input-field-select-xs !border-none !font-semibold !text-white !w-auto !pr-12`}
+                              >
+                                <option
+                                  value={
+                                    item.order_status === null
+                                      ? 'null'
+                                      : item.order_status
+                                  }
+                                >
+                                  {item.order_status === null
+                                    ? 'Status PO'
+                                    : item.order_status === 2
+                                    ? 'Diterima'
+                                    : 'Belum Disetujui'}
+                                </option>
+                                <option value="1">Status PO</option>
+                                <option value="2">Diterima</option>
+                                <option value="3">Belum Disetujui</option>
+                              </select>
+                              <IoIosArrowDown className="absolute right-4 top-[15px] text-base fill-white" />
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>

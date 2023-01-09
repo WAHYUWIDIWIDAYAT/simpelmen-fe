@@ -112,13 +112,13 @@ const Register = () => {
             'Content-Type': 'application/json',
           },
         })
-        .then((response) => {
+        .then(() => {
           setAlerts(true);
           setIsLoading(false);
         })
         .catch((e) => {
           setAlertFail(true);
-          setFailMessage(e.message);
+          setFailMessage(e.response.data.message);
           setIsLoading(false);
         });
     } else {
