@@ -143,7 +143,7 @@ const DetailPesanan = () => {
                     <td className="pl-2 w-[50%]">
                       {
                         data?.order_details[0]?.products.product_finishings
-                          .product_finishing_name
+                          ?.product_finishing_name
                       }
                     </td>
                   </tr>
