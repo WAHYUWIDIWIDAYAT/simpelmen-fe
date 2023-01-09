@@ -155,8 +155,7 @@ const Modals = ({
                           <figure className="p-6 rounded-xl border border-orange-900/70">
                             <img
                               src={
-                                filteredData?.order_details[0]
-                                  ?.order_detail_design_image
+                                 "http://localhost:8000/public/image/"+filteredData?.order_details[0].order_detail_design_image
                               }
                               alt={`${filteredData?.order_details[0]?.products?.product_name
                                 .replace(/\s+/g, '-')
@@ -207,8 +206,7 @@ const Modals = ({
                                     setValidFields({
                                       ...validFields,
                                       order_design_image:
-                                        e.target.value !== '' &&
-                                        e.target.files[0].size < 3000000,
+                                        e.target.value !== '',
                                     });
                                     handleFile(e);
                                   }}
