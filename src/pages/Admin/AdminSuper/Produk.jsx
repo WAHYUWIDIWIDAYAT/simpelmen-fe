@@ -99,8 +99,7 @@ const Produk = () => {
     e.preventDefault();
     setPostProduct({
       ...postProduct,
-      [e.target.getAttribute('name')]: e.target.value,
-      [e.target.getAttribute('name')]: e.target.files[0],
+      [e.target.getAttribute('name')]: (e.target.files && e.target.files[0]) || e.target.value,
     });
   };
   const handleChangePutProduct = (e) => {
